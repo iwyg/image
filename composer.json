@@ -6,7 +6,8 @@
     "symfony/process": "~2.4.0"
   },
   "require-dev": {
-    "mockery/mockery": "dev-master",
+    "phpunit/phpunit": "~4.0",
+    "mockery/mockery": "~0.9",
     "mikey179/vfsStream": "dev-master"
   },
   "license": "MIT",
