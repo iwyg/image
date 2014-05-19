@@ -1,5 +1,11 @@
 # Image processing
 
+[![Build Status](https://api.travis-ci.org/iwyg/image.png?branch=development)](https://travis-ci.org/iwyg/image)
+[![Latest Stable Version](https://poser.pugx.org/thapp/image/v/stable.png)](https://packagist.org/packages/thapp/image) 
+[![Latest Unstable Version](https://poser.pugx.org/thapp/image/v/unstable.png)](https://packagist.org/packages/thapp/image) 
+[![License](https://poser.pugx.org/thapp/image/license.png)](https://packagist.org/packages/thapp/image)
+[![HHVM Status](http://hhvm.h4cc.de/badge/thapp/image.png)](http://hhvm.h4cc.de/package/thapp/image)
+
 ## Installation
 
 Require `thapp/image` in your project directory

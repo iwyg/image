@@ -144,9 +144,9 @@ class DelegatingLoader implements LoaderInterface
      */
     protected function getLoader($file)
     {
-        if ($this->loader) {
-            return $this->loader;
-        }
+        //if ($this->loader) {
+        //    return $this->loader;
+        //}
 
         if (!$this->supports($file)) {
             throw new \InvalidArgumentException(sprintf('No suitable loader found for srouce %s', $file));

@@ -79,6 +79,8 @@ abstract class DriverTest extends TestCase
         $this->loaderMock->shouldReceive('load')->andReturnUsing(function ($url) {
             return $url;
         });
+
+        $this->loaderMock->shouldReceive('supports')->andReturn(true);
         $this->loaderMock->shouldReceive('clean')->andReturn(null);
     }
     /**
@@ -290,6 +292,7 @@ abstract class DriverTest extends TestCase
     {
         $image = $this->createTestImage();
         $this->loaderMock->shouldReceive('getSource')->andReturn($image);
+        $this->loaderMock->shouldReceive('supports')->andReturn(true);
         $this->driver->load($image);
         $this->assertSame($image, $this->driver->getSource());
     }

@@ -11,7 +11,7 @@
 		syntaxCheck="true">
 	<testsuites>
 		<testsuite name="Image">
-      <directory>src/Thapp/Image/Tests</directory>
+      <directory>./Tests</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>

@@ -15,6 +15,7 @@ use \Mockery as m;
 use \Thapp\Image\Processor;
 use \Thapp\Image\ProcessorInterface;
 use \Thapp\Image\Driver\DriverInterface;
+use \Thapp\Image\Writer\WriterInterface;
 
 /**
  * @package Thapp\Image\Tests\Processor
@@ -28,7 +29,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldBeInstantiable()
     {
-        $this->assertInstanceof('\Thapp\Image\Processor', new Processor);
+        $this->assertInstanceof('\Thapp\Image\Processor', new Processor($this->createDriver(), $this->createWriter()));
     }
 
     /**
@@ -39,12 +40,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $q = false;
         $driver = $this->createDriver();
+        $writer = $this->createWriter();
 
         $driver->shouldReceive('setQuality')->with($quality)->andReturnUsing(function () use (&$q) {
             $q = true;
         });
 
-        $processor = new Processor($driver);
+        $processor = new Processor($driver, $writer);
 
         try {
             $processor->setQuality($quality);
@@ -61,14 +63,15 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $loaded = false;
         $driver = $this->createDriver();
+        $writer = $this->createWriter();
 
         $source = 'somefile';
 
-        $driver->shouldReceive('load')->with($source)->andReturnUsing(function () use (&$loaded) {
+        $driver->shouldReceive('load')->with($source)->once()->andReturnUsing(function () use (&$loaded) {
             $loaded = true;
         });
 
-        $processor = new Processor($driver);
+        $processor = new Processor($driver, $writer);
 
         try {
             $processor->load($source);
@@ -79,8 +82,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         try {
             $loaded = false;
-            $processor = new Processor($driver, $source);
-            $this->assertTrue($loaded, '->load() should call load() on driver');
+            $processor = new Processor($driver, $writer);
+            $this->assertFalse($loaded, '->load() should not call load() on driver');
         } catch (\Exception $e) {
             $this->fail(sprintf('->load() should not throw an exception: [%s]', $e->getMessage()));
         }
@@ -93,6 +96,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $closed = false;
         $driver = $this->createDriver();
+        $writer = $this->createWriter();
 
         $driver->shouldReceive('load')->andReturn(true);
 
@@ -100,7 +104,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $closed = true;
         });
 
-        $processor = new Processor($driver);
+        $processor = new Processor($driver, $writer);
 
         try {
             $processor->close();
@@ -129,6 +133,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processed = false;
 
         $driver = $this->createDriver();
+        $writer = $this->createWriter();
 
         $driver->shouldReceive('setTargetSize')->andReturnUsing(function () use (&$size) {
             $size = true;
@@ -145,7 +150,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         }
 
 
-        $processor = new Processor($driver);
+        $processor = new Processor($driver, $writer);
 
         $processor->process($parameters);
 
@@ -187,6 +192,16 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             call_user_func($setup, $driver);
         }
         return $driver;
+    }
+
+    protected function createWriter(callable $setup = null)
+    {
+        $writer = m::mock('\Thapp\Image\Writer\WriterInterface');
+
+        if (null !== $setup) {
+            call_user_func($setup, $writer);
+        }
+        return $writer;
     }
 
     protected function tearDown()
