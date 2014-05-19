@@ -1,0 +1,196 @@
+<?php
+
+/**
+ * This File is part of the Thapp\Image\Tests\Processor package
+ *
+ * (c) Thomas Appel <mail@thomas-appel.com>
+ *
+ * For full copyright and license information, please refer to the LICENSE file
+ * that was distributed with this package.
+ */
+
+namespace Thapp\Image\Tests\Processor;
+
+use \Mockery as m;
+use \Thapp\Image\Processor;
+use \Thapp\Image\ProcessorInterface;
+use \Thapp\Image\Driver\DriverInterface;
+
+/**
+ * @package Thapp\Image\Tests\Processor
+ * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
+ * @license MIT
+ */
+class ProcessorTest extends \PHPUnit_Framework_TestCase
+{
+
+    /** @test */
+    public function itShouldBeInstantiable()
+    {
+        $this->assertInstanceof('\Thapp\Image\Processor', new Processor);
+    }
+
+    /**
+     * @test
+     * @dataProvider qualityProvider
+     */
+    public function qualityShouldBeSettable($quality)
+    {
+        $q = false;
+        $driver = $this->createDriver();
+
+        $driver->shouldReceive('setQuality')->with($quality)->andReturnUsing(function () use (&$q) {
+            $q = true;
+        });
+
+        $processor = new Processor($driver);
+
+        try {
+            $processor->setQuality($quality);
+            $this->assertTrue($q, '->setQuality() should call setQuality() on driver');
+        } catch (\Exception $e) {
+            $this->fail(sprintf('->setQuality() should not throw an exception: [%s]', $e->getMessage()));
+        }
+
+        $this->assertTrue($q);
+    }
+
+    /** @test */
+    public function itShouldLoadAFileResource()
+    {
+        $loaded = false;
+        $driver = $this->createDriver();
+
+        $source = 'somefile';
+
+        $driver->shouldReceive('load')->with($source)->andReturnUsing(function () use (&$loaded) {
+            $loaded = true;
+        });
+
+        $processor = new Processor($driver);
+
+        try {
+            $processor->load($source);
+            $this->assertTrue($loaded, '->load() should call load() on driver');
+        } catch (\Exception $e) {
+            $this->fail(sprintf('->load() should not throw an exception: [%s]', $e->getMessage()));
+        }
+
+        try {
+            $loaded = false;
+            $processor = new Processor($driver, $source);
+            $this->assertTrue($loaded, '->load() should call load() on driver');
+        } catch (\Exception $e) {
+            $this->fail(sprintf('->load() should not throw an exception: [%s]', $e->getMessage()));
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function testClose()
+    {
+        $closed = false;
+        $driver = $this->createDriver();
+
+        $driver->shouldReceive('load')->andReturn(true);
+
+        $driver->shouldReceive('clean')->andReturnUsing(function () use (&$closed) {
+            $closed = true;
+        });
+
+        $processor = new Processor($driver);
+
+        try {
+            $processor->close();
+            $this->assertFalse($closed, '->close() should not call clean() on driver if not loaded');
+        } catch (\Exception $e) {
+            $this->fail(sprintf('->close() should not throw an exception: [%s]', $e->getMessage()));
+        }
+
+        $processor->load('somefile');
+        try {
+            $processor->close();
+            $this->assertTrue($closed, '->close() should call clean() on driver if loaded');
+        } catch (\Exception $e) {
+            $this->fail(sprintf('->close() should not throw an exception: [%s]', $e->getMessage()));
+        }
+    }
+
+    /**
+     * @test
+     * @dataProvider processParameterProvider
+     */
+    public function testProcess(array $parameters)
+    {
+        $size = false;
+        $filter = false;
+        $processed = false;
+
+        $driver = $this->createDriver();
+
+        $driver->shouldReceive('setTargetSize')->andReturnUsing(function () use (&$size) {
+            $size = true;
+        });
+
+        $driver->shouldReceive('process')->andReturnUsing(function () use (&$processed) {
+            $processed = true;
+        });
+
+        if (isset($parameters['mode'])) {
+            $driver->shouldReceive('filter')->andReturnUsing(function () use (&$filter) {
+                $filter = true;
+            });
+        }
+
+
+        $processor = new Processor($driver);
+
+        $processor->process($parameters);
+
+        $this->assertTrue($size, '->process() should call setTargetSize() on driver');
+        $this->assertTrue($processed, '->process() should call process() on driver');
+
+        if (isset($parameters['mode'])) {
+            $this->assertTrue($processed, '->process() should call filter() on driver');
+        }
+    }
+
+    public function processParameterProvider()
+    {
+        return [
+            [[]],
+            [['mode' => 1]],
+            [['mode' => 2]],
+            [['mode' => 3]],
+            [['mode' => 4]],
+            [['mode' => 5]],
+        ];
+    }
+
+    public function qualityProvider()
+    {
+        return [
+            [0],
+            [10],
+            [50],
+            [80]
+        ];
+    }
+
+    protected function createDriver(callable $setup = null)
+    {
+        $driver = m::mock('\Thapp\Image\Driver\DriverInterface');
+
+        if (null !== $setup) {
+            call_user_func($setup, $driver);
+        }
+        return $driver;
+    }
+
+    protected function tearDown()
+    {
+        m::close();
+    }
+}
