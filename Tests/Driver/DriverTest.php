@@ -17,13 +17,12 @@ use \Thapp\Image\Driver\DriverInterface;
 use \Thapp\Image\Tests\TestCase;
 
 /**
- * Class: JitImageDriverTest
- *
- * @uses TestCase
+ * @abstract class DriverTest extends TestCase
+ * @see TestCase
  * @abstract
  *
- * @package
- * @version
+ * @package Thapp\Image\Tests\Driver
+ * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  * @license MIT
  */

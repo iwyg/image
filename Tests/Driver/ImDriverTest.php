@@ -17,12 +17,11 @@ use \Thapp\Image\Driver\ImDriver;
 use \Thapp\Image\Driver\BinLocatorInterface;
 
 /**
- * Class: JitImageImDriverTest
+ * @class ImDriverTest extends DriverTest
+ * @see DriverTest
  *
- * @uses JitImageDriverTest
- *
- * @package
- * @version
+ * @package Thapp\Image\Tests\Driver
+ * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  * @license MIT
  */

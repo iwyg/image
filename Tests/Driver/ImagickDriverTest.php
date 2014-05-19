@@ -15,12 +15,11 @@ use \Mockery as m;
 use \Thapp\Image\Driver\ImagickDriver;
 
 /**
- * Class: JitImageImDriverTest
+ * @class ImagickDriverTest extends DriverTest
+ * @see DriverTest
  *
- * @uses JitImageDriverTest
- *
- * @package
- * @version
+ * @package Thapp\Image\Tests\Driver
+ * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  * @license MIT
  */
