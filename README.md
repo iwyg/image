@@ -16,7 +16,7 @@ Require `thapp/image` in your project directory
 ```
 or add this to your `composer.json`
 
-```
+```json
 {
 	"require": {
 		"thapp/image": "dev-development"
@@ -26,7 +26,7 @@ or add this to your `composer.json`
 ```
 
 
-## Usage
+## Quick Usage
 
 ```php
 
@@ -99,6 +99,11 @@ $image->save('target.jpg');
 ```
 
 ## Advanced Usage
+
+### Loading source files
+
+By default, the image processor will load both, local files and remote files
+reachable via http. 
 
 ### Adding or altering resource loaders
 

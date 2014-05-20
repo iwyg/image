@@ -140,6 +140,20 @@ abstract class DriverTest extends TestCase
         $this->assertStringEqualsFile($image, $this->driver->getImageBlob());
     }
 
+    /** @test */
+    public function itShouldReturnTheSourceFile()
+    {
+        $image = $this->createTestImage(10, 10);
+
+        $this->driver->load($image);
+
+        $this->loaderMock->shouldReceive('getSource')->andReturnUsing(function () use ($image) {
+            return $image;
+        });
+
+        $this->assertEquals($image, $this->driver->getSource());
+    }
+
     /**
      * @dataProvider resizeFilterParameterProvider
      */

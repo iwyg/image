@@ -53,7 +53,7 @@ class DelegatingLoader implements LoaderInterface
     public function load($file)
     {
         $loader = $this->getLoader($file);
-        $this->loader = null;
+        //$this->loader = null;
 
         return $loader->load($file);
     }
@@ -67,9 +67,11 @@ class DelegatingLoader implements LoaderInterface
      */
     public function clean()
     {
-        if ($this->loader) {
-            $this->loader->clean();
+        foreach ($this->loaders as $loader) {
+            $loader->clean();
         }
+
+        $this->loader = null;
     }
 
     /**
@@ -82,6 +84,8 @@ class DelegatingLoader implements LoaderInterface
      */
     public function supports($file)
     {
+        $this->clean();
+
         foreach ($this->loaders as $loader) {
             if ($loader->supports($file)) {
                 $this->loader = $loader;
@@ -102,8 +106,10 @@ class DelegatingLoader implements LoaderInterface
     public function getSource()
     {
         if ($this->loader) {
-            $this->loader->getSource();
+            return $this->loader->getSource();
         }
+
+        return null;
     }
 
     /**
@@ -144,10 +150,6 @@ class DelegatingLoader implements LoaderInterface
      */
     protected function getLoader($file)
     {
-        //if ($this->loader) {
-        //    return $this->loader;
-        //}
-
         if (!$this->supports($file)) {
             throw new \InvalidArgumentException(sprintf('No suitable loader found for srouce %s', $file));
         }

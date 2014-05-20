@@ -66,8 +66,48 @@ class DelegatingLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('/path/to/tmpfile', $loader->load('http://example.com/image.jpg'));
     }
 
+    /** @test */
+    public function itShouldReturnTheSourceFile()
+    {
+
+        $floader = $this->getLoaderMock();
+
+        $floader->shouldReceive('supports')->andReturnUsing(function ($src) {
+            return $src === 'image.jpg';
+        });
+
+        $floader->shouldReceive('getSource')->andReturn('image.jpg');
+
+        $floader->shouldReceive('load')->andReturnUsing(function ($src) {
+            return $src;
+        });
+
+        $rloader = $this->getLoaderMock();
+
+        $rloader->shouldReceive('supports')->andReturnUsing(function ($src) {
+            return $src === 'http://example.com/image.jpg';
+        });
+
+        $rloader->shouldReceive('load')->andReturnUsing(function ($src) {
+            return '/path/to/tmpfile';
+        });
+
+        $loader = new DelegatingLoader(
+            [
+                $floader,
+                $rloader
+            ]
+        );
+
+        $loader->supports('image.jpg');
+        $this->assertSame('image.jpg', $loader->load('image.jpg'));
+        $this->assertSame('image.jpg', $loader->getSource('image.jpg'));
+    }
+
     protected function getLoaderMock()
     {
-        return m::mock('\Thapp\Image\Driver\Loader\LoaderInterface');
+        $mock = m::mock('\Thapp\Image\Driver\Loader\LoaderInterface');
+        $mock->shouldreceive('clean')->andReturn(null);
+        return $mock;
     }
 }

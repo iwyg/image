@@ -137,7 +137,6 @@ class ImDriver extends AbstractDriver
      */
     public function process()
     {
-        parent::process();
         $process = new Process($this->compile());
         $process->run();
 

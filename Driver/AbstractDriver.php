@@ -26,7 +26,6 @@ use \Thapp\Image\Traits\Scaling;
  */
 abstract class AbstractDriver implements DriverInterface
 {
-
     use Scaling;
 
     /**
@@ -79,13 +78,6 @@ abstract class AbstractDriver implements DriverInterface
     protected $outputType;
 
     /**
-     * error
-     *
-     * @var string
-     */
-    protected $error;
-
-    /**
      * processed
      *
      * @var bool
@@ -93,7 +85,92 @@ abstract class AbstractDriver implements DriverInterface
     protected $processed = false;
 
     /**
-     * clean up temporary files after shutdown
+     * Loads an image source.
+     *
+     * @param mixed $source
+     *
+     * @access public
+     * @return boolean
+     */
+    public function load($source)
+    {
+        $this->clean();
+
+        if (!$this->loader->supports($source)) {
+            throw new \InvalidArgumentException(sprintf('resource %s is not supported', $source));
+        }
+
+        if ($this->loaded = (bool)($src = $this->loader->load($source))) {
+            $this->source = $src;
+            return $this->loaded;
+        }
+
+        throw new \RuntimeException(sprintf('error loading source %s', $source));
+    }
+
+    /**
+     * Call a filter on the driver.
+     *
+     * if the filter method exists on the driver the method will be called,
+     * otherwise it will return a flag to indecate that the filter is an
+     * external one.
+     *
+     * @param string $name
+     * @param array  $options
+     * @access public
+     * @return int
+     */
+    public function filter($name, array $options = [])
+    {
+        if (method_exists($this, $filter = 'filter' . ucfirst($name))) {
+            call_user_func_array([$this, $filter], is_array($options) ? $options : []);
+
+            return static::INT_FILTER;
+        }
+
+        return static::EXT_FILTER;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function process()
+    {
+        $this->processed = true;
+    }
+
+    /**
+     * Determine if an image has been processed yet.
+     *
+     * @throws \InvalidArgumentException if the source is not supported by the
+     * sourceloader
+     * @throws \RuntimeException if the source could not be loaded
+     * @access public
+     * @return bool
+     */
+    public function isProcessed()
+    {
+        return $this->processed;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clean()
+    {
+        $this->source           = null;
+        $this->resource         = null;
+        $this->processed        = false;
+        $this->targetSize       = null;
+        $this->outputType       = null;
+        $this->sourceAttributes = null;
+
+        $this->cleanUpTmp();
+        $this->loader->clean();
+    }
+
+    /**
+     * Clean up temporary files after shutdown.
      *
      * @access public
      * @return void
@@ -118,60 +195,6 @@ abstract class AbstractDriver implements DriverInterface
     }
 
     /**
-     * Determine if an image has been processed yet.
-     *
-     * @throws \InvalidArgumentException if the source is not supported by the
-     * sourceloader
-     * @throws \RuntimeException if the source could not be loaded
-     * @access public
-     * @return bool
-     */
-    public function isProcessed()
-    {
-        return $this->processed;
-    }
-
-    public function load($source)
-    {
-        $this->clean();
-
-        if (!$this->loader->supports($source)) {
-            throw new \InvalidArgumentException(sprintf('resource %s is not supported', $source));
-        }
-
-        if ($this->loaded = (bool)($src = $this->loader->load($source))) {
-            $this->source = $src;
-            return $this->loaded;
-        }
-
-        throw new \RuntimeException(sprintf('error loading source %s', $source));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function process()
-    {
-        $this->processed = true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clean()
-    {
-        $this->source           = null;
-        $this->resource         = null;
-        $this->processed        = false;
-        $this->targetSize       = null;
-        $this->outputType       = null;
-        $this->sourceAttributes = null;
-
-        $this->cleanUpTmp();
-        $this->loader->clean();
-    }
-
-    /**
      * Retrurns the driver type name.
      *
      * @access public
@@ -184,34 +207,10 @@ abstract class AbstractDriver implements DriverInterface
     }
 
     /**
-     * Call a filter on the driver.
+     * Set the image target size.
      *
-     * if the filter method exists on the driver the method will be called,
-     * otherwise it will return a flag to indecate that the filter is an
-     * external one.
-     *
-     * @param string $name
-     * @param array  $options
-     * @access public
-     * @return int
-     */
-    public function filter($name, array $options = [])
-    {
-        if (method_exists($this, $filter = 'filter' . ucfirst($name))) {
-
-            call_user_func_array([$this, $filter], is_array($options) ? $options : []);
-
-            return static::INT_FILTER;
-        }
-
-        return static::EXT_FILTER;
-    }
-
-    /**
-     * setTargetSize
-     *
-     * @param mixed $width
-     * @param mixed $height
+     * @param int $width
+     * @param int $height
      * @access public
      * @return void
      */
@@ -221,27 +220,16 @@ abstract class AbstractDriver implements DriverInterface
     }
 
     /**
-     * getTargetSize
+     * Get the target width and height of the image.
      *
      * @access public
-     * @return array
+     * @return array containing int $width and int $height of the image
      */
     public function getTargetSize()
     {
         extract($this->targetSize);
 
         return $this->getImageSize((int)$width, (int)$height);
-    }
-
-    /**
-     * getError
-     *
-     * @access public
-     * @return mixed
-     */
-    public function getError()
-    {
-        return $this->error ?: false;
     }
 
     /**
@@ -265,10 +253,10 @@ abstract class AbstractDriver implements DriverInterface
     }
 
     /**
-     * getSource
+     * Get the image source originally loaded into the driver.
      *
      * @access public
-     * @return mixed
+     * @return string
      */
     public function getSource()
     {
@@ -317,44 +305,21 @@ abstract class AbstractDriver implements DriverInterface
     {
         $type = $this->outputType;
 
-        if (is_null($type)) {
+        if (null === $type) {
             $type = $this->getInfo('type');
         }
 
         return $this->getExtensionFromMime($type);
     }
 
-    abstract protected function cleanUpTmp();
-
-
-    protected function formatType($type)
-    {
-        return strtr(strtolower($type), ['jpeg' => 'jpg']);
-    }
-
     /**
-     * getExtensionFromMime
-     *
-     * @param mixed $mime
+     * cleanUpTmp
      *
      * @access protected
-     * @return string
-     */
-    protected function getExtensionFromMime($mime)
-    {
-        return preg_replace('~image/~', null, $this->formatType($mime));
-    }
-
-    /**
-     * getOutputMimeType
-     *
-     * @access public
+     * @abstract
      * @return mixed
      */
-    public function getOutputMimeType()
-    {
-        return image_type_to_mime_type($this->getImageTypeConstant($this->getOutputType()));
-    }
+    abstract protected function cleanUpTmp();
 
     /**
      * filterResize
@@ -516,6 +481,43 @@ abstract class AbstractDriver implements DriverInterface
         }
 
         return compact('width', 'height');
+    }
+
+    /**
+     * formatType
+     *
+     * @param mixed $type
+     *
+     * @access protected
+     * @return mixed
+     */
+    protected function formatType($type)
+    {
+        return strtr(strtolower($type), ['jpeg' => 'jpg']);
+    }
+
+    /**
+     * getExtensionFromMime
+     *
+     * @param mixed $mime
+     *
+     * @access protected
+     * @return string
+     */
+    protected function getExtensionFromMime($mime)
+    {
+        return preg_replace('~image/~', null, $this->formatType($mime));
+    }
+
+    /**
+     * getOutputMimeType
+     *
+     * @access public
+     * @return mixed
+     */
+    public function getOutputMimeType()
+    {
+        return image_type_to_mime_type($this->getImageTypeConstant($this->getOutputType()));
     }
 
     /**

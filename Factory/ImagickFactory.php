@@ -29,6 +29,6 @@ class ImagickFactory extends AbstractFactory
      */
     protected function createProcessor()
     {
-        return new Processor(new ImagickDriver($this->getLoaderInstance()), $this->getWriterInstance());
+        return new Processor(new ImagickDriver($this->loader), $this->writer);
     }
 }

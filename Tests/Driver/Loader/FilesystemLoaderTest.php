@@ -55,6 +55,56 @@ class FilesystemLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(file_exists($loader->load($file)));
     }
 
+    /** @test */
+    public function itShouldThrowExceptionOnLoadingInvalidFile()
+    {
+        $loader = new FilesystemLoader;
+        $file = $this->rootDir . DIRECTORY_SEPARATOR . 'image.jpg';
+
+        try {
+            $loader->load($file);
+        } catch (\Thapp\Image\Exception\SourceLoaderException $e) {
+            $this->assertEquals('Invalid Source URL: ' . $file, $e->getMessage());
+            return;
+        }
+
+        $this->fail('test failed');
+    }
+
+    /** @test */
+    public function itShouldReturnItsSource()
+    {
+        $loader = new FilesystemLoader;
+        touch($file = $this->rootDir . DIRECTORY_SEPARATOR . 'image.jpg');
+        $this->createDummySource($file);
+
+        $loader->load($file);
+
+        $this->assertSame($file, $loader->getSource());
+    }
+
+    /** @test */
+    public function itShouldCleanItSource()
+    {
+        $loader = new FilesystemLoader;
+        touch($file = $this->rootDir . DIRECTORY_SEPARATOR . 'image.jpg');
+        $this->createDummySource($file);
+
+        $loader->load($file);
+
+        $loader->clean();
+
+        $this->assertNull($loader->getSource(), 'source should ne null after ->clean()');
+    }
+
+    /**
+     * createDummySource
+     *
+     * @param mixed $file
+     *
+     * @access protected
+     * @return void
+     */
     protected function createDummySource($file)
     {
         $image = imagecreatetruecolor(1, 1);
