@@ -198,6 +198,7 @@ abstract class AbstractDriver implements DriverInterface
     public function filter($name, array $options = [])
     {
         if (method_exists($this, $filter = 'filter' . ucfirst($name))) {
+
             call_user_func_array([$this, $filter], is_array($options) ? $options : []);
 
             return static::INT_FILTER;

@@ -123,7 +123,13 @@ class ImagickDriver extends AbstractDriver
     public function swapResource($resource)
     {
         if (false === ($resource instanceof Imagick)) {
-            throw new \InvalidArgumentException('Wrong resource type');
+            throw new \InvalidArgumentException(
+                sprintf(
+                    '%s::swapResource() expects resource to be type of Imagick, instead saw %s',
+                    get_class($this),
+                    is_object($resource) ? get_class($resource) : gettype($resource)
+                )
+            );
         }
 
         $this->resource = $resource;
@@ -212,18 +218,6 @@ class ImagickDriver extends AbstractDriver
     }
 
     /**
-     * Set the backgroundcolor fot that image.
-     *
-     * @param mixed $color
-     * @access public
-     * @return mixed
-     */
-    public function setBackgroundColor($color)
-    {
-        $this->resource->setImageBackgroundColor($color);
-    }
-
-    /**
      * Set the compression quality fot that image.
      *
      * @param mixed $param
@@ -269,7 +263,7 @@ class ImagickDriver extends AbstractDriver
      * @param mixed $gravity
      * @param string $flag
      * @access protected
-     * @return \Thapp\JitImage\Driver\ImagickDriver
+     * @return \Thapp\Image\Driver\ImagickDriver
      */
     protected function gravity($gravity, $flag = '')
     {
@@ -280,26 +274,15 @@ class ImagickDriver extends AbstractDriver
     }
 
     /**
-     * repage
-     *
-     * @access protected
-     * @return mixed
-     */
-    protected function repage()
-    {
-        $this->resource->setImagePage(0, 0, 0, 0);
-    }
-
-    /**
      * background
      *
      * @param mixed $color
      * @access protected
-     * @return \Thapp\JitImage\Driver\ImagickDriver
+     * @return \Thapp\Image\Driver\ImagickDriver
      */
     protected function background($color = null)
     {
-        if (!is_null($color)) {
+        if (null !== $color) {
             $this->resource->setImageBackgroundColor(sprintf('#%s', $color));
         }
         return $this;
@@ -311,7 +294,7 @@ class ImagickDriver extends AbstractDriver
      * @param mixed $height
      * @param string $flag
      * @access protected
-     * @return \Thapp\JitImage\Driver\ImagickDriver
+     * @return \Thapp\Image\Driver\ImagickDriver
      */
     protected function extent($width, $height, $flag = '')
     {

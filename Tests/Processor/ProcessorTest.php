@@ -171,6 +171,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             [['mode' => 3]],
             [['mode' => 4]],
             [['mode' => 5]],
+            [['mode' => 6]],
         ];
     }
 

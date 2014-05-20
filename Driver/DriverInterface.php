@@ -144,6 +144,8 @@ interface DriverInterface
      */
     public function setOutPutType($type);
 
+    public function setQuality($quality);
+
     /**
      * getSoruceType
      *

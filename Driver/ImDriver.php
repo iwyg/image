@@ -224,7 +224,7 @@ class ImDriver extends AbstractDriver
      */
     public function swapResource($resource)
     {
-        return null;
+        throw new \LogicException(sprintf('%s has no resource', get_class($this)));
     }
 
     /**

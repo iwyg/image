@@ -130,6 +130,16 @@ abstract class DriverTest extends TestCase
 
     }
 
+    /** @test */
+    public function itShouldReturnTheImageContents()
+    {
+        $image = $this->createTestImage(10, 10);
+
+        $this->driver->load($image);
+
+        $this->assertStringEqualsFile($image, $this->driver->getImageBlob());
+    }
+
     /**
      * @dataProvider resizeFilterParameterProvider
      */
@@ -169,7 +179,6 @@ abstract class DriverTest extends TestCase
         list($tw, $th) = getimagesize($this->writeTestImage($this->driver));
 
         $this->assertSame($expected, [$tw, $th]);
-
     }
 
     /**
@@ -187,6 +196,30 @@ abstract class DriverTest extends TestCase
         $this->assertTrue(($tw * $th) <= $limit);
 
     }
+
+    /**
+     * @test
+     * @dataProvider cropFilterParameterProvider
+     */
+    public function testFilterCrop($w, $h, $nw, $nh, array $expected)
+    {
+        $image = $this->createTestImage(200, 200);
+        $this->driver->load($image);
+        $this->runImageFilter('crop', 100, 100, [5]);
+        //$this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     * @dataProvider cropScaleFilterParameterProvider
+     */
+    public function testFilterCropScale($w, $h, $nw, $nh, array $expected)
+    {
+        $image = $this->createTestImage(200, 200);
+        $this->driver->load($image);
+        $this->runImageFilter('cropScale', 100, 100, [5]);
+    }
+
 
     /**
      * @dataProvider imageTypeProvider
@@ -216,24 +249,6 @@ abstract class DriverTest extends TestCase
         }
 
         $this->assertSame($mime, $this->driver->getOutputMimeType());
-    }
-
-    /**
-     * @test
-     * @dataProvider cropFilterParameterProvider
-     */
-    public function testFilterCrop($w, $h, $nw, $nh, array $expected)
-    {
-        $this->markTestIncomplete();
-    }
-
-    /**
-     * @test
-     * @dataProvider cropScaleFilterParameterProvider
-     */
-    public function testFilterCropScale($w, $h, $nw, $nh, array $expected)
-    {
-        $this->markTestIncomplete();
     }
 
     /**

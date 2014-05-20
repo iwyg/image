@@ -59,6 +59,49 @@ class ImagickDriverTest extends DriverTest
         $this->assertInstanceOf('\Imagick', $resource);
     }
 
+    /** @test */
+    public function itShouldGetTheResource()
+    {
+        $image = $this->createTestImage();
+
+        $this->assertNull($this->driver->getResource());
+
+        $this->driver->load($image);
+
+        $this->assertInstanceof('\Imagick', $this->driver->getResource());
+    }
+
+    /** @test */
+    public function itShouldSpwapResource()
+    {
+        $image = $this->createTestImage();
+        $this->driver->load($image);
+
+        $this->assertInstanceof('\Imagick', $this->driver->getResource());
+
+        $image = $this->createTestImage();
+        $newRes = new \Imagick($image);
+
+        $this->driver->swapResource($newRes);
+        $this->assertSame($newRes, $this->driver->getResource());
+    }
+
+    /** @test */
+    public function itShouldThrowAnExceptionWhenResourceIsInvalid()
+    {
+        try {
+            $this->driver->swapResource(new \StdClass);
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame(
+                'Thapp\Image\Driver\ImagickDriver::swapResource() expects resource to be type of Imagick, instead saw stdClass',
+                $e->getMessage()
+            );
+            return;
+        }
+
+        $this->fail('test failed');
+    }
+
     /**
      * @test
      * @dataProvider filterDataProvider

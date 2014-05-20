@@ -112,4 +112,30 @@ class ImDriverTest extends DriverTest
 
         $this->assertSame(array_values($pxl), [$tw, $th]);
     }
+
+    /** @test */
+    public function itShouldThrowAnExceptionWhenGettingResource()
+    {
+        try {
+            $this->driver->getResource('newfile.jpg');
+        } catch (\LogicException $e) {
+            $this->assertSame(sprintf(sprintf('%s has no resource', get_class($this->driver))), $e->getMessage());
+            return;
+        }
+
+        $this->fail('test failed');
+    }
+
+    /** @test */
+    public function itShouldThrowAnExceptionWhenSwappingResource()
+    {
+        try {
+            $this->driver->swapResource('newfile.jpg');
+        } catch (\LogicException $e) {
+            $this->assertSame(sprintf(sprintf('%s has no resource', get_class($this->driver))), $e->getMessage());
+            return;
+        }
+
+        $this->fail('test failed');
+    }
 }
