@@ -17,7 +17,6 @@ namespace Thapp\Image;
  * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
- * @license MIT
  */
 interface ProcessorInterface
 {
@@ -56,12 +55,24 @@ interface ProcessorInterface
      */
     const IM_RSIZEPXCOUNT = 6;
 
+    /**
+     * @var string
+     */
     const FORMAT_JPG = 'jpg';
 
+    /**
+     * @var string
+     */
     const FORMAT_PNG = 'png';
 
+    /**
+     * @var string
+     */
     const FORMAT_GIF = 'png';
 
+    /**
+     * @var string
+     */
     const FORMAT_TIF = 'tif';
 
     /**
@@ -145,7 +156,7 @@ interface ProcessorInterface
      * @access public
      * @return string
      */
-    public function getSourceMimeTime();
+    public function getSourceMimeType();
 
     /**
      * get the image output MimeType

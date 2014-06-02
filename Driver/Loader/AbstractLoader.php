@@ -68,6 +68,7 @@ abstract class AbstractLoader implements LoaderInterface
     {
         if (@getimagesize($url)) {
             $this->source = $url;
+
             return $url;
         }
 

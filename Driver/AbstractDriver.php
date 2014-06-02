@@ -132,6 +132,28 @@ abstract class AbstractDriver implements DriverInterface
     }
 
     /**
+     * getExternaleFilter
+     *
+     * @param mixed $name
+     *
+     * @access protected
+     * @return mixed
+     */
+    protected function getExternaleFilter($name, $options)
+    {
+        if (isset($this->filters[$name])) {
+            return new $this->filters[$name]($this, $options);
+        }
+
+        if (class_exists($filterClass = static::getFilterClassName($name))) {
+            return new $filterClass($this, $options);
+        }
+
+        return false;
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public function process()

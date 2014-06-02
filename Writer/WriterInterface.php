@@ -13,8 +13,11 @@ namespace Thapp\Image\Writer;
 
 /**
  * @interface WriterInterface
+ *
  * @package Thapp\Image\Writer
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
+ * @license MIT
  */
 interface WriterInterface
 {

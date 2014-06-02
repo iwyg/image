@@ -190,9 +190,13 @@ class ImDriver extends AbstractDriver
      */
     public function filter($name, array $options = [])
     {
-        if (static::EXT_FILTER === ($result = parent::filter($name, $options)) && isset($this->filters[$name])) {
+        if (static::EXT_FILTER !== ($result = parent::filter($name, $options))) {
 
-            $filter = new $this->filters[$name]($this, $options);
+            return $result;
+
+        }
+
+        if ($filter = $this->getExternaleFilter($name, $options)) {
 
             $filterCommands = $filter->run();
 

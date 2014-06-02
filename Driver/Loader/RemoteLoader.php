@@ -131,6 +131,7 @@ class RemoteLoader extends AbstractLoader
         }
 
         curl_close($curl);
+
         return $status;
     }
 }

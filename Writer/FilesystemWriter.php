@@ -12,9 +12,13 @@
 namespace Thapp\Image\Writer;
 
 /**
- * @class FilesystemWriter
+ * @class FilesystemWriter implements WriterInterface
+ * @see WriterInterface
+ *
  * @package Thapp\Image\Writer
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
+ * @license MIT
  */
 class FilesystemWriter implements WriterInterface
 {

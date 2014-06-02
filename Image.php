@@ -11,50 +11,78 @@
 
 namespace Thapp\Image;
 
+use \Thapp\Image\Factory\GdFactory;
 use \Thapp\Image\Factory\ImFactory;
 use \Thapp\Image\Factory\ImagickFactory;
+use \Thapp\Image\Cache\CacheInterface;
+use \Thapp\Image\Cache\FilesystemCache;
 
 /**
- * Facade class for an Imageprocessor implementation
- *
- * @class Image Image
+ * @class Image implements ImageInterface
+ * @see ImageInterface
  *
  * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
- * @license MIT
  */
-class Image
+class Image implements ImageInterface
 {
-    const DRIVER_IM = 'im';
-
-    const DRIVER_IMAGICK = 'imagick';
-
-    const DRIVER_GD = 'gb';
-
-    private $filters;
-
-    private $arguments;
-
-    private $targetSize;
-
-    private $mode;
+    /**
+     * filters
+     *
+     * @var array
+     */
+    protected $filters;
 
     /**
-     * __construct
+     * arguments
      *
+     * @var array
+     */
+    protected $arguments;
+
+    /**
+     * targetSize
+     *
+     * @var array
+     */
+    protected $targetSize;
+
+    /**
+     * source
+     *
+     * @var string
+     */
+    protected $source;
+
+    /**
+     * mode
+     *
+     * @var int
+     */
+    protected $mode;
+
+    /**
+     * cache
+     *
+     * @var mixed
+     */
+    protected $cache;
+
+    /**
      * @param ProcessorInterface $processor
      *
      * @access public
      * @return mixed
      */
-    public function __construct(ProcessorInterface $processor)
+    public function __construct(ProcessorInterface $processor, CacheInterface $cache = null)
     {
         $this->filters = [];
         $this->arguments = [];
         $this->targetSize = [];
 
         $this->processor = $processor;
+        $this->cache = $cache;
     }
 
     /**
@@ -78,27 +106,6 @@ class Image
     }
 
     /**
-     * getFactory
-     *
-     * @param mixed $driver
-     *
-     * @throws \InvalidArgumentException if driver is not defined.
-     * @access protected
-     * @return DriverInterface
-     */
-    protected static function getFactory($driver)
-    {
-        switch ($driver) {
-            case self::DRIVER_IMAGICK:
-                return new ImagickFactory;
-            case self::DRIVER_IM:
-                return new ImFactory;
-            default:
-                throw new \InvalidArgumentException(sprintf('invalid driver %s', $driver));
-        }
-    }
-
-    /**
      * source
      *
      * @param mixed $source
@@ -108,7 +115,8 @@ class Image
      */
     public function source($source)
     {
-        $this->processor->load($source);
+        $this->source = $source;
+
         return $this;
     }
 
@@ -137,7 +145,7 @@ class Image
     {
         $this->process();
         $this->processor->writeToFile($target);
-        $this->processor->close();
+        $this->close();
     }
 
     /**
@@ -149,8 +157,9 @@ class Image
     public function getImageData()
     {
         $this->process();
+
         $content = $this->processor->getContents();
-        $this->processor->close();
+        $this->close();
 
         return $content;
     }
@@ -166,6 +175,7 @@ class Image
     public function quality($quality = 80)
     {
         $this->processor->setQuality((int)$quality);
+
         return $this;
     }
 
@@ -341,6 +351,19 @@ class Image
     }
 
     /**
+     * setImageCache
+     *
+     * @param CacheInterface $cache
+     *
+     * @access public
+     * @return mixed
+     */
+    public function setImageCache(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
+
+    /**
      * process
      *
      * @access protected
@@ -348,13 +371,74 @@ class Image
      */
     protected function process()
     {
+        if ($this->processor->isProcessed()) {
+            return;
+        }
+
         $params = $this->compileExpression();
 
-        $params['filter'] = $this->filters;
+        if (null === $this->cache) {
+            $this->doProcess($params);
 
-        $this->processor->process($params);
+            return $this;
+        }
+
+        if ($this->cache->has($key = $this->getCacheKey($params, $this->filters))) {
+            $this->loadFromCache($key);
+
+            return $this;
+        }
+
+        $this->doProcess($params);
+        $this->cache->set($key, $this->processor->getContents());
 
         return $this;
+    }
+
+    /**
+     * loadFromCache
+     *
+     * @param array $params
+     *
+     * @access protected
+     * @return string
+     */
+    protected function loadFromCache($key)
+    {
+        $source = $this->cache->getSource($key);
+        $this->processor->load($source);
+
+        return $source;
+    }
+
+    /**
+     * doProcess
+     *
+     * @param array $params
+     *
+     * @access protected
+     * @return void
+     */
+    protected function doProcess(array $params)
+    {
+        $this->processor->load($this->source);
+        $params['filter'] = $this->filters;
+        $this->processor->process($params);
+    }
+
+    /**
+     * close
+     *
+     *
+     * @access protected
+     * @return void
+     */
+    protected function close()
+    {
+        $this->filters = [];
+        $this->source = null;
+
+        $this->processor->close();
     }
 
     /**
@@ -363,7 +447,7 @@ class Image
      * @param mixed $mode
      *
      * @access protected
-     * @return mixed
+     * @return void
      */
     protected function setMode($mode)
     {
@@ -377,43 +461,24 @@ class Image
      * @param mixed $height
      *
      * @access protected
-     * @return mixed
+     * @return void
      */
     protected function setTargetSize($width = null, $height = null)
     {
         $this->targetSize = [$width, $height];
     }
 
+    /**
+     * setArguments
+     *
+     * @param array $arguments
+     *
+     * @access protected
+     * @return void
+     */
     protected function setArguments(array $arguments)
     {
         $this->arguments = $arguments;
-    }
-
-    /**
-     * compileFilterExpression
-     *
-     * @access private
-     * @return string|null
-     */
-    private function compileFilterExpression()
-    {
-        $filters = [];
-
-        foreach ($this->filters as $filter => $options) {
-            $opt = [];
-
-            if (is_array($options)) {
-
-                foreach ($options as $option => $value) {
-                    $opt[] = sprintf('%s=%s', $option, $value);
-                }
-            }
-            $filters[] = sprintf('%s;%s', $filter, implode(';', $opt));
-        }
-
-        $filterString = sprintf('filter:%s', implode(':', $filters));
-
-        return strlen($filterString) ? $filterString  : null;
     }
 
     /**
@@ -439,5 +504,80 @@ class Image
         }
 
         return $parts;
+    }
+
+    /**
+     * getCacheKey
+     *
+     * @param array $params
+     * @param array $filter
+     *
+     * @access protected
+     * @return string
+     */
+    protected function getCacheKey(array $params, array $filter)
+    {
+        $fingerprint = $this->getImageFingerPrint($params, $filter);
+
+        return $this->cache->createKey($this->source, $fingerprint, null, pathinfo($this->source, PATHINFO_EXTENSION));
+    }
+
+    /**
+     * getImageFingerPrint
+     *
+     *
+     * @access protected
+     * @return mixed
+     */
+    protected function getImageFingerPrint(array $params, array $filters)
+    {
+        return rtrim(implode('/', $params) . '/'.$this->compileFilterExpression($filters), '/');
+    }
+
+    /**
+     * @param string $driver
+     *
+     * @throws \InvalidArgumentException if driver is not defined.
+     * @return DriverInterface
+     */
+    protected static function getFactory($driver)
+    {
+        switch ($driver) {
+            case self::DRIVER_GD:
+                return new GdFactory;
+            case self::DRIVER_IM:
+                return new ImFactory;
+            case self::DRIVER_IMAGICK:
+                return new ImagickFactory;
+            default:
+                throw new \InvalidArgumentException(sprintf('invalid driver %s', $driver));
+        }
+    }
+
+    /**
+     * compileFilterExpression
+     *
+     * @return string|null
+     */
+    private function compileFilterExpression(array $filter)
+    {
+        $filters = [];
+
+        foreach ($this->filters as $filter => $options) {
+            $opt = [];
+
+            if (is_array($options)) {
+
+                foreach ($options as $option => $value) {
+                    $opt[] = sprintf('%s=%s', $option, $value);
+                }
+            }
+            $filters[] = sprintf('%s;%s', $filter, implode(';', $opt));
+        }
+        if (!empty($filters)) {
+             return sprintf('filter:%s', implode(':', $filters));
+        }
+
+        return null;
     }
 }

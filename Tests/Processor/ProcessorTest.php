@@ -162,6 +162,116 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /** @test */
+    public function itShouldSetFileformatOnDriver()
+    {
+
+        $driver = $this->createDriver();
+        $writer = $this->createWriter();
+
+        $format = '';
+
+        $driver->shouldReceive('setOutputType')->with('jpg')->andReturnUsing(function ($f) use (&$format) {
+            $format = $f;
+        });
+
+        $processor = new Processor($driver, $writer);
+
+        $processor->setFileFormat('jpg');
+
+        $this->assertSame('jpg', $format);
+    }
+
+    /** @test */
+    public function itShouldGetFileformatFromDriver()
+    {
+
+        $driver = $this->createDriver();
+        $writer = $this->createWriter();
+
+        $driver->shouldReceive('getOutputType')->andReturnUsing(function () {
+            return 'jpg';
+        });
+
+        $processor = new Processor($driver, $writer);
+
+        $format = $processor->getFileFormat();
+
+        $this->assertSame('jpg', $format);
+    }
+
+    /** @test */
+    public function itShouldGetSourceMimetypeFromDriver()
+    {
+
+        $driver = $this->createDriver();
+        $writer = $this->createWriter();
+
+        $driver->shouldReceive('getSourceType')->with(false)->andReturnUsing(function () {
+            return 'image/png';
+        });
+
+        $processor = new Processor($driver, $writer);
+
+        $format = $processor->getSourceMimeType();
+
+        $this->assertSame('image/png', $format);
+    }
+
+    /** @test */
+    public function itShouldGetMimetypeFromDriver()
+    {
+
+        $driver = $this->createDriver();
+        $writer = $this->createWriter();
+
+        $driver->shouldReceive('getOutputMimeType')->andReturnUsing(function () {
+            return 'image/jpeg';
+        });
+
+        $processor = new Processor($driver, $writer);
+
+        $format = $processor->getMimeType();
+
+        $this->assertSame('image/jpeg', $format);
+    }
+
+    /** @test */
+    public function itShouldGetSourceFormatFromDriver()
+    {
+
+        $driver = $this->createDriver();
+        $writer = $this->createWriter();
+
+        $driver->shouldReceive('getSourceType')->with(true)->andReturnUsing(function () {
+            return 'png';
+        });
+
+        $processor = new Processor($driver, $writer);
+
+        $format = $processor->getSourceFormat();
+
+        $this->assertSame('png', $format);
+    }
+
+    /** @test */
+    public function itShouldGrabContentFromDriver()
+    {
+
+        $driver = $this->createDriver();
+        $writer = $this->createWriter();
+
+        $driver->shouldReceive('getImageBlob')->andReturnUsing(function () {
+            return 'content';
+        });
+
+        $processor = new Processor($driver, $writer);
+
+        $contents = $processor->getContents();
+
+        $this->assertSame('content', $contents);
+    }
+
     public function processParameterProvider()
     {
         return [

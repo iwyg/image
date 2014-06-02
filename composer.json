@@ -7,9 +7,13 @@
   },
   "require-dev": {
     "phpunit/phpunit": "~4.0",
-    "mockery/mockery": "~0.9",
+    "mockery/mockery": "0.9.*@dev",
     "mikey179/vfsStream": "dev-master",
+    "league/flysystem": "0.4.5",
     "league/phpunit-coverage-listener":"dev-master"
+  },
+  "suggest": {
+    "league/flysystem": ""
   },
   "license": "MIT",
   "authors": [

@@ -89,6 +89,7 @@ class DelegatingLoader implements LoaderInterface
         foreach ($this->loaders as $loader) {
             if ($loader->supports($file)) {
                 $this->loader = $loader;
+
                 return true;
             }
         }
@@ -108,8 +109,6 @@ class DelegatingLoader implements LoaderInterface
         if ($this->loader) {
             return $this->loader->getSource();
         }
-
-        return null;
     }
 
     /**

@@ -134,7 +134,7 @@ interface DriverInterface
      * @access public
      * @return void
      */
-    public function setOutPutType($type);
+    public function setOutputType($type);
 
     /**
      * setQuality

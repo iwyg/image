@@ -69,6 +69,9 @@ class GdDriver extends AbstractDriver
      * @var bool|integer
      */
     private $background;
+
+    protected static $driverType = 'gd';
+
     /**
      * __construct
      *
@@ -151,14 +154,19 @@ class GdDriver extends AbstractDriver
      * @param mixed $name
      * @param mixed $options
      * @access public
-     * @return mixed
+     * @return void
      */
     public function filter($name, array $options = [])
     {
-        if (static::EXT_FILTER === parent::filter($name, $options) and isset($this->filters[$name])) {
-            $filter = new $this->filters[$name]($this, $options);
+        if (static::EXT_FILTER !== ($result = parent::filter($name, $options))) {
+            return $result;
+        }
+
+        if ($filter = $this->getExternaleFilter($name, $options)) {
             $filter->run();
         }
+
+        return $result;
     }
 
     /**

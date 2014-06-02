@@ -170,16 +170,11 @@ class ImagickDriver extends AbstractDriver
             $result = parent::filter($name, $options);
         }
 
-        //look for external filters.
-        if (static::EXT_FILTER === $result) {
-            if (isset($this->filters[$name])) {
-                $filter = new $this->filters[$name]($this, $options);
-            } elseif (class_exists($filterClass = static::getFilterClassName($name))) {
-                $filter = new $filterClass($this, $options);
-            } else {
-                return $result;
-            }
+        if (static::EXT_FILTER !== ($result = parent::filter($name, $options))) {
+            return $result;
+        }
 
+        if ($filter = $this->getExternaleFilter($name, $options)) {
             foreach ($this->resource as $frame) {
                 $filter->run();
             }

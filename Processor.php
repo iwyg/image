@@ -21,19 +21,18 @@ use \Thapp\Image\Driver\DriverInterface;
  * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
- * @license MIT
  */
 class Processor implements ProcessorInterface
 {
     /**
      * driver
      *
-     * @var \Thapp\JitImage\Driver\DriverInterface
+     * @var \Thapp\Image\Driver\DriverInterface
      */
     protected $driver;
 
     /**
-     * @var \Thapp\JitImage\Writer\WriterInterface
+     * @var \Thapp\Image\Writer\WriterInterface
      *
      * @var mixed
      */
@@ -87,15 +86,17 @@ class Processor implements ProcessorInterface
      * @param mixed $target
      *
      * @access public
-     * @return mixed
+     * @return void
      */
     public function writeToFile($target)
     {
         if (!$this->loaded) {
             throw new \BadMethodCallException('no source loaded');
         }
-        return $this->writer->write($target, $this->getContents());
+
+        $this->writer->write($this->getTargetName($target), $this->getContents());
     }
+
 
     /**
      * {@inheritDoc}
@@ -181,7 +182,7 @@ class Processor implements ProcessorInterface
     /**
      * {@inheritDoc}
      */
-    public function getSourceMimeTime()
+    public function getSourceMimeType()
     {
         return $this->driver->getSourceType(false);
     }
@@ -219,7 +220,7 @@ class Processor implements ProcessorInterface
      * isProcessed
      *
      * @access public
-     * @return mixed
+     * @return boolean
      */
     public function isProcessed()
     {
@@ -255,78 +256,85 @@ class Processor implements ProcessorInterface
     /**
      * mode 1 filter: scale
      *
-     * @param FilterInterface $filter
-     * @access public
-     * @return mixed
+     * @return void
      */
     protected function resize()
     {
-        return $this->driver->filter('resize', func_get_args());
+        $this->driver->filter('resize', func_get_args());
     }
 
     /**
      * mode 2 filter: cropScale
      *
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $gravity
-     * @access public
-     * @return mixed
+     * @return void
      */
     protected function cropScale()
     {
-        return $this->driver->filter('cropScale', func_get_args());
+        $this->driver->filter('cropScale', func_get_args());
     }
 
     /**
      * mode 3 filter: crop
      *
-     * @param FilterInterface $filter
-     * @access public
-     * @return mixed
+     * @return void
      */
     protected function crop()
     {
-        return $this->driver->filter('crop', func_get_args());
+        $this->driver->filter('crop', func_get_args());
     }
 
     /**
      * mode 4 filter: resizeToFit
      *
-     * @access public
      * @return void
      */
     protected function resizeToFit()
     {
-        return $this->driver->filter('resizeToFit', func_get_args());
+        $this->driver->filter('resizeToFit', func_get_args());
     }
 
     /**
      * mode 5 filte: percentualScale
      *
-     * @access protected
      * @return void
      */
     protected function resizePercentual()
     {
-        return $this->driver->filter('percentualScale', func_get_args());
+        $this->driver->filter('percentualScale', func_get_args());
     }
 
     /**
      * mode 6 filte: resizePixelCount
      *
-     * @access protected
      * @return void
      */
     protected function resizePixelCount()
     {
-        return $this->driver->filter('resizePixelCount', func_get_args());
+        $this->driver->filter('resizePixelCount', func_get_args());
+    }
+
+    /**
+     * getTargetName
+     *
+     * @param mixed $target
+     *
+     * @return string
+     */
+    protected function getTargetName($target)
+    {
+        if (pathinfo($target, PATHINFO_EXTENSION) === ($format = $this->getFileFormat())) {
+            return $target;
+        }
+
+        $name = substr($target, 0, (strpos($target, '.')));
+        $target = $name . '.' . $this->getFileFormat();
+
+        return $target;
     }
 
     /**
      * defaultParams
      *
-     * @access protected
      * @return array
      */
     protected function defaultParams()

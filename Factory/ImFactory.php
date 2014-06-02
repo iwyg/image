@@ -25,10 +25,10 @@ class ImFactory extends AbstractFactory
      * createProcessor
      *
      * @access protected
-     * @return mixed
+     * @return \Thamm\Image\ProcessorInterface
      */
     protected function createProcessor()
     {
-        return new Processor(new ImDriver($this->getLoaderInstance()), $this->getWriterInstance());
+        return new Processor(new ImDriver($this->loader), $this->writer(), $this->cache());
     }
 }

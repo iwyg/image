@@ -18,6 +18,7 @@ use \Thapp\Image\Driver\Loader\LoaderInterface;
 use \Thapp\Image\Driver\Loader\RemoteLoader;
 use \Thapp\Image\Driver\Loader\FilesystemLoader;
 use \Thapp\Image\Driver\Loader\DelegatingLoader;
+use \Thapp\Image\Cache\FilesystemCache;
 
 /**
  * @class AbstractFactory
@@ -41,6 +42,13 @@ abstract class AbstractFactory
     protected $writer;
 
     /**
+     * cache
+     *
+     * @var mixed
+     */
+    protected $cache;
+
+    /**
      * processor
      *
      * @var mixed
@@ -62,6 +70,13 @@ abstract class AbstractFactory
     protected static $writerInstantiator;
 
     /**
+     * cacheInstantiator
+     *
+     * @var callable
+     */
+    protected static $cacheInstantiator;
+
+    /**
      * __construct
      *
      * @param LoaderInterface $loader
@@ -73,6 +88,7 @@ abstract class AbstractFactory
     {
         $this->loader = $loader?: $this->getLoaderInstance();
         $this->writer = $writer?: $this->getWriterInstance();
+        $this->cache  = $writer?: $this->getCacheInstance();
     }
 
     /**
@@ -81,9 +97,13 @@ abstract class AbstractFactory
      * @access public
      * @return mixed
      */
-    public function make()
+    public function make($class = null)
     {
-        return new Image($this->getProcessor());
+        if (null !== $class) {
+            return new $class($this->getProcessor(), $this->cache);
+        }
+
+        return new Image($this->getProcessor(), $this->cache);
     }
 
     /**
@@ -97,6 +117,7 @@ abstract class AbstractFactory
         if (null === $this->processor) {
             $this->processor = $this->createProcessor();
         }
+
         return $this->processor;
     }
 
@@ -113,17 +134,32 @@ abstract class AbstractFactory
         }
 
         if (is_callable($instantiator = static::$loaderInstantiator)) {
-            $loader =  call_user_func($instantiator);
-        } else {
-            $loader = new DelegatingLoader([
-                new FilesystemLoader,
-                new RemoteLoader
-            ]);
+            return $this->loader =  call_user_func($instantiator);
         }
 
-        return $this->loader = $loader;
+        return $this->loader = new DelegatingLoader([
+            new FilesystemLoader,
+            new RemoteLoader
+        ]);
+    }
 
+    /**
+     * getLoaderInstance
+     *
+     * @access protected
+     * @return mixed
+     */
+    protected function getCacheInstance()
+    {
+        if ($this->cache) {
+            return $this->cache;
+        }
 
+        if (is_callable($instantiator = static::$cacheInstantiator)) {
+            return $this->cache =  call_user_func($instantiator);
+        }
+
+        return $this->cache = new FilesystemCache(getcwd() . DIRECTORY_SEPARATOR . 'cache');
     }
 
     /**
@@ -159,6 +195,19 @@ abstract class AbstractFactory
     }
 
     /**
+     * setLoaderInstantiator
+     *
+     * @param callable $instantiator
+     *
+     * @access public
+     * @return void
+     */
+    public static function setCacheInstantiator(callable $instantiator)
+    {
+        static::$cacheInstantiator = $instantiator;
+    }
+
+    /**
      * setWriterInstantiator
      *
      * @param callable $instantiator
@@ -177,7 +226,7 @@ abstract class AbstractFactory
      *
      * @access protected
      * @abstract
-     * @return mixed
+     * @return \Thamm\Image\ProcessorInterface
      */
     abstract protected function createProcessor();
 }

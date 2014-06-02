@@ -15,17 +15,17 @@ use \Thapp\Image\Processor;
 use \Thapp\Image\Driver\ImagickDriver;
 
 /**
- * @class ImagickFactory
+ * @class ImagickFactory extends AbstractFactory
+ * @see AbstractFactory
+ *
  * @package Thapp\Image\Factory
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
  */
 class ImagickFactory extends AbstractFactory
 {
     /**
-     * createProcessor
-     *
-     * @access protected
-     * @return mixed
+     * {@inheritdoc}
      */
     protected function createProcessor()
     {
