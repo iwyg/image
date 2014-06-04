@@ -9,7 +9,7 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Driver\Loader;
+namespace Thapp\Image\Loader;
 
 /**
  * @class DelegatingLoader
@@ -45,17 +45,15 @@ class DelegatingLoader implements LoaderInterface
     /**
      * load
      *
-     * @param mixed $file
+     * @param string $resource
      *
-     * @access public
-     * @return mixed
+     * @return string
      */
-    public function load($file)
+    public function load($resource)
     {
-        $loader = $this->getLoader($file);
-        //$this->loader = null;
+        $loader = $this->getLoader($resource);
 
-        return $loader->load($file);
+        return $loader->load($resource);
     }
 
     /**
@@ -95,6 +93,19 @@ class DelegatingLoader implements LoaderInterface
         }
 
         return false;
+    }
+
+    public function __clone()
+    {
+        $this->loader = null;
+
+        $loaders = [];
+
+        foreach ($this->loaders as $loader) {
+            $loaders[] = clone($loader);
+        }
+
+        $this->loaders = $loaders;
     }
 
     /**
@@ -150,7 +161,7 @@ class DelegatingLoader implements LoaderInterface
     protected function getLoader($file)
     {
         if (!$this->supports($file)) {
-            throw new \InvalidArgumentException(sprintf('No suitable loader found for srouce %s', $file));
+            throw new \InvalidArgumentException(sprintf('No suitable loader found for resource "%s"', $file));
         }
 
         return $this->loader;

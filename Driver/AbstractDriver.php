@@ -96,16 +96,17 @@ abstract class AbstractDriver implements DriverInterface
     {
         $this->clean();
 
-        if (!$this->loader->supports($source)) {
-            throw new \InvalidArgumentException(sprintf('resource %s is not supported', $source));
-        }
+        //if (!$this->loader->supports($source)) {
+        //    throw new \InvalidArgumentException(sprintf('resource "%s" not found or not supported', $source));
+        //}
 
         if ($this->loaded = (bool)($src = $this->loader->load($source))) {
             $this->source = $src;
+
             return $this->loaded;
         }
 
-        throw new \RuntimeException(sprintf('error loading source %s', $source));
+        throw new \RuntimeException(sprintf('error loading source "%s"', $source));
     }
 
     /**

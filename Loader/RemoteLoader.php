@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Loader package
+ * This File is part of the Thapp\Image package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -9,15 +9,25 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Driver\Loader;
+namespace Thapp\Image\Loader;
 
 /**
- * @class RemoteLoader
- * @package Loader
+ * @class RemoteLoader extends AbstractLoader
+ * @see AbstractLoader
+ *
+ * @package Thapp\Image
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
  */
 class RemoteLoader extends AbstractLoader
 {
+    /**
+     * curl_error
+     *
+     * @var string
+     */
+    private $curl_error;
+
     /**
      * tmp
      *
@@ -30,8 +40,11 @@ class RemoteLoader extends AbstractLoader
      *
      * @var string
      */
-    protected $file;
+    protected $source;
 
+    /**
+     * Create a new RemoteLoader instance.
+     */
     public function __construct()
     {
         $this->tmp = sys_get_temp_dir();
@@ -42,7 +55,7 @@ class RemoteLoader extends AbstractLoader
      *
      * @param mixed $url
      *
-     * @access public
+     * @throws \RuntimeException if fetching remote file fails
      * @return string|boolean false if loading fails, else the downloaded file
      * as string
      */
@@ -52,16 +65,17 @@ class RemoteLoader extends AbstractLoader
             return $this->validate($file);
         }
 
-        return false;
+        throw new \RuntimeException(
+            sprintf('Error loading remote file "%s": %s', $url, $this->curl_error ?: 'undefined error')
+        );
     }
 
     /**
      * supports
      *
-     * @param mixed $url
+     * @param string $url
      *
-     * @access public
-     * @return mixed
+     * @return boolean
      */
     public function supports($url)
     {
@@ -71,13 +85,12 @@ class RemoteLoader extends AbstractLoader
     /**
      * loadRemoteFile
      *
-     * @param mixed $url
-     * @access protected
-     * @return mixed
+     * @param string $url
+     * @return string|boolean false if error
      */
-    protected function loadRemoteFile($url)
+    private function loadRemoteFile($url)
     {
-        $this->file = tempnam($this->tmp, 'img_rmt_');
+        $this->source = tempnam($this->tmp, basename($url));
 
         if (!function_exists('curl_init')) {
 
@@ -85,30 +98,22 @@ class RemoteLoader extends AbstractLoader
                 return false;
             }
 
-            file_put_contents($contents, $this->file);
+            file_put_contents($contents, $this->source);
 
-            return $this->file;
-
+            return $this->source;
         }
 
-        $handle = fopen($this->file, 'w');
-
-        if (!$this->fetchFile($handle, $url)) {
-            fclose($handle);
-            return false;
-        }
-
+        $status = $this->fetchFile($handle = fopen($this->source, 'w'), $url, $this->curl_error);
         fclose($handle);
 
-        return $this->file;
+        return $status ? $this->source : $status;
     }
 
     /**
      * fetchFile
      *
-     * @param Resource $handle
-     * @access protected
-     * @return void
+     * @param resource $handle
+     * @return int the curl status
      */
     protected function fetchFile($handle, $url, &$message = null)
     {

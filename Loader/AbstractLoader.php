@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Loader package
+ * This File is part of the Thapp\Image package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -9,15 +9,24 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Driver\Loader;
+namespace Thapp\Image\Loader;
 
 /**
- * @class AbstractLoader
- * @package Loader
+ * @abstract class AbstractLoader implements LoaderInterface
+ * @see LoaderInterface
+ * @abstract
+ *
+ * @package Thapp\Image
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
  */
 abstract class AbstractLoader implements LoaderInterface
 {
+    /**
+     * source
+     *
+     * @var string
+     */
     protected $source;
 
     /**
@@ -34,7 +43,6 @@ abstract class AbstractLoader implements LoaderInterface
     /**
      * Clean up un object removal
      *
-     * @access public
      * @return void
      */
     public function __destruct()
@@ -43,16 +51,25 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
+     * Clone the loader instance.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->source = null;
+    }
+
+    /**
      * clean
      *
-     * @access public
      * @return void
      */
     public function clean()
     {
-        if (file_exists($this->file)) {
-            @unlink($this->file);
-        }
+        //if (file_exists($this->source)) {
+        //    @unlink($this->source);
+        //}
 
         $this->source = null;
     }
@@ -60,16 +77,13 @@ abstract class AbstractLoader implements LoaderInterface
     /**
      * valid
      *
-     * @param mixed $url
-     * @access private
-     * @return mixed
+     * @param string $url
+     * @return boolean
      */
     protected function validate($url)
     {
         if (@getimagesize($url)) {
-            $this->source = $url;
-
-            return $url;
+            return $this->source = $url;
         }
 
         return false;

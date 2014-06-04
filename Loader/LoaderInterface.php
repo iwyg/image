@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Thapp\JitImage package
+ * This File is part of the Thapp\Image package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -9,52 +9,53 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Driver\Loader;
+namespace Thapp\Image\Loader;
 
 /**
  * Interface SourceLoaderInterface
  *
- *
- * @package Thapp\JitImage
- * @version
+ * @package Thapp\Image
+ * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
- * @license MIT
  */
 interface LoaderInterface
 {
     /**
-     * load
+     * Loads an image url.
      *
-     * @param mixed $url
+     * @param string $url
      *
-     * @access public
      * @return mixed
      */
     public function load($url);
 
     /**
-     * clean
+     * Clean the loader instance.
      *
-     * @access public
      * @return void
      */
     public function clean();
 
     /**
-     * getSource
+     * Get the loaded source as string.
      *
-     * @access public
      * @return string
      */
     public function getSource();
 
     /**
-     * supports
+     * Checks if this loader supports the image url.
      *
-     * @param mixed $url
+     * @param string $url
      *
-     * @access public
      * @return boolean
      */
     public function supports($url);
+
+    /**
+     * Clones a loader instance.
+     *
+     * @return void
+     */
+    public function __clone();
 }

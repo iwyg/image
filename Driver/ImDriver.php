@@ -13,8 +13,8 @@ namespace Thapp\Image\Driver;
 
 use \Symfony\Component\Process\Process;
 use \Symfony\Component\Process\ProcessBuilder;
-use \Thapp\Image\Driver\Loader\LoaderInterface;
-use \Thapp\Image\Driver\Loader\FilesystemLoader;
+use \Thapp\Image\Loader\LoaderInterface;
+use \Thapp\Image\Loader\FilesystemLoader;
 use \Thapp\Image\Exception\ImageProcessException;
 
 /**
@@ -120,7 +120,8 @@ class ImDriver extends AbstractDriver
      * __construct
      *
      * @access public
-     * @return mixed
+     * @param LoaderInterface $loader
+     * @param BinLocatorInterface $locator
      */
     public function __construct(LoaderInterface $loader = null, BinLocatorInterface $locator = null)
     {

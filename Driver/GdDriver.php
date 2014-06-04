@@ -12,7 +12,8 @@
 namespace Thapp\Image\Driver;
 
 use \Thapp\Image\Traits\Scaling;
-use \Thapp\Image\Driver\Loader\LoaderInterface;
+use \Thapp\Image\Loader\LoaderInterface;
+use \Thapp\Image\Loader\FilesystemLoader;
 
 /**
  * GD Processing Driver
@@ -73,15 +74,11 @@ class GdDriver extends AbstractDriver
     protected static $driverType = 'gd';
 
     /**
-     * __construct
-     *
-     * @param SourceLoaderInterface $loader
-     * @access public
-     * @return mixed
+     * @param LoaderInterface $loader
      */
-    public function __construct(LoaderInterface $loader)
+    public function __construct(LoaderInterface $loader = null)
     {
-        $this->loader = $loader;
+        $this->loader  = $loader ?: new FilesystemLoader;
     }
 
     /**

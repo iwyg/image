@@ -15,12 +15,11 @@
   "suggest": {
     "league/flysystem": ""
   },
-  "license": "MIT",
   "authors": [
     {
-    "name": "Thomas Appel",
-    "email": "mail@thomas-appel.com"
-  }
+      "name": "Thomas Appel",
+      "email": "mail@thomas-appel.com"
+    }
   ],
   "autoload": {
     "psr-4": {

@@ -12,8 +12,8 @@
 namespace Thapp\Image\Driver;
 
 use \Imagick;
-use \ImagickPixel;
-use \Thapp\Image\Driver\Loader\LoaderInterface;
+use \Thapp\Image\Loader\LoaderInterface;
+use \Thapp\Image\Loader\FilesystemLoader;
 
 /**
  * Imagick Processing Driver
@@ -44,12 +44,13 @@ class ImagickDriver extends AbstractDriver
     /**
      * Create a new Imagick based processing driver.
      *
-     * @param BinLocatorInterface $locator the source loader.
+     * @param LoaderInterface $loader
+     * @internal param \Thapp\Image\Driver\BinLocatorInterface $locator the source loader.
      */
-    public function __construct(LoaderInterface $loader)
+    public function __construct(LoaderInterface $loader = null)
     {
         $this->tmp  = sys_get_temp_dir();
-        $this->loader = $loader;
+        $this->loader = $loader ?: new FilesystemLoader;
     }
 
     /**
@@ -77,9 +78,12 @@ class ImagickDriver extends AbstractDriver
             $this->resource->destroy();
         }
 
-        return parent::clean();
+        parent::clean();
     }
 
+    /**
+     * Clean all temp files.
+     */
     protected function cleanUpTmp()
     {
         if (is_file($this->tmpFile)) {

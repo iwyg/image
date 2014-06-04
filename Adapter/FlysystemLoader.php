@@ -39,12 +39,20 @@ class FlysystemLoader extends AbstractLoader
     protected $tmp;
 
     /**
+     * useTmp
+     *
+     * @var boolean
+     */
+    protected $useTmp;
+
+    /**
      * @param FilesystemInterface $fs
      */
     public function __construct(FilesystemInterface $fs)
     {
         $this->fs = $fs;
         $this->tmp = sys_get_temp_dir();
+        $this->useTmp = false;
     }
 
     /**
@@ -65,34 +73,37 @@ class FlysystemLoader extends AbstractLoader
      */
     public function load($url)
     {
-        $tmp = tempnam($this->tmp, 'fly_');
+        $file = $this->createTmpIfNotLocal($url);
 
-        $this->fs->put($tmp, $this->fs->read($url));
-
-        if (!$this->validate($tmp)) {
+        if (!$this->validate($file)) {
             $this->clean();
             throw new \InvalidArgumentException(sprintf('%s is not a valid image source', $url));
         }
 
-        $this->source = $tmp;
-
-        return $tmp;
+        return $this->source = $file;
     }
 
     /**
-     * clean
+     * createTmpIfNotLocal
      *
-     * @access public
-     * @return void
+     * @param string $url
+     *
+     * @return string
      */
-    public function clean()
+    private function createTmpIfNotLocal($url)
     {
-        if (null === $this->source) {
-            return;
+        if (stream_is_local($url)) {
+            return $url;
         }
 
-        $this->fs->delete($this->source);
-        $this->source = null;
+        //$this->❨╯°□°❩╯︵┻━┻ = 'fuuuuu…';
+
+        $this->useTmp = true;
+
+        $file = tempnam($this->tmp, basename($url));
+        $this->fs->put($file, $this->fs->read($url));
+
+        return $file;
     }
 
     /**
@@ -106,5 +117,32 @@ class FlysystemLoader extends AbstractLoader
     public function supports($url)
     {
         return $this->fs->has($url);
+    }
+
+    /**
+     * clean
+     *
+     * @return void
+     */
+    public function clean()
+    {
+        if (null === $this->source) {
+            $this->useTmp = false;
+
+            return;
+        }
+
+        if (!$this->useTmp) {
+            return;
+        }
+
+        if ($this->supports($this->source)) {
+            $this->fs->delete($this->source);
+        } else {
+            @unlink($this->source);
+        }
+
+        $this->source = null;
+        $this->useTmp = false;
     }
 }

@@ -57,6 +57,19 @@ abstract class AbstractCache implements CacheInterface
     }
 
     /**
+     * setFromProcessor
+     *
+     * @param mixed $id
+     * @param ProcessorInterface $processor
+     *
+     * @return void
+     */
+    public function setFromProcessor($id, ProcessorInterface $processor)
+    {
+
+    }
+
+    /**
      * get
      *
      * @param mixed $id

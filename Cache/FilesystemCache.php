@@ -12,6 +12,7 @@
 namespace Thapp\Image\Cache;
 
 use \Thapp\Image\ImageInterface;
+use \Thapp\Image\Resource\CachedResource;
 
 /**
  * @class FilesystemCache implements CacheInterface
@@ -48,28 +49,15 @@ class FilesystemCache extends AbstractCache
     }
 
     /**
-     * getCacheKey
-     *
-     * @param mixed $param
-     *
-     * @access public
-     * @return mixed
-     */
-    public function getCacheKey($param)
-    {
-        return null;
-    }
-
-    /**
      * get
      *
      * @param mixed $id
      *
      * @return string
      */
-    public function get($id)
+    public function get($id, $raw = false)
     {
-        return null;
+        return $raw ? file_get_contents($this->getSource($id)) : $this->createSource($id);
     }
 
     /**
@@ -82,7 +70,9 @@ class FilesystemCache extends AbstractCache
      */
     public function set($id, $content)
     {
-        file_put_contents($this->realizeDir($id), $content);
+        file_put_contents($file = $this->realizeDir($id), $content);
+
+        $this->pool[$id] = $file;
     }
 
     /**
@@ -147,10 +137,36 @@ class FilesystemCache extends AbstractCache
     {
         $parsed = $this->parseKey($key);
 
-        //array_shift($parsed);
-
         list ($dir, $file) = $parsed;
 
         return sprintf('%s%s%s%s%s', $this->path, DIRECTORY_SEPARATOR, $dir, DIRECTORY_SEPARATOR, $file);
+    }
+
+    /**
+     * createSource
+     *
+     * @param mixed $id
+     *
+     * @access private
+     * @return ResourceInterface
+     */
+    private function createSource($id)
+    {
+        $file = $this->getSource($id);
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+
+        $mime = finfo_file($finfo, $file);
+
+        finfo_close($finfo);
+
+        return new CachedResource(
+            $file,
+            function () use ($file) {
+                return file_get_contents($file);
+            },
+            filemtime($file),
+            $mime
+        );
     }
 }

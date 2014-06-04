@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Loader package
+ * This File is part of the Thapp\JitImage package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -9,14 +9,17 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Driver\Loader;
+namespace Thapp\Image\Loader;
 
 use Thapp\Image\Exception\SourceLoaderException;
 
 /**
- * @class FileSystemLoader
- * @package Loader
+ * @class FilesystemLoader extends AbstractLoader
+ * @see AbstractLoader
+ *
+ * @package Thapp\JitImage
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
  */
 class FilesystemLoader extends AbstractLoader
 {
@@ -30,7 +33,7 @@ class FilesystemLoader extends AbstractLoader
     /**
      * src
      *
-     * @var mixed
+     * @var string
      */
     protected $source;
 
@@ -45,7 +48,7 @@ class FilesystemLoader extends AbstractLoader
     public function load($file)
     {
         if (!($source = $this->validate($file))) {
-            throw new SourceLoaderException(sprintf('Invalid Source URL: %s', $file));
+            throw new SourceLoaderException(sprintf('source "%s" is not an image', $file));
         }
 
         return $source;
@@ -56,11 +59,15 @@ class FilesystemLoader extends AbstractLoader
      *
      * @param mixed $file
      *
-     * @access public
      * @return boolean
      */
     public function supports($file)
     {
+        // prevent errors on unsupported stream wrappers:
+        if (null !== ($scheme = parse_url($file, PHP_URL_SCHEME)) && 'file' !== $scheme) {
+            return false;
+        }
+
         return is_file($file) && stream_is_local($file);
     }
 }
