@@ -10,7 +10,15 @@ matrix:
     - php: hhvm
     - php: hhvm-nightly
   fast_finish: true
+services:
+- imagemagick
+- convert
+- imagick
 before_script:
+  - pear config-set preferred_state beta
+  - printf "\n" | pecl install imagick
+  - echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - php -m | grep imagick 
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
 script: 
