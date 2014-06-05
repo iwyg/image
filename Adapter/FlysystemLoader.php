@@ -12,7 +12,7 @@
 namespace Thapp\Image\Adapter;
 
 use \League\Flysystem\FilesystemInterface;
-use \Thapp\Image\Driver\Loader\AbstractLoader;
+use \Thapp\Image\Loader\AbstractLoader;
 
 /**
  * @class FlysystemAdapter implements LoaderInterface
@@ -92,7 +92,7 @@ class FlysystemLoader extends AbstractLoader
      */
     private function createTmpIfNotLocal($url)
     {
-        if (stream_is_local($url)) {
+        if (stream_is_local($url) && file_exists($url)) {
             return $url;
         }
 
@@ -101,7 +101,7 @@ class FlysystemLoader extends AbstractLoader
         $this->useTmp = true;
 
         $file = tempnam($this->tmp, basename($url));
-        $this->fs->put($file, $this->fs->read($url));
+        file_put_contents($file, $this->fs->read($url));
 
         return $file;
     }

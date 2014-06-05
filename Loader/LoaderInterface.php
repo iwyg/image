@@ -57,5 +57,5 @@ interface LoaderInterface
      *
      * @return void
      */
-    public function __clone();
+    //public function __clone();
 }

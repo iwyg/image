@@ -74,7 +74,7 @@ abstract class DriverTest extends TestCase
         $this->fileRoot = vfsStream::setup('images');
         $this->fileUrl  = vfsStream::url('images');
 
-        $this->loaderMock = m::mock('Thapp\Image\Driver\Loader\LoaderInterface');
+        $this->loaderMock = m::mock('Thapp\Image\Loader\LoaderInterface');
         $this->loaderMock->shouldReceive('load')->andReturnUsing(function ($url) {
             return $url;
         });
@@ -82,6 +82,7 @@ abstract class DriverTest extends TestCase
         $this->loaderMock->shouldReceive('supports')->andReturn(true);
         $this->loaderMock->shouldReceive('clean')->andReturn(null);
     }
+
     /**
      * tearDown
      *

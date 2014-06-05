@@ -41,9 +41,10 @@ class FilesystemCache extends AbstractCache
     /**
      * @param string $location
      */
-    public function __construct($location)
+    public function __construct($location, $prefix = 'fs_')
     {
         $this->path = $location;
+        $this->prefix = $prefix;
 
         $this->pool = [];
     }
@@ -103,7 +104,7 @@ class FilesystemCache extends AbstractCache
      */
     public function getSource($key)
     {
-        return $this->pool[$key];
+        return isset($this->pool[$key]) ? $this->pool[$key] : $this->getPath($key);
     }
 
     /**

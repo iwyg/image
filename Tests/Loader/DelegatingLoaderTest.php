@@ -9,10 +9,10 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Tests\Driver\Loader;
+namespace Thapp\Image\Tests\Loader;
 
 use \Mockery as m;
-use \Thapp\Image\Driver\Loader\DelegatingLoader;
+use \Thapp\Image\Loader\DelegatingLoader;
 
 /**
  * @class DelegatingLoaderTest
@@ -25,7 +25,7 @@ class DelegatingLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldBeInstantiable()
     {
-        $this->assertInstanceof('Thapp\Image\Driver\Loader\LoaderInterface', new DelegatingLoader);
+        $this->assertInstanceof('Thapp\Image\Loader\LoaderInterface', new DelegatingLoader);
     }
 
     /** @test */
@@ -106,7 +106,7 @@ class DelegatingLoaderTest extends \PHPUnit_Framework_TestCase
 
     protected function getLoaderMock()
     {
-        $mock = m::mock('\Thapp\Image\Driver\Loader\LoaderInterface');
+        $mock = m::mock('\Thapp\Image\Loader\LoaderInterface');
         $mock->shouldreceive('clean')->andReturn(null);
         return $mock;
     }

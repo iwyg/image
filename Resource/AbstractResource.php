@@ -55,7 +55,7 @@ abstract class AbstractResource implements ResourceInterface
      */
     public function isLocal()
     {
-        return null !== $this->path && stream_is_local($this->path);
+        return null !== $this->path && is_file($this->path);
     }
 
     /**

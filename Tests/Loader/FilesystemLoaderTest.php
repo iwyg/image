@@ -9,10 +9,10 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Tests\Driver\Loader;
+namespace Thapp\Image\Tests\Loader;
 
 use \org\bovigo\vfs\vfsStream;
-use \Thapp\Image\Driver\Loader\FilesystemLoader;
+use \Thapp\Image\Loader\FilesystemLoader;
 
 /**
  * @class FilesystemLoaderTest
@@ -33,7 +33,7 @@ class FilesystemLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldBeInstantiable()
     {
-        $this->assertInstanceof('Thapp\Image\Driver\Loader\LoaderInterface', new FilesystemLoader);
+        $this->assertInstanceof('Thapp\Image\Loader\LoaderInterface', new FilesystemLoader);
     }
 
     /** @test */

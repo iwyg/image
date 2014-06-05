@@ -67,10 +67,6 @@ abstract class AbstractLoader implements LoaderInterface
      */
     public function clean()
     {
-        //if (file_exists($this->source)) {
-        //    @unlink($this->source);
-        //}
-
         $this->source = null;
     }
 

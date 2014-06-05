@@ -25,11 +25,31 @@ abstract class AbstractCache implements CacheInterface
      */
     protected $pool;
 
-    public function __construct(\Memcached $memcached)
-    {
-        $this->memcached = $memcached;
+    protected $prefix;
 
-        parent::__construct();
+    /**
+     * setPrefix
+     *
+     * @param mixed $prefix
+     *
+     * @access public
+     * @return mixed
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = prefix;
+    }
+
+    /**
+     * getPrefix
+     *
+     *
+     * @access public
+     * @return mixed
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
 
     /**
@@ -50,23 +70,10 @@ abstract class AbstractCache implements CacheInterface
         return sprintf(
             '%s.%s%s%s',
             substr(hash('sha1', $src), 0, 8),
-            $prefix,
+            $this->prefix,
             $this->pad($src, $fingerprint),
             $this->pad($src, $suffix, 3)
         );
-    }
-
-    /**
-     * setFromProcessor
-     *
-     * @param mixed $id
-     * @param ProcessorInterface $processor
-     *
-     * @return void
-     */
-    public function setFromProcessor($id, ProcessorInterface $processor)
-    {
-
     }
 
     /**
@@ -101,14 +108,13 @@ abstract class AbstractCache implements CacheInterface
     /**
      * getSource
      *
-     * @param mixed $key
      *
      * @access public
-     * @return mixed
+     * @return void
      */
-    public function getSource($key)
+    public function getSource($id)
     {
-        return $this->pool[$key];
+        return isset($this->pool[$key]) ? $this->pool[$key] : $this->getPath($key);
     }
 
     /**
@@ -116,8 +122,7 @@ abstract class AbstractCache implements CacheInterface
      *
      * @param mixed $key
      *
-     * @access protected
-     * @return void
+     * @return array
      */
     protected function parseKey($key)
     {
@@ -125,6 +130,17 @@ abstract class AbstractCache implements CacheInterface
         $file = substr($key, $pos + 1);
 
         return [$path, $file];
+    }
+
+    /**
+     * getPath
+     *
+     * @param string $id
+     *
+     * @return string
+     */
+    protected function getPath($id)
+    {
     }
 
     /**
@@ -140,5 +156,17 @@ abstract class AbstractCache implements CacheInterface
     protected function pad($src, $pad, $len = 16)
     {
         return substr(hash('sha1', sprintf('%s%s', $src, $pad)), 0, $len);
+    }
+
+    /**
+     * poolHas
+     *
+     * @param sring $id
+     *
+     * @return boolean
+     */
+    protected function poolHas($key)
+    {
+        return array_key_exists($key, $this->pool);
     }
 }
