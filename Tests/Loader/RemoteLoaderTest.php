@@ -51,7 +51,17 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
     public function itShouldNotLoadInvalidSources()
     {
         $loader = $this->loader = new RemoteLoader;
-        $this->assertFalse($loader->load('http://example.com/doesnotexist.jpg'));
+
+        try {
+            $loader->load($url = 'http://example.com/doesnotexist.jpg');
+        } catch (\Thapp\Image\Exception\SourceLoaderException $e) {
+            $this->assertTrue(true);
+            return;
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
+
+        $this->fail('test slipped');
     }
 
     /**

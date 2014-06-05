@@ -64,9 +64,10 @@ class FilesystemLoader extends AbstractLoader
     public function supports($file)
     {
         // prevent errors on unsupported stream wrappers:
-        if (null !== ($scheme = parse_url($file, PHP_URL_SCHEME)) && 'file' !== $scheme) {
-            return false;
-        }
+        //if (null !== ($scheme = parse_url($file, PHP_URL_SCHEME)) && !in_array($scheme, ['vfs', 'file'])) {
+        //    var_dump($scheme);
+        //    return false;
+        //}
 
         return is_file($file) && stream_is_local($file);
     }

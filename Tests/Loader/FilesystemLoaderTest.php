@@ -40,6 +40,7 @@ class FilesystemLoaderTest extends \PHPUnit_Framework_TestCase
     public function itShouldSupportLocalFiles()
     {
         $loader = new FilesystemLoader;
+
         touch($file = $this->rootDir . DIRECTORY_SEPARATOR . 'image.jpg');
 
         $this->assertTrue($loader->supports($file));
@@ -52,7 +53,7 @@ class FilesystemLoaderTest extends \PHPUnit_Framework_TestCase
         touch($file = $this->rootDir . DIRECTORY_SEPARATOR . 'image.jpg');
         $this->createDummySource($file);
 
-        $this->assertTrue(file_exists($loader->load($file)));
+        $this->assertTrue(is_string($loader->load($file)));
     }
 
     /** @test */
@@ -64,7 +65,7 @@ class FilesystemLoaderTest extends \PHPUnit_Framework_TestCase
         try {
             $loader->load($file);
         } catch (\Thapp\Image\Exception\SourceLoaderException $e) {
-            $this->assertEquals('Invalid Source URL: ' . $file, $e->getMessage());
+            $this->assertEquals('source "'.$file.'" is not an image', $e->getMessage());
             return;
         }
 

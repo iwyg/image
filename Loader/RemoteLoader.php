@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Loader;
 
+use Thapp\Image\Exception\SourceLoaderException;
+
 /**
  * @class RemoteLoader extends AbstractLoader
  * @see AbstractLoader
@@ -65,7 +67,7 @@ class RemoteLoader extends AbstractLoader
             return $this->validate($file);
         }
 
-        throw new \RuntimeException(
+        throw new SourceLoaderException(
             sprintf('Error loading remote file "%s": %s', $url, $this->curl_error ?: 'undefined error')
         );
     }
