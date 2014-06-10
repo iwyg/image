@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Thapp\Image\Cache package
+ * This File is part of the Thapp\Image package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -12,44 +12,67 @@
 namespace Thapp\Image\Cache;
 
 /**
- * @class AbstractCache
- * @package Thapp\Image\Cache
+ * @abstract class AbstractCache implements CacheInterface
+ * @see CacheInterface
+ * @abstract
+ *
+ * @package Thapp\Image
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
  */
 abstract class AbstractCache implements CacheInterface
 {
     /**
      * pool
      *
-     * @var mixed
+     * @var array
      */
     protected $pool;
 
+    /**
+     * prefix
+     *
+     * @var string
+     */
     protected $prefix;
 
     /**
-     * setPrefix
+     * suffix
      *
-     * @param mixed $prefix
-     *
-     * @access public
-     * @return mixed
+     * @var string
+     */
+    protected $suffix;
+
+    /**
+     * {@inheritdoc}
      */
     public function setPrefix($prefix)
     {
-        $this->prefix = prefix;
+        $this->prefix = $prefix;
     }
 
     /**
-     * getPrefix
-     *
-     *
-     * @access public
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getPrefix()
     {
         return $this->prefix;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSuffix($suffix)
+    {
+        $this->suffix = $suffix;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSuffix()
+    {
+        return $this->suffix;
     }
 
     /**
@@ -65,33 +88,24 @@ abstract class AbstractCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function createKey($src, $fingerprint = null, $prefix = 'io', $suffix = 'file')
+    public function createKey($src, $fingerprint = null)
     {
         return sprintf(
             '%s.%s%s%s',
             substr(hash('sha1', $src), 0, 8),
             $this->prefix,
             $this->pad($src, $fingerprint),
-            $this->pad($src, $suffix, 3)
+            $this->pad($src, $this->suffix, 3)
         );
     }
 
     /**
-     * get
-     *
-     * @param mixed $id
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    abstract public function get($id);
+    abstract public function get($id, $raw = self::CONTENT_RESOURCE);
 
     /**
-     * set
-     *
-     * @param string $id
-     * @param Image $image
-     *
-     * @return void
+     * {@inheritdoc}
      */
     abstract public function set($id, $content);
 
@@ -106,11 +120,7 @@ abstract class AbstractCache implements CacheInterface
     }
 
     /**
-     * getSource
-     *
-     *
-     * @access public
-     * @return void
+     * {@inheritdoc}
      */
     public function getSource($id)
     {
@@ -144,13 +154,12 @@ abstract class AbstractCache implements CacheInterface
     }
 
     /**
-     * Appends and hash a string with another string.
+     * Hashes a string and a padd and returns a string with a given length.
      *
      * @param string $src
      * @param string $pad
      * @param int    $len
      *
-     * @access protected
      * @return string
      */
     protected function pad($src, $pad, $len = 16)

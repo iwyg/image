@@ -373,6 +373,7 @@ abstract class AbstractDriver implements DriverInterface
             ->resize($this->targetSize['width'], $this->targetSize['height'], static::FL_FILL_AREA)
             ->gravity($gravity)
             ->extent($this->targetSize['width'], $this->targetSize['height']);
+
     }
 
     /**

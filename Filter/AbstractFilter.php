@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Thapp\JitImage package
+ * This File is part of the Thapp\Image package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -15,15 +15,13 @@ use Thapp\Image\Driver\DriverInterface;
 use Thapp\Image\Filter\Traits\ProcessingTrait;
 
 /**
- * Class: AbstractFilter
- *
- * @implements FilterInterface
+ * @abstract class AbstractFilter implements FilterInterface
+ * @see FilterInterface
  * @abstract
  *
- * @package Thapp\JitImage
+ * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
- * @license MIT
  */
 abstract class AbstractFilter implements FilterInterface
 {
@@ -50,8 +48,6 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * Exeecute the filter processing.
      *
-     * @access public
-     * @abstract
      * @return void
      */
     abstract public function run();
@@ -60,7 +56,8 @@ abstract class AbstractFilter implements FilterInterface
      * Creates a new filter object.
      *
      * @param Imagick $resource
-     * @access public
+     *
+     * @return void
      */
     final public function __construct(DriverInterface $driver, $options)
     {
@@ -70,9 +67,31 @@ abstract class AbstractFilter implements FilterInterface
         $this->ensureCompat();
     }
 
+    /**
+     * Get a filter option.
+     *
+     * @param string $option option name
+     * @param mixed  $default the default value to return
+     *
+     * @return mixed
+     */
+    public function getOption($option, $default = null)
+    {
+        if (array_key_exists($option, $this->options)) {
+            return $this->options[$option];
+        }
+        return $default;
+    }
+
+    /**
+     * getOptionAlias
+     *
+     * @param string $alias
+     *
+     * @return string
+     */
     protected function getOptionAlias($alias)
     {
-
     }
 
     /**
@@ -100,27 +119,9 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * Get a filter option.
-     *
-     * @param string $option option name
-     * @param mixed  $default the default value to return
-     * @access public
-     * @return mixed
-     */
-    public function getOption($option, $default = null)
-    {
-        if (array_key_exists($option, $this->options)) {
-            return $this->options[$option];
-        }
-        return $default;
-    }
-
-
-    /**
      * Ensure driver compatibility.
      *
      * @throws \Exception
-     * @access private
      * @return void
      */
     private function ensureCompat()

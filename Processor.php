@@ -85,11 +85,16 @@ class Processor implements ProcessorInterface
      *
      * @param mixed $target
      *
-     * @access public
      * @return void
      */
-    public function writeToFile($target)
+    public function writeToFile($target, ResourceInterface $resource = null)
     {
+        if (null !== $resource) {
+            $this->writeResourceToFile($resource, $target);
+
+            return;
+        }
+
         if (!$this->loaded) {
             throw new \BadMethodCallException('no source loaded');
         }
@@ -97,6 +102,17 @@ class Processor implements ProcessorInterface
         $this->writer->write($this->getTargetName($target), $this->getContents());
     }
 
+    /**
+     * writeResourceToFile
+     *
+     * @param ResourceInterface $resource
+     *
+     * @return void
+     */
+    public function writeResourceToFile(ResourceInterface $resource, $target)
+    {
+        $this->writer->write($this->getTargetName($target), $resource->getContents());
+    }
 
     /**
      * {@inheritDoc}
@@ -136,7 +152,14 @@ class Processor implements ProcessorInterface
             $this->addFilter($f, (array)$parameter);
         }
 
+        $this->driver->setQuality(80);
+
         $this->driver->process();
+
+        //$r = $this->driver->getResource();
+        //var_dump($r->getImageHeight());
+        //var_dump($r->getImageWidth());
+        //die;
     }
 
     /**

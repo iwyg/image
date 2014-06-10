@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Thapp\JitImage\Filter package
+ * This File is part of the Thapp\Image package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -14,10 +14,9 @@ namespace Thapp\Image\Filter\Traits;
 /**
  * @trait ProcessingTrait
  *
- * @package Thapp\JitImage\Filter
+ * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
- * @license MIT
  */
 trait ProcessingTrait
 {

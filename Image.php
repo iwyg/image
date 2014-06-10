@@ -574,6 +574,7 @@ class Image implements ImageInterface
             }
             $filters[] = sprintf('%s;%s', $filter, implode(';', $opt));
         }
+
         if (!empty($filters)) {
              return sprintf('filter:%s', implode(':', $filters));
         }

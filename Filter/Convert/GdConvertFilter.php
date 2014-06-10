@@ -11,17 +11,17 @@
 
 namespace Thapp\Image\Filter\Convert;
 
-use \Thapp\Image\Filter\ImagickFilter;
+use \Thapp\Image\Filter\GdFilter;
 
 /**
- * @class ImConvertFilter extends ImagickFilter
- * @see ImagickFilter
+ * @class GdConvertFilter extends GdFilter
+ * @see GdFilter
  *
  * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  */
-class ImConvertFilter extends ImagickFilter
+class GdConvertFilter extends GdFilter
 {
     use FilterRunner;
 

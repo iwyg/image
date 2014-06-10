@@ -49,6 +49,11 @@ abstract class AbstractResource implements ResourceInterface
     protected $path;
 
     /**
+     * @var boolean
+     */
+    protected $fresh;
+
+    /**
      * isLocal
      *
      * @return boolean
@@ -67,6 +72,17 @@ abstract class AbstractResource implements ResourceInterface
     public function isFresh($time = null)
     {
         return $this->getLastModified() < $time ?: time();
+    }
+
+    /**
+     * isFresh
+     *
+     * @access public
+     * @return void
+     */
+    public function setFresh($fresh)
+    {
+        return $this->fresh = true;
     }
 
     /**

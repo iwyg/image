@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This File is part of the Thapp\JitImage\Filter\Convert package
+ * This File is part of the Thapp\Image package
  *
  * (c) Thomas Appel <mail@thomas-appel.com>
  *
@@ -14,16 +14,25 @@ namespace Thapp\Image\Filter\Convert;
 use \Thapp\Image\Filter\ImagickFilter;
 
 /**
- * @class ImagickConvFilter
- * @package Thapp\JitImage\Filter\Convert
+ * @class ImagickConvertFilter extends ImagickFilter
+ * @see ImagickFilter
+ *
+ * @package Thapp\Image
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
  */
 class ImagickConvertFilter extends ImagickFilter
 {
     use FilterRunner;
 
+    /**
+     * {@inheritdoc}
+     */
     protected $availableOptions = ['f'];
 
+    /**
+     * {@inheritdoc}
+     */
     public function run()
     {
         $this->runConvert();

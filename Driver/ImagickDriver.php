@@ -174,7 +174,7 @@ class ImagickDriver extends AbstractDriver
             $result = parent::filter($name, $options);
         }
 
-        if (static::EXT_FILTER !== ($result = parent::filter($name, $options))) {
+        if (static::EXT_FILTER !== $result) {
             return $result;
         }
 
@@ -297,9 +297,7 @@ class ImagickDriver extends AbstractDriver
      */
     protected function extent($width, $height, $flag = '')
     {
-        unset($flag);
-
-        $coords = $this->getCropCoordinates(
+        list ($x, $y) = $this->getCropCoordinates(
             $this->resource->getImageWidth(),
             $this->resource->getImageHeight(),
             $width,
@@ -307,7 +305,8 @@ class ImagickDriver extends AbstractDriver
             $this->resource->getGravity()
         );
 
-        $this->resource->extentImage($width, $height, $coords['x'], $coords['y']);
+        $this->resource->extentImage($width, $height, $x, $y);
+
         return $this;
     }
 

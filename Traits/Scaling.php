@@ -186,6 +186,6 @@ trait Scaling
         $x = (int)ceil($x);
         $y = (int)ceil($y);
 
-        return compact('x', 'y');
+        return [$x, $y];
     }
 }
