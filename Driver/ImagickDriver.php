@@ -297,7 +297,7 @@ class ImagickDriver extends AbstractDriver
      */
     protected function extent($width, $height, $flag = '')
     {
-        list ($x, $y) = $this->getCropCoordinates(
+        $xy = $this->getCropCoordinates(
             $this->resource->getImageWidth(),
             $this->resource->getImageHeight(),
             $width,
@@ -305,7 +305,7 @@ class ImagickDriver extends AbstractDriver
             $this->resource->getGravity()
         );
 
-        $this->resource->extentImage($width, $height, $x, $y);
+        $this->resource->extentImage($width, $height, $xy['x'], $xy['y']);
 
         return $this;
     }

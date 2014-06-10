@@ -152,14 +152,7 @@ class Processor implements ProcessorInterface
             $this->addFilter($f, (array)$parameter);
         }
 
-        $this->driver->setQuality(80);
-
         $this->driver->process();
-
-        //$r = $this->driver->getResource();
-        //var_dump($r->getImageHeight());
-        //var_dump($r->getImageWidth());
-        //die;
     }
 
     /**
