@@ -16,6 +16,7 @@ use \Thapp\Image\Factory\ImFactory;
 use \Thapp\Image\Factory\ImagickFactory;
 use \Thapp\Image\Cache\CacheInterface;
 use \Thapp\Image\Cache\FilesystemCache;
+use \Thapp\Image\Filter\FilterExpression;
 
 /**
  * @class Image implements ImageInterface
@@ -77,12 +78,13 @@ class Image implements ImageInterface
      */
     public function __construct(ProcessorInterface $processor, CacheInterface $cache = null)
     {
-        $this->filters = [];
-        $this->arguments = [];
-        $this->targetSize = [];
+        $this->filters = new FilterExpression([]);
 
         $this->processor = $processor;
         $this->cache = $cache;
+
+        $this->arguments = [];
+        $this->targetSize = [];
     }
 
     /**
@@ -128,7 +130,7 @@ class Image implements ImageInterface
      * @access public
      * @return mixed
      */
-    public function from($source)
+    public function load($source)
     {
         return $this->source($source);
     }
@@ -223,7 +225,7 @@ class Image implements ImageInterface
      */
     public function filter($name, $options = [])
     {
-        $this->filters[$name] = $options;
+        $this->filters->addFilter($name, $options);
 
         return $this;
     }
@@ -435,10 +437,17 @@ class Image implements ImageInterface
      */
     protected function close()
     {
-        $this->filters = [];
-        $this->source = null;
+        $this->filters = clone($this->filters);
 
-        $this->processor->close();
+        $this->source = null;
+        $this->arguments = [];
+
+        $this->getProcessor()->close();
+    }
+
+    protected function getProcessor()
+    {
+        return $this->processor;
     }
 
     /**
@@ -561,24 +570,6 @@ class Image implements ImageInterface
      */
     private function compileFilterExpression(array $filter)
     {
-        $filters = [];
-
-        foreach ($this->filters as $filter => $options) {
-            $opt = [];
-
-            if (is_array($options)) {
-
-                foreach ($options as $option => $value) {
-                    $opt[] = sprintf('%s=%s', $option, $value);
-                }
-            }
-            $filters[] = sprintf('%s;%s', $filter, implode(';', $opt));
-        }
-
-        if (!empty($filters)) {
-             return sprintf('filter:%s', implode(':', $filters));
-        }
-
-        return null;
+        return (new FilterExpression($this->filters))->compile();
     }
 }
