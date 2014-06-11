@@ -28,7 +28,7 @@ class RemoteLoader extends AbstractLoader
      *
      * @var string
      */
-    private $curl_error;
+    private $error;
 
     /**
      * tmp
@@ -45,10 +45,18 @@ class RemoteLoader extends AbstractLoader
     protected $source;
 
     /**
+     * source
+     *
+     * @var array
+     */
+    protected $trustedHosts;
+
+    /**
      * Create a new RemoteLoader instance.
      */
-    public function __construct()
+    public function __construct(array $trustedHosts = [])
     {
+        $this->trustedHosts = $trustedHosts;
         $this->tmp = sys_get_temp_dir();
     }
 
@@ -68,7 +76,7 @@ class RemoteLoader extends AbstractLoader
         }
 
         throw new SourceLoaderException(
-            sprintf('Error loading remote file "%s": %s', $url, $this->curl_error ?: 'undefined error')
+            sprintf('Error loading remote file "%s": %s', $url, $this->error ?: 'undefined error')
         );
     }
 
@@ -92,6 +100,12 @@ class RemoteLoader extends AbstractLoader
      */
     private function loadRemoteFile($url)
     {
+        if (!$this->isValidDomain($url)) {
+            $this->error = sprintf('forbidden host "%s"', parse_url($url, PHP_URL_HOST));
+
+            return false;
+        }
+
         $this->source = tempnam($this->tmp, basename($url));
 
         if (!function_exists('curl_init')) {
@@ -105,7 +119,7 @@ class RemoteLoader extends AbstractLoader
             return $this->source;
         }
 
-        $status = $this->fetchFile($handle = fopen($this->source, 'w'), $url, $this->curl_error);
+        $status = $this->fetchFile($handle = fopen($this->source, 'w'), $url);
         fclose($handle);
 
         return $status ? $this->source : $status;
@@ -115,9 +129,10 @@ class RemoteLoader extends AbstractLoader
      * fetchFile
      *
      * @param resource $handle
+     * @param string $url
      * @return int the curl status
      */
-    protected function fetchFile($handle, $url, &$message = null)
+    private function fetchFile($handle, $url)
     {
         $curl = curl_init($url);
 
@@ -129,16 +144,58 @@ class RemoteLoader extends AbstractLoader
         $info = curl_getinfo($curl);
 
         if (!in_array($info['http_code'], [200, 302, 304])) {
+            $this->error = 'resource not found';
             $status = false;
         }
 
         if (0 !== strlen($msg = curl_error($curl))) {
-            $message = $msg;
+            $this->error = $msg;
             $status = false;
         }
 
         curl_close($curl);
 
         return $status;
+    }
+
+    /**
+     * isValidDomain
+     *
+     * @access protected
+     * @return string|boolean
+     */
+    private function isValidDomain($url)
+    {
+        $trusted = $this->trustedHosts;
+
+        if (!empty($trusted)) {
+
+            $host = parse_url($url, PHP_URL_HOST);
+            $host = substr($url, 0, strpos($url, $host)).$host;
+
+            if (!$this->matchHost($host, $trusted)) {
+                return false;
+            }
+        }
+        return $url;
+    }
+
+    /**
+     * matchHosts
+     *
+     * @param mixed $host
+     * @param array $hosts
+     *
+     * @access protected
+     * @return boolean
+     */
+    protected function matchHost($host, array $hosts)
+    {
+        foreach ($hosts as $trusted) {
+            if (0 === strcmp($host, $trusted) || preg_match('#^'. $trusted .'#s', $host)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
