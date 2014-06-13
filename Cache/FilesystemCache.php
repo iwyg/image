@@ -11,8 +11,10 @@
 
 namespace Thapp\Image\Cache;
 
+use \FilesystemIterator;
 use \Thapp\Image\ImageInterface;
 use \Thapp\Image\Resource\CachedResource;
+use \Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @class FilesystemCache implements CacheInterface
@@ -27,23 +29,38 @@ class FilesystemCache extends AbstractCache
     /**
      * path
      *
-     * @var mixed
+     * @var string
      */
     protected $path;
 
     /**
      * pool
      *
-     * @var mixed
+     * @var array
      */
     protected $pool;
 
     /**
+     * fs
+     *
+     * @var Filesystem
+     */
+    protected $fs;
+
+    /**
+     * prefix
+     *
+     * @var string
+     */
+    protected $prefix;
+
+    /**
      * @param string $location
      */
-    public function __construct($location, $prefix = 'fs_')
+    public function __construct(Filesystem $fs = null, $location = null, $prefix = 'fs_')
     {
-        $this->path = $location;
+        $this->fs     = $fs ?: new Filesystem;
+        $this->path   = $location ?: getcwd();
         $this->prefix = $prefix;
 
         $this->pool = [];
@@ -71,7 +88,7 @@ class FilesystemCache extends AbstractCache
      */
     public function set($id, $content)
     {
-        file_put_contents($file = $this->realizeDir($id), $content);
+        $this->fs->dumpFile($file = $this->realizeDir($id), $content);
 
         $this->pool[$id] = $file;
     }
@@ -87,6 +104,41 @@ class FilesystemCache extends AbstractCache
 
         if (file_exists($path = $this->getPath($key))) {
             $this->pool[$key] = $path;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function purge()
+    {
+        if (!$this->fs->exists($this->path)) {
+            return true;
+        }
+
+        try {
+            foreach (new FilesystemIterator($this->path, FilesystemIterator::SKIP_DOTS) as $file) {
+                $this->fs->remove($file);
+            }
+
+            return true;
+        } catch (\Exception $e) {
+        }
+
+        return true;
+    }
+
+    public function delete($file)
+    {
+        $key = $this->createKey($file);
+        $dir = substr($key, 0, strpos($key, '.'));
+
+        if ($this->fs->exists($dir = $this->path . '/' . $dir)) {
+            $this->fs->remove($dir);
 
             return true;
         }

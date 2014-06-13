@@ -64,7 +64,7 @@ class Processor implements ProcessorInterface
      *
      * @param InterfaceDriver $driver
      */
-    public function __construct(DriverInterface $driver, WriterInterface $writer)
+    public function __construct(DriverInterface $driver, WriterInterface $writer = null)
     {
         $this->driver = $driver;
         $this->writer = $writer;

@@ -26,6 +26,14 @@ class ImBinLocator implements BinLocatorInterface
     protected $path;
 
     /**
+     * @param string $path
+     */
+    public function __construct($path = null)
+    {
+        $this->path = $path;
+    }
+
+    /**
      * setConverterPath
      *
      * @param mixed $path

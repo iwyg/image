@@ -59,6 +59,22 @@ interface CacheInterface
     public function has($key);
 
     /**
+     * Delete the whole cache
+     *
+     * @return void
+     */
+    public function purge();
+
+    /**
+     * delete a cached group based in the image name.
+     *
+     * @param string $image
+     *
+     * @return void
+     */
+    public function delete($image);
+
+    /**
      * setPrefix
      *
      * @param string $prefix
