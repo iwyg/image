@@ -59,6 +59,8 @@ class Processor implements ProcessorInterface
      */
     protected $attributes;
 
+    protected $parameters;
+
     /**
      * Create a new instance of Image
      *
