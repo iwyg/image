@@ -29,48 +29,6 @@ use \Thapp\Image\Filter\FilterExpression;
 class Image extends AbstractImage
 {
     /**
-     * filters
-     *
-     * @var array
-     */
-    protected $filters;
-
-    /**
-     * arguments
-     *
-     * @var array
-     */
-    protected $arguments;
-
-    /**
-     * targetSize
-     *
-     * @var array
-     */
-    protected $targetSize;
-
-    /**
-     * source
-     *
-     * @var string
-     */
-    protected $source;
-
-    /**
-     * mode
-     *
-     * @var int
-     */
-    protected $mode;
-
-    /**
-     * cache
-     *
-     * @var mixed
-     */
-    protected $cache;
-
-    /**
      * create
      *
      * @param mixed $source

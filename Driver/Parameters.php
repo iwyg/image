@@ -92,9 +92,15 @@ class Parameters
      */
     public function all()
     {
-        list ($mode, $width, $height, $gravity, $background) = array_pad($this->params, 5, null);
+        $params = array_merge(static::defaults(), $this->params);
 
-        return static::sanitize($mode, $width, $height, $gravity, $background);
+        return static::sanitize(
+            $params['mode'],
+            $params['width'],
+            $params['height'],
+            $params['gravity'],
+            $params['background']
+        );
     }
 
     /**
@@ -149,6 +155,11 @@ class Parameters
         $height = ($mode !== 1 && $mode !== 2) ? $height : (int)$height;
 
         return compact('mode', 'width', 'height', 'gravity', 'background');
+    }
+
+    private static function defaults()
+    {
+        return ['mode' => null, 'width' => null, 'height' => null, 'gravity' => null, 'background' => null];
     }
 
     /**
