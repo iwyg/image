@@ -27,7 +27,7 @@ use \Thapp\Image\Driver\Parameters;
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  */
-abstract class AbsractImage implements ImageInterface
+abstract class AbstractImage implements ImageInterface
 {
     /**
      * filters
