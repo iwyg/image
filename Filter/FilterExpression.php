@@ -165,13 +165,36 @@ class FilterExpression
             case 0 === strlen($val) || 'null' === $val:
                 return null;
             case is_numeric($val):
-                return 0 !== substr_count($val, '.') ?
-                    (float)$val : (0 === strpos($val, '0x') ? hexdec($val)  : (int)$val);
+                return $this->getNumVal($val);
             case in_array($val, ['true', 'false']):
                 return 'true' === $val ? true : false;
             default:
                 return $val;
         }
+    }
+
+    /**
+     * getNumVal
+     *
+     * @param string $val
+     *
+     * @return float|int|string
+     */
+    private function getNumVal($val)
+    {
+        if (0 !== substr_count($val, '.')) {
+            return (float)$val;
+        }
+
+        if (3 === ($len = strlen($val)) || 6 === $len) {
+            $dec = hexdec($val);
+
+            if (0 === $dec || 128 > $dec) {
+                return $val;
+            }
+        }
+
+        return strpos($val, '0x') ? hexdec($val)  : (int)$val;
     }
 
     /**
