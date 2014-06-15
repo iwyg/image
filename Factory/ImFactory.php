@@ -22,6 +22,27 @@ use \Thapp\Image\Driver\ImDriver;
 class ImFactory extends AbstractFactory
 {
     /**
+     * loaderInstantiator
+     *
+     * @var callable
+     */
+    protected static $loaderInstantiator;
+
+    /**
+     * writerInstantiator
+     *
+     * @var callable
+     */
+    protected static $writerInstantiator;
+
+    /**
+     * cacheInstantiator
+     *
+     * @var callable
+     */
+    protected static $cacheInstantiator;
+
+    /**
      * createProcessor
      *
      * @access protected

@@ -25,6 +25,27 @@ use \Thapp\Image\Driver\GdDriver;
 class GdFactory extends AbstractFactory
 {
     /**
+     * loaderInstantiator
+     *
+     * @var callable
+     */
+    protected static $loaderInstantiator;
+
+    /**
+     * writerInstantiator
+     *
+     * @var callable
+     */
+    protected static $writerInstantiator;
+
+    /**
+     * cacheInstantiator
+     *
+     * @var callable
+     */
+    protected static $cacheInstantiator;
+
+    /**
      * {@inheritdoc}
      */
     protected function createProcessor()
