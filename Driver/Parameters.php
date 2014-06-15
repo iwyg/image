@@ -103,6 +103,11 @@ class Parameters
         );
     }
 
+    public function __toString()
+    {
+        return implode('/', array_values($this->all()));
+    }
+
     /**
      * parseString
      *

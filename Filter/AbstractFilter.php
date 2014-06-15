@@ -12,7 +12,7 @@
 namespace Thapp\Image\Filter;
 
 use Thapp\Image\Driver\DriverInterface;
-use Thapp\Image\Filter\Traits\ProcessingTrait;
+use Thapp\Image\Filter\Traits\FilterHelperTrait;
 
 /**
  * @abstract class AbstractFilter implements FilterInterface
@@ -25,7 +25,7 @@ use Thapp\Image\Filter\Traits\ProcessingTrait;
  */
 abstract class AbstractFilter implements FilterInterface
 {
-    use ProcessingTrait;
+    use FilterHelperTrait;
 
     /**
      * driver
@@ -127,7 +127,12 @@ abstract class AbstractFilter implements FilterInterface
     private function ensureCompat()
     {
         if (!static::$driverType) {
-            throw new \Exception(sprintf('trying to apply incopatible filter on %s driver', $this->driver->getDriverType()));
+            throw new \Exception(
+                sprintf(
+                    'trying to apply incopatible filter on %s driver',
+                    $this->driver->getDriverType()
+                )
+            );
         }
     }
 }

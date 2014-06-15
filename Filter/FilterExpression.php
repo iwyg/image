@@ -18,7 +18,18 @@ namespace Thapp\Image\Filter;
  */
 class FilterExpression
 {
+    /**
+     * expr
+     *
+     * @var string
+     */
     private $expr;
+
+    /**
+     * params
+     *
+     * @var array
+     */
     private $params;
 
     public function __construct($params)
@@ -96,13 +107,17 @@ class FilterExpression
     }
 
     /**
+     * Parse the input string expression
+     *
+     * @param string $str
+     *
      * @return array
      */
     private function transformString($str)
     {
         $filters = [];
 
-        foreach (explode(':', $str) as $filter) {
+        foreach (preg_split('~:~', $str, -1, PREG_SPLIT_NO_EMPTY) as $filter) {
 
             if (0 === substr_count($filter, ';')) {
                 $filters[$filter] = [];
@@ -167,17 +182,17 @@ class FilterExpression
         $filters = [];
 
         foreach ($this->params as $fname => $options) {
+
             if (is_int($fname)) {
                 $fname   = $options;
                 $options = [];
             }
 
-            $filters[] = ':';
-            $filters[] = $fname;
+            array_push($filters, ':', $fname);
+
             $opts = [];
 
             if (empty($options)) {
-
                 continue;
             }
 

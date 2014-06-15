@@ -12,13 +12,13 @@
 namespace Thapp\Image\Filter\Traits;
 
 /**
- * @trait ProcessingTrait
+ * @trait FilterHelperTrait
  *
  * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  */
-trait ProcessingTrait
+trait FilterHelperTrait
 {
     public function hexToRgb($hex)
     {

@@ -117,15 +117,13 @@ class FilesystemCache extends AbstractCache
     public function purge()
     {
         if (!$this->fs->exists($this->path)) {
-            return true;
+            return false;
         }
 
         try {
             foreach (new FilesystemIterator($this->path, FilesystemIterator::SKIP_DOTS) as $file) {
                 $this->fs->remove($file);
             }
-
-            return true;
         } catch (\Exception $e) {
         }
 

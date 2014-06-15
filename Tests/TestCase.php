@@ -12,6 +12,7 @@
 namespace Thapp\Image\Tests;
 
 use \Mockery as m;
+use \org\bovigo\vfs\vfsStream;
 use \ReflectionClass;
 use \ReflectionObject;
 

@@ -32,7 +32,7 @@ abstract class AbstractImage implements ImageInterface
     /**
      * filters
      *
-     * @var array
+     * @var FilterExpression
      */
     protected $filters;
 
@@ -53,7 +53,7 @@ abstract class AbstractImage implements ImageInterface
     /**
      * cache
      *
-     * @var mixed
+     * @var CacheInterface
      */
     protected $cache;
 
@@ -61,7 +61,6 @@ abstract class AbstractImage implements ImageInterface
      * @param ProcessorInterface $processor
      *
      * @access public
-     * @return mixed
      */
     public function __construct(ProcessorInterface $processor, CacheInterface $cache = null)
     {
@@ -81,7 +80,6 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param mixed $source
      *
-     * @access public
      * @return mixed
      */
     public function source($source)
@@ -96,7 +94,6 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param mixed $source
      *
-     * @access public
      * @return mixed
      */
     public function load($source)
@@ -109,7 +106,6 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param mixed $target
      *
-     * @access public
      * @return mixed
      */
     public function save($target)
@@ -122,7 +118,6 @@ abstract class AbstractImage implements ImageInterface
     /**
      * getImageData
      *
-     * @access public
      * @return string
      */
     public function getImageData()
@@ -175,7 +170,6 @@ abstract class AbstractImage implements ImageInterface
     /**
      * toGif
      *
-     * @access public
      * @return mixed
      */
     public function toGif()
@@ -189,8 +183,7 @@ abstract class AbstractImage implements ImageInterface
      * @param mixed $name
      * @param mixed $options
      *
-     * @access public
-     * @return Image
+     * @return ImageInterface
      */
     public function filter($name, $options = [])
     {
@@ -207,8 +200,7 @@ abstract class AbstractImage implements ImageInterface
      * @param int $gravity
      * @param mixed $background
      *
-     * @access public
-     * @return mixed
+     * @return ImageInterface
      */
     public function crop($width, $height, $gravity = 5, $background = null)
     {
@@ -227,8 +219,7 @@ abstract class AbstractImage implements ImageInterface
      * @param int $height
      * @param int $gravity
      *
-     * @access protected
-     * @return void
+     * @return ImageInterface
      */
     public function cropAndResize($width, $height, $gravity)
     {
@@ -245,8 +236,7 @@ abstract class AbstractImage implements ImageInterface
      * @param int $width
      * @param int $height
      *
-     * @access protected
-     * @return void
+     * @return ImageInterface
      */
     public function fit($width, $height)
     {
@@ -262,8 +252,7 @@ abstract class AbstractImage implements ImageInterface
      * @param mixed $width
      * @param mixed $height
      *
-     * @access public
-     * @return mixed
+     * @return ImageInterface
      */
     public function resize($width, $height)
     {
@@ -278,8 +267,7 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param mixed $percent
      *
-     * @access public
-     * @return mixed
+     * @return ImageInterface
      */
     public function scale($percent)
     {
@@ -294,8 +282,8 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param mixed $width
      * @param mixed $height
-     * @access protected
-     * @return void
+     *
+     * @return ImageInterface
      */
     public function pixel($pixel)
     {
@@ -310,8 +298,7 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param mixed $color
      *
-     * @access protected
-     * @return boolean
+     * @return bool
      */
     protected function isColor($color)
     {
@@ -323,8 +310,7 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param CacheInterface $cache
      *
-     * @access public
-     * @return mixed
+     * @return void
      */
     public function setImageCache(CacheInterface $cache)
     {
@@ -334,7 +320,6 @@ abstract class AbstractImage implements ImageInterface
     /**
      * process
      *
-     * @access protected
      * @return mixed
      */
     protected function process()
@@ -368,7 +353,6 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param array $params
      *
-     * @access protected
      * @return string
      */
     protected function loadFromCache($key)
@@ -384,21 +368,18 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param array $params
      *
-     * @access protected
      * @return void
      */
     protected function doProcess(array $params)
     {
         $this->processor->load($this->source);
-        $params['filter'] = $this->filters;
+        $params['filter'] = $this->filters->toArray();
         $this->processor->process($params);
     }
 
     /**
      * close
      *
-     *
-     * @access protected
      * @return void
      */
     protected function close()
@@ -438,7 +419,6 @@ abstract class AbstractImage implements ImageInterface
      * @param array $params
      * @param array $filter
      *
-     * @access protected
      * @return string
      */
     protected function getCacheKey(array $params, array $filter)
@@ -451,9 +431,7 @@ abstract class AbstractImage implements ImageInterface
     /**
      * getImageFingerPrint
      *
-     *
-     * @access protected
-     * @return mixed
+     * @return string
      */
     protected function getImageFingerPrint(array $params, array $filters)
     {
