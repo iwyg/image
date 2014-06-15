@@ -33,6 +33,7 @@ trait FilterHelperTrait
         } else {
             throw new \InvalidArgumentException(sprintf('invalid hex value %s', $hex));
         }
+
         return $rgb;
     }
 }

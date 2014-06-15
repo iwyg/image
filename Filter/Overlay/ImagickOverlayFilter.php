@@ -13,7 +13,7 @@ namespace Thapp\Image\Filter\Overlay;
 
 use \Imagick;
 use \ImagickPixel;
-use Thapp\Image\Filter\ImagickFilter;
+use \Thapp\Image\Filter\ImagickFilter;
 
 /**
  * @class ImagickOverlayFilter

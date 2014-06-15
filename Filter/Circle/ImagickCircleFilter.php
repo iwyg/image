@@ -30,6 +30,7 @@ class ImagickCircleFilter extends ImagickFilter
 {
 
     protected $availableOptions = ['o'];
+
     /**
      * {@inheritdoc}
      */
