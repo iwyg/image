@@ -133,14 +133,14 @@ abstract class AbstractDriver implements DriverInterface
     }
 
     /**
-     * getExternaleFilter
+     * getExternalFilter
      *
      * @param mixed $name
      *
      * @access protected
      * @return mixed
      */
-    protected function getExternaleFilter($name, $options)
+    protected function getExternalFilter($name, $options)
     {
         if (isset($this->filters[$name])) {
             return new $this->filters[$name]($this, $options);

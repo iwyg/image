@@ -197,7 +197,7 @@ class ImDriver extends AbstractDriver
 
         }
 
-        if ($filter = $this->getExternaleFilter($name, $options)) {
+        if ($filter = $this->getExternalFilter($name, $options)) {
 
             $filterCommands = $filter->run();
 

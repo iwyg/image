@@ -159,7 +159,7 @@ class GdDriver extends AbstractDriver
             return $result;
         }
 
-        if ($filter = $this->getExternaleFilter($name, $options)) {
+        if ($filter = $this->getExternalFilter($name, $options)) {
             $filter->run();
         }
 

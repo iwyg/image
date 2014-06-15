@@ -178,7 +178,7 @@ class ImagickDriver extends AbstractDriver
             return $result;
         }
 
-        if ($filter = $this->getExternaleFilter($name, $options)) {
+        if ($filter = $this->getExternalFilter($name, $options)) {
             foreach ($this->resource as $frame) {
                 $filter->run();
             }
