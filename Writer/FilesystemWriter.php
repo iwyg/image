@@ -24,6 +24,11 @@ class FilesystemWriter implements WriterInterface
 {
     public function write($target, $data = null)
     {
+        if (!is_dir($dir = dirname($target))) {
+            mkdir($dir, 0755, true);
+        }
+
+        touch($target);
         file_put_contents($target, $data);
     }
 }

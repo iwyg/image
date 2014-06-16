@@ -101,7 +101,7 @@ class RemoteLoader extends AbstractLoader
     private function loadRemoteFile($url)
     {
         if (!$this->isValidDomain($url)) {
-            $this->error = sprintf('forbidden host "%s"', parse_url($url, PHP_URL_HOST));
+            $this->error = sprintf('forbidden host `%s`', parse_url($url, PHP_URL_HOST));
 
             return false;
         }

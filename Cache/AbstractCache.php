@@ -78,16 +78,6 @@ abstract class AbstractCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdFromUrl($url)
-    {
-        $parts = preg_split('~/~', $url, -1, PREG_SPLIT_NO_EMPTY);
-
-        return implode('.', array_slice($parts, count($parts) >= 2 ? -2 : -1));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createKey($src, $fingerprint = null)
     {
         return sprintf(
@@ -114,15 +104,13 @@ abstract class AbstractCache implements CacheInterface
      */
     public function has($key)
     {
-        if (array_key_exists($key, $this->pool)) {
-            return true;
-        }
+        return array_key_exists($key, $this->pool);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSource($id)
+    public function getSource($key)
     {
         return isset($this->pool[$key]) ? $this->pool[$key] : $this->getPath($key);
     }

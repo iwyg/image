@@ -12,6 +12,7 @@
 namespace Thapp\Image\Tests\Loader;
 
 use \Mockery as m;
+use \Thapp\Image\Loader\FilesystemLoader;
 use \Thapp\Image\Loader\DelegatingLoader;
 
 /**
@@ -21,6 +22,15 @@ use \Thapp\Image\Loader\DelegatingLoader;
  */
 class DelegatingLoaderTest extends \PHPUnit_Framework_TestCase
 {
+
+    protected function setUp()
+    {
+    }
+
+    protected function tearDown()
+    {
+        m::close();
+    }
 
     /** @test */
     public function itShouldBeInstantiable()
@@ -102,6 +112,22 @@ class DelegatingLoaderTest extends \PHPUnit_Framework_TestCase
         $loader->supports('image.jpg');
         $this->assertSame('image.jpg', $loader->load('image.jpg'));
         $this->assertSame('image.jpg', $loader->getSource('image.jpg'));
+    }
+
+    /** @test */
+    public function itShouldCloneItsLoaders()
+    {
+        $loader = new DelegatingLoader([
+            $fsl = new FilesystemLoader
+        ]);
+
+        $this->assertTrue($loader->supports($file = __DIR__.'/Fixures/image.gif'));
+        $this->assertSame($file, $loader->load($file));
+        $this->assertSame($file, $loader->getSource());
+
+        $clone = clone($loader);
+
+        $this->assertNull($clone->getSource());
     }
 
     protected function getLoaderMock()

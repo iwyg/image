@@ -28,7 +28,7 @@ class FilterExpressionTest extends \PHPUnit_Framework_TestCase
         $params = ['circle' => ['o' => 1, 'n' => 2], 'gscale', 'lucid' => ['c' => 1.4]];
         $expr = new FilterExpression($params);
 
-        $this->assertEquals('circle;o=1,n=2:gscale:lucid;c=1.4', $expr->compile());
+        $this->assertEquals('circle;o=1;n=2:gscale:lucid;c=1.4', $expr->compile());
     }
 
     /**
@@ -42,10 +42,23 @@ class FilterExpressionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expexted, $expr->toArray());
     }
 
+    /** @test */
+    public function itShouldRecognizeHexValues()
+    {
+        $params = 'a;b=fff;c=000000:b;d=0ef';
+        $expr = new FilterExpression($params);
+
+        $parsed = $expr->toArray();
+
+        $this->assertEquals('fff', $parsed['a']['b']);
+        $this->assertEquals('000000', $parsed['a']['c']);
+        $this->assertEquals('0ef', $parsed['b']['d']);
+    }
+
     public function paramProvider()
     {
         return [[
-            'circle;o=0.4,b=false:gscale;b=1:foo',
+            'circle;o=0.4;b=false:gscale;b=1:foo',
             [
                 'circle' => [
                     'o' => 0.4,

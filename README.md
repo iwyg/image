@@ -12,7 +12,6 @@ Require `thapp/image` in your project directory
 
 ```sh
 $ composer require thapp/image
-
 ```
 or add this to your `composer.json`
 
@@ -22,7 +21,6 @@ or add this to your `composer.json`
 		"thapp/image": "dev-development"
 	}
 }
-
 ```
 
 
@@ -225,6 +223,43 @@ $proc->process($params);
 $proc->writeToFile($target);
 
 ```
+
+#### Processing Modes
+
+**mode 0**  
+Pass through, no processing. 
+
+**mode 1** `< width/height >`  
+Resizes the image with the given width and height values and ignores aspect
+ratio unless one of the values is zero.  
+
+**mode 2** `< width/height/gravity >`  
+Resize the image to fit within the cropping boundaries defined in width and height. 
+
+Gravity explained:        
+
+```
+-------------  
+| 1 | 2 | 3 |  
+-------------  
+| 4 | 5 | 6 |  
+-------------  
+| 7 | 8 | 9 |  
+-------------  
+```
+
+**mode 3** `< width/height/gravity/[color] >`  
+Crops the image with cropping boundaries defined in width and height. Will
+create a frame if the image is smaller than the cropping area. 
+
+**mode 4** `< width/height >`  
+Best fit  within the given bounds.
+
+**mode 5** `< percentage >`  
+Percrentual scale. 
+
+**mode 6** `< pixelcount >`  
+Pixel limit.
 
 ## Filters
 

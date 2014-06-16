@@ -160,7 +160,7 @@ abstract class AbstractResource implements ResourceInterface
      */
     public function setPath($path)
     {
-
+        $this->path = $path;
     }
 
     /**

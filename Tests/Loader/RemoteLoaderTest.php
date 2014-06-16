@@ -64,6 +64,26 @@ class RemoteLoaderTest extends \PHPUnit_Framework_TestCase
         $this->fail('test slipped');
     }
 
+
+    /** @test */
+    public function itShouldNotLoadSourcesFromBlockedSites()
+    {
+        $loader = $this->loader = new RemoteLoader(['http://google.com', 'http://lorempixel\.(de|com)']);
+        $this->assertTrue(is_string($loader->load('http://lorempixel.com/g/400/200/')));
+
+        try {
+            $loader->load($url = 'http://google.de/doesnotexist.jpg');
+        } catch (\Thapp\Image\Exception\SourceLoaderException $e) {
+            $this->assertSame('Error loading remote file "http://google.de/doesnotexist.jpg": forbidden host `google.de`', $e->getMessage());
+            return;
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
+
+        $this->fail('test slipped');
+    }
+
+
     /**
      * urlProvider
      *

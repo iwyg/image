@@ -117,20 +117,19 @@ class FilterExpression
     {
         $filters = [];
 
-        foreach (preg_split('~:~', $str, -1, PREG_SPLIT_NO_EMPTY) as $filter) {
+        foreach (explode(':', $str) as $filter) {
 
             if (0 === substr_count($filter, ';')) {
                 $filters[$filter] = [];
                 continue;
             }
 
-            list ($fname, $options) = explode(';', $filter);
-
             $opt = [];
+            $fname = substr($filter, 0, $pos = strpos($filter, ';'));
+            $options = substr($filter, $pos + 1);
 
-            foreach (explode(',', $options) as $option) {
+            foreach (explode(';', $options) as $option) {
                 list ($oname, $val) = $this->getOption($option);
-
                 $opt[$oname] = $val;
             }
 
@@ -223,7 +222,7 @@ class FilterExpression
                 $opts[] = sprintf('%s=%s', $key, $value);
             }
 
-            $filters[] = ';' . implode(',', $opts);
+            $filters[] = ';' . implode(';', $opts);
         }
 
         array_shift($filters);
