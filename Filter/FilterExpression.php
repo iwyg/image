@@ -60,6 +60,12 @@ class FilterExpression
         }
     }
 
+    public function setExpression($expr)
+    {
+        $this->expr = null;
+        $this->params = $expr;
+    }
+
     public function addFilter($filter, array $options = [])
     {
         if (0 === strlen($filter)) {
