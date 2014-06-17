@@ -103,9 +103,11 @@ class Parameters
         );
     }
 
-    public function __toString()
+    public function asString($sp = '/')
     {
-        return implode('/', array_values($this->all()));
+        return implode($sp, array_filter(array_values($this->all()), function ($val) {
+            return null !== $val;
+        }));
     }
 
     /**

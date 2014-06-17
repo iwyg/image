@@ -180,14 +180,57 @@ abstract class AbstractImage implements ImageInterface
     /**
      * filter
      *
-     * @param mixed $name
-     * @param mixed $options
+     * @param string $name
+     * @param array $options
      *
      * @return ImageInterface
      */
-    public function filter($name, $options = [])
+    public function addFilter($name, $options = [])
     {
         $this->filters->addFilter($name, $options);
+
+        return $this;
+    }
+
+    /**
+     * filterExpression
+     *
+     * @param string $expr
+     *
+     * @return ImageInterface
+     */
+    public function filter($expr)
+    {
+        $this->filters = clone($this->filters);
+        $this->filters->setExpression($expr);
+
+        return $this;
+    }
+
+    /**
+     * Pass through
+     *
+     * @return ImageInterface
+     */
+    public function get()
+    {
+        $this->parameters->setMode(ProcessorInterface::IM_NOSCALE);
+
+        return $this;
+    }
+
+    /**
+     * resize
+     *
+     * @param mixed $width
+     * @param mixed $height
+     *
+     * @return ImageInterface
+     */
+    public function resize($width, $height)
+    {
+        $this->parameters->setMode(ProcessorInterface::IM_RESIZE);
+        $this->parameters->setTargetSize($width, $height);
 
         return $this;
     }
@@ -241,22 +284,6 @@ abstract class AbstractImage implements ImageInterface
     public function fit($width, $height)
     {
         $this->parameters->setMode(ProcessorInterface::IM_RSIZEFIT);
-        $this->parameters->setTargetSize($width, $height);
-
-        return $this;
-    }
-
-    /**
-     * resize
-     *
-     * @param mixed $width
-     * @param mixed $height
-     *
-     * @return ImageInterface
-     */
-    public function resize($width, $height)
-    {
-        $this->parameters->setMode(ProcessorInterface::IM_RESIZE);
         $this->parameters->setTargetSize($width, $height);
 
         return $this;

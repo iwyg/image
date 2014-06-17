@@ -23,4 +23,10 @@ interface ImageInterface
     const DRIVER_IMAGICK = 'imagick';
 
     const DRIVER_GD = 'gd';
+
+    public function toJpeg();
+
+    public function toPng();
+
+    public function toGif();
 }
