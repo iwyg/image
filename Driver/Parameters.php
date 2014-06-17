@@ -103,11 +103,16 @@ class Parameters
         );
     }
 
-    public function asString($sp = '/')
+    public function asString($separator = self::P_SEPARATOR)
     {
-        return implode($sp, array_filter(array_values($this->all()), function ($val) {
+        return implode($separator, array_filter(array_values($this->all()), function ($val) {
             return null !== $val;
         }));
+    }
+
+    public function setFromString($str, $separator = self::P_SEPARATOR)
+    {
+        $this->params = static::parseString($str, $separator);
     }
 
     /**
