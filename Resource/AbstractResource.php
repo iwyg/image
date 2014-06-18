@@ -172,4 +172,12 @@ abstract class AbstractResource implements ResourceInterface
     {
         return $this->path;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFileName()
+    {
+        return basename($this->getPath());
+    }
 }

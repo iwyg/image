@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Tests\Cache\Stubs;
 
+use \Thapp\Image\ProcessorInterface;
 use \Thapp\Image\Cache\AbstractCache;
 
 /**
@@ -26,7 +27,7 @@ class CacheStub extends AbstractCache
     {
     }
 
-    public function set($key, $contents)
+    public function set($key, ProcessorInterface $proc)
     {
     }
 

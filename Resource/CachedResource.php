@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Resource;
 
+use \Thapp\Image\ProcessorInterface;
+
 /**
  * @class CachedResource extends AbstractResource
  * @see AbstractResource
@@ -19,34 +21,35 @@ namespace Thapp\Image\Resource;
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  */
-class CachedResource extends AbstractResource
+class CachedResource extends AbstractResource implements \Serializable
 {
+    protected $dimensions;
+
     /**
      * @param string $path
      * @param string $contents
      * @param int $lastModified
      * @param string $mime
      */
-    public function __construct($path = null, $contents = '', $lastModified = 0, $mime = 'application/octet-stream')
+    public function __construct(ProcessorInterface $proc, $path = null)
     {
         $this->path = $path;
-        $this->contents = $contents;
-        $this->lastModified = $lastModified;
-        $this->mimeType = $mime;
+        $this->contents = $proc->getContents();
+
+        $this->mimeType     = $proc->getMimeType();
+        $this->lastModified = $proc->getLastModTime();
+        $this->dimensions   = $proc->getTargetSize();
+        $this->fresh = false;
     }
 
-    /**
-     * getContents
-     *
-     * @return string
-     */
+    public function getFileName()
+    {
+        return basename($this->path);
+    }
+
     public function getContents()
     {
-        if (is_callable($this->contents)) {
-            return $this->contents = call_user_func($this->contents);
-        }
-
-        return $this->contents;
+        return $this->contents = is_callable($this->contents) ? call_user_func($this->contents) : $this->contents;
     }
 
     /**
@@ -75,5 +78,51 @@ class CachedResource extends AbstractResource
      */
     public function setPath($path)
     {
+    }
+
+    /**
+     * serialize
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        return serialize([
+         'path'         => $this->path,
+         'mimeType'     => $this->mimeType,
+         'lastModified' => $this->lastModified,
+         'dimensions'   => $this->dimensions
+        ]);
+    }
+
+    /**
+     * unserialize
+     *
+     * @param string $data
+     *
+     * @return CachedResource
+     */
+    public function unserialize($data)
+    {
+        $data = unserialize($data);
+
+        $this->path         = $data['path'];
+        $this->mimeType     = $data['mimeType'];
+        $this->lastModified = $data['lastModified'];
+        $this->dimensions   = $data['dimensions'];
+
+        $this->contents = $this->initContent();
+    }
+
+    /**
+     * initContent
+     *
+     * @return \Closure
+     */
+    protected function initContent()
+    {
+        return function () {
+            return file_get_contents($this->path);
+        };
     }
 }

@@ -189,4 +189,13 @@ interface ProcessorInterface
      * @return integet
      */
     public function getLastModTime();
+
+    /**
+     * Get output dimensions in width and height
+     *
+     *
+     * @access public
+     * @return mixed
+     */
+    public function getTargetSize();
 }

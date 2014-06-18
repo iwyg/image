@@ -14,6 +14,7 @@ namespace Thapp\Image\Tests\Cache;
 
 use \Mockery as m;
 use \org\bovigo\vfs\vfsStream;
+use \Thapp\Image\Cache\CacheInterface;
 use \Thapp\Image\Cache\FilesystemCache;
 use \Symfony\Component\Filesystem\Filesystem;
 
@@ -36,13 +37,25 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceof('Thapp\Image\Cache\FilesystemCache', new FilesystemCache);
     }
 
+    protected function getProcMock()
+    {
+        $proc = m::mock('Thapp\Image\ProcessorInterface');
+        $proc->shouldReceive('getTargetSize')->andReturn(['w' => 100, 'h' => 100]);
+        $proc->shouldReceive('getContents')->andReturn('');
+        $proc->shouldReceive('getMimeType')->andReturn('image/jpeg');
+        $proc->shouldReceive('getLastModTime')->andReturn(time());
+        $proc->shouldReceive('getFileFormat')->andReturn('jpg');
+
+        return $proc;
+    }
+
     /** @test */
     public function itIsExpectedThat()
     {
         $key = 'foo.bar';
 
-        $this->cache->set($key, 'somecontent');
-        $this->assertTrue(file_exists($this->rootPath . '/foo/bar'));
+        $this->cache->set($key, $this->getProcMock());
+        $this->assertTrue(file_exists($this->rootPath . '/foo/bar.jpg'));
     }
 
     /** @test */
@@ -51,7 +64,7 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
         $key = 'foo.bar';
 
         $this->assertFalse($this->cache->has($key));
-        $this->cache->set($key, 'somecontent');
+        $this->cache->set($key, $this->getProcMock());
         $this->assertTrue($this->cache->has($key));
 
         $this->assertInstanceof('\Thapp\Image\Resource\ResourceInterface', $this->cache->get($key));
@@ -65,11 +78,16 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
     {
         $key = 'foo.bar';
 
-        $this->cache->set($key, $c = 'somecontent');
-        $res = $this->cache->get($key);
+        $this->cache->set($key, $c = $this->getProcMock());
+        $res = $this->cache->get($key, CacheInterface::CONTENT_RESOURCE);
 
-        $this->assertTrue($res->isLocal());
-        $this->assertSame($c, $res->getContents());
+        $this->assertInstanceof('\Thapp\Image\Resource\CachedResource', $res);
+        //$this->assertFalse($res->isLocal());
+
+        $this->cache->set($key, $c = $this->getProcMock());
+        $res = $this->cache->get($key, CacheInterface::CONTENT_STRING);
+
+        $this->assertSame('', $res);
     }
 
     /** @test */
@@ -87,8 +105,8 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
         $keyA = $this->cache->createKey('image.jpg', 'string/image.jpg', 'jpg');
         $keyB = $this->cache->createKey('image.png', 'string/image.png', 'png');
 
-        $this->cache->set($keyA, 'somecontent');
-        $this->cache->set($keyB, 'somecontent');
+        $this->cache->set($keyA, $this->getProcMock());
+        $this->cache->set($keyB, $this->getProcMock());
 
         $ra = $this->cache->get($keyA);
         $rb = $this->cache->get($keyB);
@@ -105,8 +123,8 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
         $keyA = $this->cache->createKey('image.jpg', 'string/image.jpg', 'jpg');
         $keyB = $this->cache->createKey('image.png', 'string/image.png', 'png');
 
-        $this->cache->set($keyA, 'somecontent');
-        $this->cache->set($keyB, 'somecontent');
+        $this->cache->set($keyA, $this->getProcMock());
+        $this->cache->set($keyB, $this->getProcMock());
 
         $ra = $this->cache->get($keyA);
         $rb = $this->cache->get($keyB);
@@ -124,7 +142,7 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($this->cache->delete('image.jpg'));
 
-        $this->cache->set($key, 'somecontent');
+        $this->cache->set($key, $this->getProcMock());
 
         $this->assertTrue($this->cache->delete('image.jpg'));
     }

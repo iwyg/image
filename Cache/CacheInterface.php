@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Cache;
 
+use \Thapp\Image\ProcessorInterface;
+
 /**
  * @interface CacheInterface
  * @package Thapp\Image\Cache
@@ -43,11 +45,11 @@ interface CacheInterface
      * set
      *
      * @param string $key
-     * @param string $contents
+     * @param ProcessorInterface $proc
      *
      * @return void
      */
-    public function set($key, $contents);
+    public function set($key, ProcessorInterface $proc);
 
     /**
      * has

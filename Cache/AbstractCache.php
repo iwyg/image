@@ -92,16 +92,6 @@ abstract class AbstractCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    abstract public function get($id, $raw = self::CONTENT_RESOURCE);
-
-    /**
-     * {@inheritdoc}
-     */
-    abstract public function set($id, $content);
-
-    /**
-     * {@inheritdoc}
-     */
     public function has($key)
     {
         return array_key_exists($key, $this->pool);

@@ -54,4 +54,9 @@ interface ResourceInterface
      * @return string
      */
     public function getPath();
+
+    /**
+     * @return string
+     */
+    public function getFileName();
 }

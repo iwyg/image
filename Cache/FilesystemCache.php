@@ -13,6 +13,7 @@ namespace Thapp\Image\Cache;
 
 use \FilesystemIterator;
 use \Thapp\Image\ImageInterface;
+use \Thapp\Image\ProcessorInterface;
 use \Thapp\Image\Resource\CachedResource;
 use \Symfony\Component\Filesystem\Filesystem;
 
@@ -40,6 +41,8 @@ class FilesystemCache extends AbstractCache
      */
     protected $pool;
 
+    protected $resources;
+
     /**
      * fs
      *
@@ -54,16 +57,22 @@ class FilesystemCache extends AbstractCache
      */
     protected $prefix;
 
+    protected $metaKey;
+
     /**
      * @param string $location
      */
-    public function __construct(Filesystem $fs = null, $location = null, $prefix = 'fs_')
+    public function __construct(Filesystem $fs = null, $location = null, $prefix = 'fs_', $metaKey = 'meta', $metaPath = null)
     {
         $this->fs     = $fs ?: new Filesystem;
         $this->path   = $location ?: getcwd();
         $this->prefix = $prefix;
 
+        $this->metaKey  = $metaKey;
+        $this->metaPath = $metaPath ?: $this->path;
+
         $this->pool = [];
+        $this->resources = [];
     }
 
     /**
@@ -73,9 +82,15 @@ class FilesystemCache extends AbstractCache
      *
      * @return string
      */
-    public function get($id, $raw = false)
+    public function get($key, $raw = self::CONTENT_RESOURCE)
     {
-        return $raw ? file_get_contents($this->getSource($id)) : $this->createSource($id);
+        if (!$this->has($key)) {
+            return;
+        }
+
+        $resource = $this->getMeta($key);
+
+        return $raw ? $resource->getContents() : $resource;
     }
 
     /**
@@ -86,11 +101,9 @@ class FilesystemCache extends AbstractCache
      *
      * @return void
      */
-    public function set($id, $content)
+    public function set($id, ProcessorInterface $proc)
     {
-        $this->fs->dumpFile($file = $this->realizeDir($id), $content);
-
-        $this->pool[$id] = $file;
+        $this->writeCache($id, $proc);
     }
 
     /**
@@ -102,13 +115,54 @@ class FilesystemCache extends AbstractCache
             return true;
         }
 
-        if (file_exists($path = $this->getPath($key))) {
+        if (file_exists($path = $this->getMetaPath($key))) {
             $this->pool[$key] = $path;
 
             return true;
         }
 
         return false;
+    }
+
+    private function getMetaPath($key)
+    {
+        list ($path, $file) = array_pad(explode('.', $key), 2, null);
+
+        return $this->metaPath.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$file.'.'. $this->metaKey;
+    }
+
+    /**
+     * readMeata
+     *
+     * @param mixed $file
+     *
+     * @access public
+     * @return mixed
+     */
+    private function getMeta($key)
+    {
+        if (array_key_exists($key, $this->resources)) {
+            return $this->resources[$key];
+        }
+
+        return $this->resources[$key] = unserialize(file_get_contents($this->getMetaPath($key)));
+    }
+
+    private function writeCache($id, ProcessorInterface $proc)
+    {
+        $fname = $this->getPath($id);
+
+        $file = $fname.'.'.$proc->getFileFormat();
+        //$meta = $fname.'.'.$this->metaKey;
+        $meta = $this->getMetaPath($id);
+
+        $metaContent = serialize($resource = new CachedResource($proc, $file));
+
+        $this->fs->dumpFile($meta, $metaContent);
+        $this->fs->dumpFile($file, $proc->getContents());
+
+        $this->pool[$id] = $file;
+        $this->resources[$id] = $resource;
     }
 
     /**

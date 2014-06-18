@@ -261,6 +261,16 @@ class Processor implements ProcessorInterface
     }
 
     /**
+     * getTargetSize
+     *
+     * @return array
+     */
+    public function getTargetSize()
+    {
+        return $this->driver->getTargetSize();
+    }
+
+    /**
      * addFilter
      *
      * @access public
