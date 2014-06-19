@@ -14,6 +14,7 @@ namespace Thapp\Image\Adapter;
 use \Thapp\Image\ProcessorInterface;
 use \Thapp\Image\Cache\AbstractCache;
 use \Thapp\Image\Resource\FlysystemCachedResource;
+use \Thapp\Image\Traits\FileHelper;
 use \League\Flysystem\FilesystemInterface;
 
 /**
@@ -26,24 +27,26 @@ use \League\Flysystem\FilesystemInterface;
  */
 class FlysystemCache extends AbstractCache
 {
+    use FileHelper;
+
     /**
      * fs
      *
-     * @var mixed
+     * @var FilesystemInterface
      */
     protected $fs;
 
     /**
      * path
      *
-     * @var mixed
+     * @var string
      */
     protected $path;
 
     /**
      * path
      *
-     * @var mixed
+     * @var string
      */
     protected $metaPath;
 
@@ -120,7 +123,7 @@ class FlysystemCache extends AbstractCache
     /**
      * Purge the whole cache
      *
-     * @return void
+     * @return boolean
      */
     public function purge()
     {
@@ -137,13 +140,13 @@ class FlysystemCache extends AbstractCache
             }
         }
 
-        $this->recursiveDelete($this->metaPath);
+        return $this->sweepDir($this->metaPath);
     }
 
     /**
      * Purge cache for a file
      *
-     * @return void
+     * @return boolean
      */
     public function delete($file)
     {
@@ -151,36 +154,7 @@ class FlysystemCache extends AbstractCache
 
         $this->fs->deleteDir(dirname($this->getPath($key)));
 
-        $this->recursiveDelete($meta = dirname($this->getMetaFile($key)));
-
-        rmdir($meta);
-    }
-
-    /**
-     * recursiveDelete
-     *
-     * @param string $dir
-     *
-     * @return void
-     */
-    protected function recursiveDelete($dir)
-    {
-        if (!file_exists($dir)) {
-            return;
-        }
-
-        foreach (new \FilesystemIterator($dir, \FilesystemIterator::SKIP_DOTS) as $path => $item) {
-            if ($item->isFile()) {
-                unlink($item);
-            }
-
-            if ($item->isDir()) {
-
-                $this->recursiveDelete($path);
-
-                rmdir($path);
-            }
-        }
+        return $this->deleteDir($meta = $this->getMetaDir($key));
     }
 
     /**
@@ -243,9 +217,9 @@ class FlysystemCache extends AbstractCache
 
         $this->fs->put($path, $resource->getContents());
 
-        $this->ensureDir($meta = $this->getMetaFile($key));
+        $this->ensureDir(dirname($meta = $this->getMetaFile($key)));
 
-        file_put_contents($meta, serialize($resource));
+        $this->dumpFile($meta, serialize($resource));
 
         return $resource;
     }
@@ -296,16 +270,14 @@ class FlysystemCache extends AbstractCache
     }
 
     /**
-     * Make shure the directory of a file exists
+     * Returns the path to the meta directory.
      *
-     * @param string $file
+     * @param string $key the cache id
      *
-     * @return void
+     * @return string
      */
-    private function ensureDir($file)
+    private function getMetaDir($key)
     {
-        if (!is_dir($dir = dirname($file))) {
-            @mkdir($dir, 0755, true);
-        }
+        return dirname($this->getMetaFile($key));
     }
 }

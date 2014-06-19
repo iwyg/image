@@ -26,6 +26,7 @@ use \Symfony\Component\Filesystem\Filesystem;
  */
 class HybridCache extends FilesystemCache
 {
+
     /**
      * @var string
      */
@@ -55,9 +56,9 @@ class HybridCache extends FilesystemCache
      * @param string $pfx             image name prefix
      *
      */
-    public function __construct(ClientInterface $client, Filesystem $fs = null, $id = 'hbrd', $path = null, $pfx = null)
+    public function __construct(ClientInterface $client, $id = 'hbrd', $path = null, $pfx = null)
     {
-        parent::__construct($fs, $path, $pfx);
+        parent::__construct($path, $pfx);
 
         $this->id      = $id;
         $this->client  = $client;
@@ -154,7 +155,7 @@ class HybridCache extends FilesystemCache
     {
         $resource = new CachedResource($proc, $file = $this->getImagePath($prefix, $id) . '.' . $proc->getFileFormat());
 
-        $this->fs->dumpFile($file, $proc->getContents());
+        $this->dumpFile($file, $proc->getContents());
 
         return $resource;
     }

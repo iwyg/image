@@ -11,11 +11,10 @@
 
 namespace Thapp\Image\Cache;
 
-use \FilesystemIterator;
 use \Thapp\Image\ImageInterface;
+use \Thapp\Image\Traits\FileHelper;
 use \Thapp\Image\ProcessorInterface;
 use \Thapp\Image\Resource\CachedResource;
-use \Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @class FilesystemCache implements CacheInterface
@@ -27,6 +26,7 @@ use \Symfony\Component\Filesystem\Filesystem;
  */
 class FilesystemCache extends AbstractCache
 {
+    use FileHelper;
     /**
      * path
      *
@@ -62,9 +62,8 @@ class FilesystemCache extends AbstractCache
     /**
      * @param string $location
      */
-    public function __construct(Filesystem $fs = null, $location = null, $prefix = 'fs_', $metaKey = 'meta', $metaPath = null)
+    public function __construct($location = null, $prefix = 'fs_', $metaKey = 'meta', $metaPath = null)
     {
-        $this->fs     = $fs ?: new Filesystem;
         $this->path   = $location ?: getcwd();
         $this->prefix = $prefix;
 
@@ -158,8 +157,8 @@ class FilesystemCache extends AbstractCache
 
         $metaContent = serialize($resource = new CachedResource($proc, $file));
 
-        $this->fs->dumpFile($meta, $metaContent);
-        $this->fs->dumpFile($file, $proc->getContents());
+        $this->dumpFile($meta, $metaContent);
+        $this->dumpFile($file, $proc->getContents());
 
         $this->pool[$id] = $file;
         $this->resources[$id] = $resource;
@@ -170,32 +169,22 @@ class FilesystemCache extends AbstractCache
      */
     public function purge()
     {
-        if (!$this->fs->exists($this->path)) {
-            return false;
-        }
-
-        try {
-            foreach (new FilesystemIterator($this->path, FilesystemIterator::SKIP_DOTS) as $file) {
-                $this->fs->remove($file);
-            }
-        } catch (\Exception $e) {
-        }
-
-        return true;
+        return $this->sweepDir($this->path);
     }
 
+    /**
+     * Delete the base directory of an cached image.
+     *
+     * @param string $file
+     *
+     * @return boolean
+     */
     public function delete($file)
     {
         $key = $this->createKey($file);
         $dir = substr($key, 0, strpos($key, '.'));
 
-        if ($this->fs->exists($dir = $this->path . '/' . $dir)) {
-            $this->fs->remove($dir);
-
-            return true;
-        }
-
-        return false;
+        return $this->deleteDir($this->path . DIRECTORY_SEPARATOR . $dir);
     }
 
     /**
