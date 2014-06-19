@@ -123,47 +123,6 @@ class FilesystemCache extends AbstractCache
         return false;
     }
 
-    private function getMetaPath($key)
-    {
-        list ($path, $file) = array_pad(explode('.', $key), 2, null);
-
-        return $this->metaPath.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$file.'.'. $this->metaKey;
-    }
-
-    /**
-     * readMeata
-     *
-     * @param mixed $file
-     *
-     * @access public
-     * @return mixed
-     */
-    private function getMeta($key)
-    {
-        if (array_key_exists($key, $this->resources)) {
-            return $this->resources[$key];
-        }
-
-        return $this->resources[$key] = unserialize(file_get_contents($this->getMetaPath($key)));
-    }
-
-    private function writeCache($id, ProcessorInterface $proc)
-    {
-        $fname = $this->getPath($id);
-
-        $file = $fname.'.'.$proc->getFileFormat();
-        //$meta = $fname.'.'.$this->metaKey;
-        $meta = $this->getMetaPath($id);
-
-        $metaContent = serialize($resource = new CachedResource($proc, $file));
-
-        $this->dumpFile($meta, $metaContent);
-        $this->dumpFile($file, $proc->getContents());
-
-        $this->pool[$id] = $file;
-        $this->resources[$id] = $resource;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -188,35 +147,57 @@ class FilesystemCache extends AbstractCache
     }
 
     /**
-     * getSource
+     * Get the path to a meta file based on a key.
      *
-     * @param mixed $key
+     * @param string $key
      *
-     * @access public
      * @return string
      */
-    public function getSource($key)
+    private function getMetaPath($key)
     {
-        return isset($this->pool[$key]) ? $this->pool[$key] : $this->getPath($key);
+        list ($path, $file) = array_pad(explode('.', $key), 2, null);
+
+        return $this->metaPath.DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$file.'.'. $this->metaKey;
     }
 
     /**
-     * realizeDir
+     * Read the meta file contents.
      *
-     * @param mixed $key
+     * @param string $file
      *
-     * @access protected
-     * @return string
+     * @return ResourceInterface a cachedResource
      */
-    protected function realizeDir($key)
+    private function getMeta($key)
     {
-        $path = $this->getPath($key);
-
-        if (!is_dir($dir = dirname($path))) {
-            @mkdir($dir, 0775, true);
+        if (array_key_exists($key, $this->resources)) {
+            return $this->resources[$key];
         }
 
-        return $path;
+        return $this->resources[$key] = unserialize(file_get_contents($this->getMetaPath($key)));
+    }
+
+    /**
+     * writes the cache files.
+     *
+     * @param string $id
+     * @param ProcessorInterface $proc
+     *
+     * @return void
+     */
+    private function writeCache($id, ProcessorInterface $proc)
+    {
+        $fname = $this->getPath($id);
+
+        $file = $fname.'.'.$proc->getFileFormat();
+        $meta = $this->getMetaPath($id);
+
+        $metaContent = serialize($resource = new CachedResource($proc, $file));
+
+        $this->dumpFile($meta, $metaContent);
+        $this->dumpFile($file, $proc->getContents());
+
+        $this->pool[$id] = $file;
+        $this->resources[$id] = $resource;
     }
 
     /**
@@ -224,7 +205,6 @@ class FilesystemCache extends AbstractCache
      *
      * @param string $key
      *
-     * @access protected
      * @return string the dirctory path of the cached item
      */
     protected function getPath($key)
@@ -234,33 +214,5 @@ class FilesystemCache extends AbstractCache
         list ($dir, $file) = $parsed;
 
         return sprintf('%s%s%s%s%s', $this->path, DIRECTORY_SEPARATOR, $dir, DIRECTORY_SEPARATOR, $file);
-    }
-
-    /**
-     * createSource
-     *
-     * @param mixed $id
-     *
-     * @access private
-     * @return ResourceInterface
-     */
-    private function createSource($id)
-    {
-        $file = $this->getSource($id);
-
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-
-        $mime = finfo_file($finfo, $file);
-
-        finfo_close($finfo);
-
-        return new CachedResource(
-            $file,
-            function () use ($file) {
-                return file_get_contents($file);
-            },
-            filemtime($file),
-            $mime
-        );
     }
 }

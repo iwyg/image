@@ -35,13 +35,6 @@ interface CacheInterface
     public function get($key, $raw = self::CONTENT_RESOURCE);
 
     /**
-     * getSource
-     *
-     * @return string
-     */
-    public function getSource($id);
-
-    /**
      * set
      *
      * @param string $key
