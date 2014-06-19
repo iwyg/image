@@ -16,7 +16,6 @@ use \Mockery as m;
 use \org\bovigo\vfs\vfsStream;
 use \Thapp\Image\Cache\CacheInterface;
 use \Thapp\Image\Cache\FilesystemCache;
-use \Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @class FileystemCacheTest
@@ -35,18 +34,6 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
     public function itShouldBeInstantiable()
     {
         $this->assertInstanceof('Thapp\Image\Cache\FilesystemCache', new FilesystemCache);
-    }
-
-    protected function getProcMock()
-    {
-        $proc = m::mock('Thapp\Image\ProcessorInterface');
-        $proc->shouldReceive('getTargetSize')->andReturn(['w' => 100, 'h' => 100]);
-        $proc->shouldReceive('getContents')->andReturn('');
-        $proc->shouldReceive('getMimeType')->andReturn('image/jpeg');
-        $proc->shouldReceive('getLastModTime')->andReturn(time());
-        $proc->shouldReceive('getFileFormat')->andReturn('jpg');
-
-        return $proc;
     }
 
     /** @test */
@@ -150,7 +137,7 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function purgeShouldReturnFalseIfPathIsInvalid()
     {
-        $cache = new FilesystemCache(new Filesystem, $this->rootPath . '/cache');
+        $cache = new FilesystemCache($this->rootPath . '/cache');
 
         $this->assertFalse($cache->purge());
     }
@@ -162,26 +149,31 @@ class FileystemCacheTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->fs = new Filesystem;
-
         $root = vfsStream::setup('root');
-
-        $this->rootPath  = sys_get_temp_dir() . '/' . time() . 'cache';
+        $this->rootPath  = vfsStream::url('root');
 
         $this->cache = $this->newSystem();
     }
 
     protected function newSystem()
     {
-        return new FilesystemCache(new Filesystem, $this->rootPath);
+        return new FilesystemCache($this->rootPath);
     }
 
     protected function tearDown()
     {
         m::close();
+    }
 
-        if (is_dir($this->rootPath)) {
-            $this->fs->remove($this->rootPath);
-        }
+    protected function getProcMock()
+    {
+        $proc = m::mock('Thapp\Image\ProcessorInterface');
+        $proc->shouldReceive('getTargetSize')->andReturn(['w' => 100, 'h' => 100]);
+        $proc->shouldReceive('getContents')->andReturn('');
+        $proc->shouldReceive('getMimeType')->andReturn('image/jpeg');
+        $proc->shouldReceive('getLastModTime')->andReturn(time());
+        $proc->shouldReceive('getFileFormat')->andReturn('jpg');
+
+        return $proc;
     }
 }

@@ -18,6 +18,7 @@ use \Thapp\Image\Traits\FileHelper;
  * @class FileHelperTest
  * @package Thapp\Image
  * @version $Id$
+ * @author Thomas Appel <mail@thomas-appel.com>
  */
 class FileHelperTest extends \PHPUnit_Framework_TestCase
 {
@@ -88,6 +89,18 @@ class FileHelperTest extends \PHPUnit_Framework_TestCase
         $this->deleteDir($dir);
 
         $this->assertFalse(file_exists($dir));
+    }
+
+    /** @test */
+    public function itShouldReturnBooleanOnRemoveOps()
+    {
+        $this->ensureDir($dir = $this->rootPath . '/foo/bar');
+
+        $this->assertTrue($this->sweepDir($dir));
+        $this->assertTrue($this->deleteDir(dirname($dir)));
+
+        $this->assertFalse($this->sweepDir($dir));
+        $this->assertFalse($this->deleteDir(dirname($dir)));
     }
 
     /** @test */

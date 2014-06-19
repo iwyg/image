@@ -29,8 +29,7 @@ class HybridCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceof(
             '\Thapp\Image\Cache\CacheInterface',
             new HybridCache(
-                $client,
-                $this->getFs()
+                $client
             )
         );
 
@@ -52,7 +51,6 @@ class HybridCacheTest extends \PHPUnit_Framework_TestCase
 
         $cache = new HybridCache(
             $client,
-            $this->getFs(),
             'foo'
         );
 
