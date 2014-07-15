@@ -68,7 +68,7 @@ interface ProcessorInterface
     /**
      * @var string
      */
-    const FORMAT_GIF = 'png';
+    const FORMAT_GIF = 'gif';
 
     /**
      * @var string
@@ -80,7 +80,6 @@ interface ProcessorInterface
      *
      * @param string $source source url
      *
-     * @access public
      * @return boolean true on success or false on failure
      */
     public function load($source);
@@ -88,7 +87,6 @@ interface ProcessorInterface
     /**
      * close
      *
-     * @access public
      * @return void
      */
     public function close();
@@ -97,10 +95,17 @@ interface ProcessorInterface
      * process the image source give with an ImageResolver instance
      *
      * @param \Thapp\JitImage\ResolverInterface $resolver
-     * @access public
+     *
      * @return void
      */
     public function process(array $parameters);
+
+    /**
+     * Get the image driver
+     *
+     * @return DriverInterface
+     */
+    public function getDriver();
 
     /**
      * set the image compression quality.
@@ -110,7 +115,6 @@ interface ProcessorInterface
      *
      * @param int $quality
      *
-     * @access public
      * @return void
      */
     public function setQuality($quality);
@@ -120,7 +124,6 @@ interface ProcessorInterface
      *
      * @param string $format
      *
-     * @access public
      * @return void
      */
     public function setFileFormat($format);
@@ -128,7 +131,6 @@ interface ProcessorInterface
     /**
      * get the filecontents of the image
      *
-     * @access public
      * @return string
      */
     public function getContents();
@@ -136,7 +138,6 @@ interface ProcessorInterface
     /**
      * get the image output format
      *
-     * @access public
      * @return string
      */
     public function getFileFormat();
@@ -144,7 +145,6 @@ interface ProcessorInterface
     /**
      * getSourceFormat
      *
-     * @access public
      * @return string
      */
     public function getSourceFormat();
@@ -153,7 +153,6 @@ interface ProcessorInterface
      * getSourceMimeTime
      *
      *
-     * @access public
      * @return string
      */
     public function getSourceMimeType();
@@ -161,7 +160,6 @@ interface ProcessorInterface
     /**
      * get the image output MimeType
      *
-     * @access public
      * @return string
      */
     public function getMimeType();
@@ -169,7 +167,6 @@ interface ProcessorInterface
     /**
      * get the image input source path
      *
-     * @access public
      * @return string
      */
     public function getSource();
@@ -177,7 +174,6 @@ interface ProcessorInterface
     /**
      * Determine if the image has been processed yet.
      *
-     * @access public
      * @return bool
      */
     public function isProcessed();
@@ -185,7 +181,6 @@ interface ProcessorInterface
     /**
      * getLastModTime
      *
-     * @access public
      * @return integet
      */
     public function getLastModTime();
@@ -194,7 +189,6 @@ interface ProcessorInterface
      * Get output dimensions in width and height
      *
      *
-     * @access public
      * @return mixed
      */
     public function getTargetSize();

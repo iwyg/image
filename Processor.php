@@ -13,6 +13,7 @@ namespace Thapp\Image;
 
 use \Thapp\Image\Writer\WriterInterface;
 use \Thapp\Image\Driver\DriverInterface;
+use \Thapp\Image\Resource\ResourceInterface;
 
 /**
  * @class Processor implements ProcessorInterface
@@ -62,7 +63,7 @@ class Processor implements ProcessorInterface
     protected $parameters;
 
     /**
-     * Create a new instance of Image
+     * Constructor.
      *
      * @param InterfaceDriver $driver
      */
@@ -79,41 +80,7 @@ class Processor implements ProcessorInterface
      */
     public function load($source)
     {
-        return $this->loaded = $this->driver->load($source);
-    }
-
-    /**
-     * writeToFile
-     *
-     * @param mixed $target
-     *
-     * @return void
-     */
-    public function writeToFile($target, ResourceInterface $resource = null)
-    {
-        if (null !== $resource) {
-            $this->writeResourceToFile($resource, $target);
-
-            return;
-        }
-
-        if (!$this->loaded) {
-            throw new \BadMethodCallException('no source loaded');
-        }
-
-        $this->writer->write($this->getTargetName($target), $this->getContents());
-    }
-
-    /**
-     * writeResourceToFile
-     *
-     * @param ResourceInterface $resource
-     *
-     * @return void
-     */
-    public function writeResourceToFile(ResourceInterface $resource, $target)
-    {
-        $this->writer->write($this->getTargetName($target), $resource->getContents());
+        return $this->loaded = (bool)$this->driver->load($source);
     }
 
     /**
@@ -146,8 +113,6 @@ class Processor implements ProcessorInterface
             case static::IM_RSIZEPXCOUNT:
                 $this->resizePixelCount($params['width']);
                 break;
-            default:
-                break;
         }
 
         foreach ((array)$params['filter'] as $f => $parameter) {
@@ -155,6 +120,55 @@ class Processor implements ProcessorInterface
         }
 
         $this->driver->process();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * writeToFile
+     *
+     * @param string $target
+     * @param ResourceInterface $resource
+     * @param WriterInterface $writer
+     *
+     * @return void
+     */
+    public function writeToFile($target, ResourceInterface $resource = null, WriterInterface $writer = null)
+    {
+        if (null !== $resource) {
+            $this->writeResourceToFile($resource, $target, $writer);
+
+            return;
+        }
+
+        if (!$this->loaded) {
+            throw new \BadMethodCallException('No source loaded.');
+        }
+
+        $writer = $writer ?: $this->writer;
+        $writer->write($this->getTargetName($target), $this->getContents());
+    }
+
+    /**
+     * writeResourceToFile
+     *
+     * @param ResourceInterface $resource
+     * @param string $target
+     * @param WriterInterface $writer
+     *
+     * @return void
+     */
+    public function writeResourceToFile(ResourceInterface $resource, $target, WriterInterface $writer = null)
+    {
+        $writer = $writer ?: $this->writer;
+
+        $writer->write($this->getTargetName($target), $resource->getContents());
     }
 
     /**

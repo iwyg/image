@@ -22,6 +22,11 @@ class Parameters
 
     private $params;
 
+    /**
+     * Constructor.
+     *
+     * @param array $params
+     */
     public function __construct(array $params = [])
     {
         $this->params = $params;
@@ -80,9 +85,11 @@ class Parameters
      *
      * @return void
      */
-    public function setBackground($color = null)
+    public function setBackground($background = null)
     {
-        $this->params['background'] = $gravity;
+        if (null !== $background && $this->isColor($background)) {
+            $this->params['background'] = $background;
+        }
     }
 
     /**
@@ -133,6 +140,18 @@ class Parameters
     }
 
     /**
+     * isColor
+     *
+     * @param mixed $color
+     *
+     * @return bool
+     */
+    protected function isColor($color)
+    {
+        return (bool)preg_match('#^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$#', $color);
+    }
+
+    /**
      * sanitize
      *
      * @param int $mode
@@ -146,8 +165,14 @@ class Parameters
      */
     private static function sanitize($mode = null, $width = null, $height = null, $gravity = null, $background = null)
     {
-        if (0 > $mode || 3 < $mode || 0 === $mode) {
+        if (null === $mode) {
+            $mode = 0;
+        }
+
+        if (2 !== $mode && 3 !== $mode) {
             $gravity = null;
+        } elseif (null === $gravity) {
+            $gravity = 5;
         }
 
         if ($mode !== 3) {

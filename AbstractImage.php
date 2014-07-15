@@ -57,10 +57,13 @@ abstract class AbstractImage implements ImageInterface
      */
     protected $cache;
 
+    protected $resource;
+
     /**
-     * @param ProcessorInterface $processor
+     * Constructor.
      *
-     * @access public
+     * @param ProcessorInterface $processor
+     * @param CacheInterface $cache
      */
     public function __construct(ProcessorInterface $processor, CacheInterface $cache = null)
     {
@@ -73,6 +76,26 @@ abstract class AbstractImage implements ImageInterface
         $this->targetSize = [];
 
         $this->parameters = new Parameters;
+    }
+
+    /**
+     * getProcessor
+     *
+     * @return ProcessorInterface
+     */
+    public function getProcessor()
+    {
+        return $this->processor;
+    }
+
+    /**
+     * getImageCache
+     *
+     * @return CacheInterface
+     */
+    public function getImageCache()
+    {
+        return $this->cache;
     }
 
     /**
@@ -111,8 +134,16 @@ abstract class AbstractImage implements ImageInterface
     public function save($target)
     {
         $this->process();
-        $this->processor->writeToFile($target);
+        $this->processor->writeToFile($target, $this->getResource());
         $this->close();
+    }
+
+    /**
+     * Get the image resource if loaded from cache
+     */
+    protected function getResource()
+    {
+        return $this->resource;
     }
 
     /**
@@ -153,7 +184,7 @@ abstract class AbstractImage implements ImageInterface
      */
     public function toJpeg()
     {
-        return $this->filter('convert', ['f' => ProcessorInterface::FORMAT_JPG]);
+        return $this->addFilter('convert', ['f' => ProcessorInterface::FORMAT_JPG]);
     }
 
     /**
@@ -164,7 +195,7 @@ abstract class AbstractImage implements ImageInterface
      */
     public function toPng()
     {
-        return $this->filter('convert', ['f' => ProcessorInterface::FORMAT_PNG]);
+        return $this->addFilter('convert', ['f' => ProcessorInterface::FORMAT_PNG]);
     }
 
     /**
@@ -174,7 +205,7 @@ abstract class AbstractImage implements ImageInterface
      */
     public function toGif()
     {
-        return $this->filter('convert', ['f' => ProcessorInterface::FORMAT_GIF]);
+        return $this->addFilter('convert', ['f' => ProcessorInterface::FORMAT_GIF]);
     }
 
     /**
@@ -250,7 +281,7 @@ abstract class AbstractImage implements ImageInterface
         $this->parameters->setMode(ProcessorInterface::IM_CROP);
         $this->parameters->setTargetSize($width, $height);
         $this->parameters->setGravity($gravity);
-        $this->parameters->setBackground($gravity);
+        $this->parameters->setBackground($background);
 
         return $this->process();
     }
@@ -321,18 +352,6 @@ abstract class AbstractImage implements ImageInterface
     }
 
     /**
-     * isColor
-     *
-     * @param mixed $color
-     *
-     * @return bool
-     */
-    protected function isColor($color)
-    {
-        return (bool)preg_match('#^[0-9a-fA-F]{3}|^[0-9a-fA-F]{6}#', $color);
-    }
-
-    /**
      * setImageCache
      *
      * @param CacheInterface $cache
@@ -352,7 +371,7 @@ abstract class AbstractImage implements ImageInterface
     protected function process()
     {
         if ($this->processor->isProcessed()) {
-            return;
+            return $this;
         }
 
         $params = $this->compileExpression();
@@ -363,14 +382,14 @@ abstract class AbstractImage implements ImageInterface
             return $this;
         }
 
-        if ($this->cache->has($key = $this->getCacheKey($params, $this->filters))) {
+        if ($this->cache->has($key = $this->getCacheKey($this->parameters, $this->filters))) {
             $this->loadFromCache($key);
 
             return $this;
         }
 
         $this->doProcess($params);
-        $this->cache->set($key, $this->processor->getContents());
+        $this->cache->set($key, $this->processor);
 
         return $this;
     }
@@ -384,10 +403,7 @@ abstract class AbstractImage implements ImageInterface
      */
     protected function loadFromCache($key)
     {
-        $source = $this->cache->getSource($key);
-        $this->processor->load($source);
-
-        return $source;
+        $this->resource = $this->cache->get($key, CacheInterface::CONTENT_RESOURCE);
     }
 
     /**
@@ -415,19 +431,10 @@ abstract class AbstractImage implements ImageInterface
         $this->parameters = clone($this->parameters);
 
         $this->source = null;
+        $this->resource = null;
         $this->arguments = [];
 
         $this->getProcessor()->close();
-    }
-
-    /**
-     * getProcessor
-     *
-     * @return ProcessorInterface
-     */
-    protected function getProcessor()
-    {
-        return $this->processor;
     }
 
     /**
@@ -448,11 +455,16 @@ abstract class AbstractImage implements ImageInterface
      *
      * @return string
      */
-    protected function getCacheKey(array $params, array $filter)
+    protected function getCacheKey(Parameters $params, FilterExpression $filter)
     {
         $fingerprint = $this->getImageFingerPrint($params, $filter);
 
-        return $this->cache->createKey($this->source, $fingerprint, null, pathinfo($this->source, PATHINFO_EXTENSION));
+        return $this->cache->createKey(
+            $this->source,
+            $fingerprint,
+            null,
+            pathinfo($this->source, PATHINFO_EXTENSION)
+        );
     }
 
     /**
@@ -460,18 +472,10 @@ abstract class AbstractImage implements ImageInterface
      *
      * @return string
      */
-    protected function getImageFingerPrint(array $params, array $filters)
+    protected function getImageFingerPrint(Parameters $params, FilterExpression $filters)
     {
-        return rtrim(implode('/', $params) . '/'.$this->compileFilterExpression($filters), '/');
-    }
+        $filter = $filters->compile();
 
-    /**
-     * compileFilterExpression
-     *
-     * @return string|null
-     */
-    private function compileFilterExpression(array $filter)
-    {
-        return (new FilterExpression($this->filters))->compile();
+        return $params->asString() . (0 < strlen($filter) ? '/filter:'.$filter : '');
     }
 }

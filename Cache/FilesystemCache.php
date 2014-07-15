@@ -17,16 +17,17 @@ use \Thapp\Image\ProcessorInterface;
 use \Thapp\Image\Resource\CachedResource;
 
 /**
- * @class FilesystemCache implements CacheInterface
- * @see CacheInterface
+ * @class FilesystemCache extends AbstractCache
+ * @see AbstractCache
  *
- * @package Thapp\Image\Cache
+ * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
  */
 class FilesystemCache extends AbstractCache
 {
     use FileHelper;
+
     /**
      * path
      *
@@ -35,20 +36,25 @@ class FilesystemCache extends AbstractCache
     protected $path;
 
     /**
+     * path
+     *
+     * @var string
+     */
+    protected $metaPath;
+
+    /**
      * pool
      *
      * @var array
      */
     protected $pool;
 
-    protected $resources;
-
     /**
-     * fs
+     * resources
      *
-     * @var Filesystem
+     * @var array
      */
-    protected $fs;
+    protected $resources;
 
     /**
      * prefix
@@ -57,29 +63,35 @@ class FilesystemCache extends AbstractCache
      */
     protected $prefix;
 
+    /**
+     * metaKey
+     *
+     * @var string
+     */
     protected $metaKey;
 
     /**
+     * Create a new FilesystemCache instance.
+     *
      * @param string $location
+     * @param string $metaPath
+     * @param string $prefix
+     * @param string $metaKey
      */
-    public function __construct($location = null, $prefix = 'fs_', $metaKey = 'meta', $metaPath = null)
+    public function __construct($location = null, $metaPath = null, $prefix = 'fs_', $metaKey = 'meta')
     {
         $this->path   = $location ?: getcwd();
-        $this->prefix = $prefix;
-
-        $this->metaKey  = $metaKey;
         $this->metaPath = $metaPath ?: $this->path;
+
+        $this->prefix = $prefix;
+        $this->metaKey  = $metaKey;
 
         $this->pool = [];
         $this->resources = [];
     }
 
     /**
-     * get
-     *
-     * @param mixed $id
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function get($key, $raw = self::CONTENT_RESOURCE)
     {
@@ -93,12 +105,7 @@ class FilesystemCache extends AbstractCache
     }
 
     /**
-     * set
-     *
-     * @param string $id
-     * @param Image $image
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function set($id, ProcessorInterface $proc)
     {
@@ -132,7 +139,7 @@ class FilesystemCache extends AbstractCache
     }
 
     /**
-     * Delete the base directory of an cached image.
+     * Delete the base directory of a cached image.
      *
      * @param string $file
      *

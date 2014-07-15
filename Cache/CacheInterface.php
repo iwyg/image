@@ -25,7 +25,7 @@ interface CacheInterface
     const CONTENT_RESOURCE = false;
 
     /**
-     * get
+     * Get a cached resource by id.
      *
      * @param string $key
      * @param boolean $raw
@@ -35,7 +35,7 @@ interface CacheInterface
     public function get($key, $raw = self::CONTENT_RESOURCE);
 
     /**
-     * set
+     * Create and bind a cached resource to an id.
      *
      * @param string $key
      * @param ProcessorInterface $proc
@@ -56,21 +56,21 @@ interface CacheInterface
     /**
      * Delete the whole cache
      *
-     * @return void
+     * @return boolean
      */
     public function purge();
 
     /**
-     * delete a cached group based in the image name.
+     * Delete a cached group based in the image name.
      *
      * @param string $image
      *
-     * @return void
+     * @return boolean
      */
     public function delete($image);
 
     /**
-     * setPrefix
+     * Set the filename prefix
      *
      * @param string $prefix
      *
@@ -79,7 +79,7 @@ interface CacheInterface
     public function setPrefix($prefix);
 
     /**
-     * getPrefix
+     * Get the filename prefix
      *
      * @return string
      */

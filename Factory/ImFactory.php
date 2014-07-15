@@ -50,6 +50,6 @@ class ImFactory extends AbstractFactory
      */
     protected function createProcessor()
     {
-        return new Processor(new ImDriver($this->loader), $this->writer(), $this->cache());
+        return new Processor(new ImDriver($this->loader), $this->writer, $this->cache);
     }
 }

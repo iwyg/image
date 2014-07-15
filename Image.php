@@ -41,7 +41,7 @@ class Image extends AbstractImage
     {
         $image = static::getFactory($driver)->make();
 
-        if ($source) {
+        if (null !== $source) {
             $image->source($source);
         }
 

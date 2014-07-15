@@ -32,6 +32,11 @@ class FilterExpression
      */
     private $params;
 
+    /**
+     * Constructor.
+     *
+     * @param mixed $params
+     */
     public function __construct($params)
     {
         $this->params = $params;
@@ -51,13 +56,6 @@ class FilterExpression
     {
         $this->expr = null;
         $this->params = null;
-    }
-
-    private function ensureArray()
-    {
-        if (!is_array($this->params)) {
-            $this->toArray();
-        }
     }
 
     public function setExpression($expr)
@@ -110,6 +108,18 @@ class FilterExpression
         }
 
         return $this->transFormString($this->params);
+    }
+
+    /**
+     * ensureArray
+     *
+     * @return array
+     */
+    private function ensureArray()
+    {
+        if (!is_array($this->params)) {
+            $this->toArray();
+        }
     }
 
     /**
