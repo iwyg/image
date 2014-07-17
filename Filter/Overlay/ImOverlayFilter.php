@@ -27,9 +27,9 @@ class ImOverlayFilter extends ImFilter
      */
     public function run()
     {
-        return ['( +clone -fill rgba(%s,%s) -colorize 100 ) -compose Over -composite' => [
+        return ['( +clone -fill rgb(%s) -colorize %s ) -compose Over -composite' => [
                 implode(',', $this->hexToRgb($this->getOption('c'))),
-                $this->getOption('a', '0.5')
+                ((float)$this->getOption('a', '0.5')) * 100
             ]
         ];
     }
