@@ -21,11 +21,29 @@ namespace Thapp\Image\Driver;
 interface SourceInterface
 {
     /**
-     * read
+     * Create a new Image instance from a file resource
      *
      * @param resource $resource valid file handle or resource
      *
      * @return ImageInterface
      */
     public function read($resource);
+
+    /**
+     * Create a new Image instance from a filename
+     *
+     * @param string $file image file
+     *
+     * @return ImageInterface
+     */
+    public function load($file);
+
+    /**
+     * Create a new Image from a binary blob
+     *
+     * @param string $content image blob
+     *
+     * @return ImageInterface
+     */
+    public function create($image);
 }

@@ -22,13 +22,6 @@ use Thapp\Image\Tests\SourceTest as Source;
  */
 class SourceTest extends Source
 {
-    /** @test */
-    public function itShouldReadResource()
-    {
-        $source = $this->newSource();
-        $stream = $this->getTestImage();
-        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $source->read($stream));
-    }
 
     protected function getSourceClass()
     {

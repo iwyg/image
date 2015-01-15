@@ -34,6 +34,23 @@ abstract class AbstractImage implements ImageInterface
         $this->format = $format;
     }
 
+    public function save($target, $format = null, array $options = [])
+    {
+        return file_put_contents($target, $this->get($format, $options));
+    }
+
+    public function write($resrouce, $format = null, array $options = [])
+    {
+        if (!is_resource($resrouce)) {
+            return false;
+        }
+
+        rewind($resource);
+        fwrite($resource, $this->get($format, $options));
+
+        return true;
+    }
+
     public function getFormat()
     {
         return $this->format;

@@ -23,42 +23,58 @@ use Thapp\Image\Driver\SourceInterface;
  */
 class Source implements SourceInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function read($resource)
     {
         $imagick = new Imagick;
 
-        if ($imagick->readImageFile($resource)) {
-            return new Image($imagick);
+        try {
+            $imagick->readImageFile($resource);
+        } catch (\Exception $e) {
+            $imagick->destroy();
+
+            return false;
         }
 
-        $imagick->destroy();
+        return new Image($imagick);
 
-        return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function load($file)
     {
         $imagick = new Imagick;
 
-        if ($imagick->readImage($file)) {
-            return new Image($imagick);
+        try {
+            $imagick->readImage($file);
+        } catch (\Exception $e) {
+            $imagick->destroy();
+
+            return false;
         }
 
-        $imagick->destroy();
-
-        return false;
+        return new Image($imagick);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function create($image)
     {
         $imagick = new Imagick;
 
-        if ($imagick->readImageBlob($image)) {
-            return new Image($imagick);
+        try {
+            $imagick->readImageBlob($image);
+        } catch (\Exception $e) {
+            $imagick->destroy();
+
+            return false;
         }
 
-        $imagick->destroy();
-
-        return false;
+        return new Image($imagick);
     }
 }
