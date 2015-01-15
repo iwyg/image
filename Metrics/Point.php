@@ -23,27 +23,45 @@ class Point implements PointInterface
     private $x;
     private $y;
 
+    /**
+     * Constructor.
+     *
+     * @param int $x
+     * @param int $y
+     */
     public function __construct($x, $y)
     {
         $this->x = (int)$x;
         $this->y = (int)$y;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getX()
     {
         return $this->x;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getY()
     {
         return $this->y;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isIn(BoxInterface $box)
     {
         return $this->x <= $box->getWidth() && $this->y <= $box->getHeight();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function negate()
     {
         $x = $this->getX();
