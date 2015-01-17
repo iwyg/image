@@ -59,6 +59,9 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
      */
     public function coalesce()
     {
+        // merge previous frames
+        $this->merge();
+
         $imagick = $this->image->getImagick();
         $coalesce = $imagick->coalesceImages();
         $imagick->setFirstIterator();
