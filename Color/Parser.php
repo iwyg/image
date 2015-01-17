@@ -22,7 +22,7 @@ class Parser
 {
     public static function hexToRgb($hex)
     {
-        if (!static::isHex($color = ltrim($hext, '#'))) {
+        if (!static::isHex($color = ltrim($hex, '#'))) {
             throw new \InvalidArgumentException;
         }
 
@@ -37,6 +37,18 @@ class Parser
         }
 
         return $rgb;
+    }
+
+    public static function rgbToHex($r, $g, $b)
+    {
+        $hex = '';
+
+        foreach ([$r, $g, $b] as $channel) {
+            $c = dechex($channel);
+            $hex .= str_pad($c, 2, '0', STR_PAD_LEFT);
+        }
+
+        return $hex;
     }
 
     public static function isHex($color)

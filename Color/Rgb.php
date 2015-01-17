@@ -30,39 +30,60 @@ class Rgb implements ColorInterface
         $this->r = (int)$r;
         $this->g = (int)$g;
         $this->b = (int)$b;
-        $this->a = (float)$a;
+        $this->a = $a === null ? $a : (float)min(max($a, 0), 1.0);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toHex()
     {
-        return new Hex(dechex($this->r).dechex($this->g).dechex($this->b));
+        return new Hex(Parser::rgbToHex($this->r, $this->g, $this->b));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toRgb()
     {
         return clone $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getRed()
     {
         return $this->r;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getGreen()
     {
         return $this->g;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getBlue()
     {
         return $this->b;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAlpha()
     {
-        return $this->b;
+        return $this->a ?: 1.0;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __toString()
     {
         if (null !== $this->a) {

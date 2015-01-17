@@ -60,7 +60,7 @@ class Hex implements ColorInterface
 
     public function getAlpha()
     {
-        return null;
+        return 1.0;
     }
 
     public function __toString()
