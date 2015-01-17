@@ -16,6 +16,7 @@ use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Filter\FilterInterface;
 
 /**
  * @class AbstractImage
@@ -98,6 +99,11 @@ abstract class AbstractImage implements ImageInterface
     public function gravity(GravityInterface $gravity)
     {
         $this->gravity = $gravity;
+    }
+
+    public function filter(FilterInterface $filter)
+    {
+        $filter->apply($this);
     }
 
     /**

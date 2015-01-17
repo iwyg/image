@@ -18,6 +18,8 @@ use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Filter\FilterInterface;
+use Thapp\Image\Filter\GdFilter;
 
 /**
  * @class Image
@@ -180,6 +182,15 @@ class Image extends AbstractImage
         }
 
         return $this->generateOutPut($fn);
+    }
+
+    public function filter(FilterInterface $filter)
+    {
+        if (!$filter instanceof GdFilter) {
+            return false;
+        }
+
+        return parent::filter($filter);
     }
 
     /**

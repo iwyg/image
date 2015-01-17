@@ -20,6 +20,8 @@ use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Filter\FilterInterface;
+use Thapp\Image\Filter\ImagickFilter;
 
 /**
  * @class Image
@@ -195,6 +197,15 @@ class Image extends AbstractImage
         }
 
         return $this->imagick->getImageBlob();
+    }
+
+    public function filter(FilterInterface $filter)
+    {
+        if (!$filter instanceof ImagickFilter) {
+            return false;
+        }
+
+        return parent::filter($filter);
     }
 
     /**
