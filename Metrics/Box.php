@@ -203,7 +203,7 @@ class Box implements BoxInterface
 
         $rad = deg2rad($deg);
 
-        $pw = 2.0;
+        $pw = 1.0;
         $ph = $pw / $this->getRatio();
 
         list ($pw, $ph) = $this->doRotate($rad, $pw, $ph);

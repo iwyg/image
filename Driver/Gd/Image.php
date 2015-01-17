@@ -158,11 +158,16 @@ class Image extends AbstractImage
      */
     public function rotate($deg, ColorInterface $color = null)
     {
-        imagesetinterpolation($this->gd, IMG_NEAREST_NEIGHBOUR);
+        if (0.0 === (float)($deg % 360)) {
+            return;
+        }
 
-        $rotate = imagerotate($this->gd, 0 - $deg, $this->getColorId($this->gd, $color));
+        $size = $this->getSize()->rotate($deg);
+        $rotate = imagerotate($this->gd, -1 * $deg, $this->getColorId($this->gd, $color));
 
         $this->swapGd($rotate);
+
+        $this->resize($size);
     }
 
     /**

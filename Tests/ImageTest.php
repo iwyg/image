@@ -61,6 +61,9 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
     {
         $image = $this->newImage(200, 100);
         $image->rotate(90);
+
+        $this->assertSame(100, $image->getWidth());
+        $this->assertSame(200, $image->getHeight());
     }
 
     abstract protected function newImage($w, $h, $format = 'jpeg');
