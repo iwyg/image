@@ -31,7 +31,13 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
     {
         $image = $this->newImage(200, 100);
 
-        var_dump($image->getFormat());
+        $this->assertSame('jpeg', $image->getFormat());
+
+        $image = $this->newImage(200, 100, 'png');
+
+        $this->assertSame('png', $image->getFormat());
+        $image->setFormat('JPG');
+        $this->assertSame('jpeg', $image->getFormat());
     }
 
     /** @test */

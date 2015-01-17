@@ -134,10 +134,10 @@ abstract class AbstractImage implements ImageInterface
 
     protected function mapFormat($format)
     {
-        $map = ['jpg' => 'jepg'];
+        $map = ['jpg' => 'jpeg'];
 
         if (isset($map[strtolower($format)])) {
-            $format = $map[$format];
+            $format = $map[strtolower($format)];
         }
 
         return strtolower($format);
