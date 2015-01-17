@@ -11,6 +11,10 @@
 
 namespace Thapp\Image\Tests;
 
+use Thapp\Image\Metrics\Box;
+use Thapp\Image\Metrics\Point;
+use Thapp\Image\Metrics\Gravity;
+
 /**
  * @class ImageTest
  *
@@ -20,19 +24,45 @@ namespace Thapp\Image\Tests;
  */
 abstract class ImageTest extends \PHPUnit_Framework_TestCase
 {
-    protected function getTestImage($w = 100, $h = 100, $format = 'jpeg')
+    use ImageTestHelper;
+
+    /** @test */
+    public function itShouldGetImageFormat()
     {
-        $stream = tmpfile();
-        $resource = imagecreatetruecolor($w, $h);
+        $image = $this->newImage(200, 100);
 
-        $fn = 'image'.$format;
+        var_dump($image->getFormat());
+    }
 
-        ob_start();
-        call_user_func($fn, $resource);
+    /** @test */
+    public function itShouldCropImage()
+    {
+        $image = $this->newImage(200, 100);
+        $image->crop(new Box(50, 50));
 
-        fwrite($stream, ob_get_clean());
-        rewind($stream);
+        $this->assertSame(50, $image->getHeight());
+        $this->assertSame(50, $image->getWidth());
+    }
 
-        return $stream;
+    /** @test */
+    public function itShouldBeInstantiable()
+    {
+        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->newImage(100, 100));
+    }
+
+    /** @test */
+    public function itShouldRotateImage()
+    {
+        $image = $this->newImage(200, 100);
+        $image->rotate(90);
+    }
+
+    abstract protected function newImage($w, $h, $format = 'jpeg');
+
+    protected function getImagePath($resource)
+    {
+        $meta = stream_get_meta_data($resource);
+
+        return $meta['uri'];
     }
 }

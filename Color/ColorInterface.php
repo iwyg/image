@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im package
+ * This File is part of the Thapp\Image\Color package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -9,18 +9,15 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Driver\Im;
+namespace Thapp\Image\Color;
 
 /**
- * @class Frames
+ * @interface ColorInterface
  *
- * @package Thapp\Image\Driver\Im
+ * @package Thapp\Image\Color
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Frames
+interface ColorInterface
 {
-    public function coalesce()
-    {
-    }
 }

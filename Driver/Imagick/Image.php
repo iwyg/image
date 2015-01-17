@@ -19,6 +19,7 @@ use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
+use Thapp\Image\Color\ColorInterface;
 
 /**
  * @class Image
@@ -105,34 +106,22 @@ class Image extends AbstractImage
      */
     public function getFormat()
     {
-        if (null !== $this->format) {
-            return $this->format;
+        if (null === $this->format) {
+            $this->format = $this->imagick->getImageFormat();
         }
 
-        try {
-            return $this->imagick->getImageFormat();
-        } catch (\ImagickException $e) {
-        }
+        return parent::getFormat();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setFormat($format)
-    {
-        $this->format = $format;
-        //$this->imagick->setImageFormat(strtoupper($format));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function extent(BoxInterface $size, PointInterface $start = null, $color = null)
+    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
         $start = $this->getStartPoint($size, $start);
 
         if (null !== $color) {
-            $this->imagick->setImageBackgroundColor(new ImagickPixel($color));
+            $this->imagick->setImageBackgroundColor(new ImagickPixel((string)$color));
         }
 
         $this->imagick->extentImage($size->getWidth(), $size->getHeight(), $start->getX(), $start->getY());
@@ -149,9 +138,9 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function rotate($deg, $color = null)
+    public function rotate($deg, ColorInterface $color = null)
     {
-        $this->imagick->rotateImage(new ImagickPixel($color ?: '#ffffff'), (float)$deg);
+        $this->imagick->rotateImage(new ImagickPixel((string)$color ?: '#ffffff'), (float)$deg);
     }
 
     /**
@@ -165,7 +154,7 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function crop(BoxInterface $size, PointInterface $crop = null)
+    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null)
     {
         if (null !== $crop) {
             $box = new Box($this->getWidth(), $this->getHeight());
@@ -175,7 +164,7 @@ class Image extends AbstractImage
             }
         }
 
-        $this->extent($size, $crop);
+        $this->extent($size, $crop, $color);
     }
 
     /**

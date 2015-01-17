@@ -14,6 +14,7 @@ namespace Thapp\Image\Driver;
 use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Color\ColorInterface;
 
 /**
  * @interface ImageInterface
@@ -89,7 +90,7 @@ interface ImageInterface
      *
      * @return void
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, $color = null);
+    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null);
 
     /**
      * {@inheritdoc}
@@ -99,7 +100,7 @@ interface ImageInterface
     /**
      * {@inheritdoc}
      */
-    public function rotate($deg, $color = null);
+    public function rotate($deg, ColorInterface $color = null);
 
     /**
      * {@inheritdoc}
@@ -109,7 +110,7 @@ interface ImageInterface
     /**
      * {@inheritdoc}
      */
-    public function crop(BoxInterface $size, PointInterface $crop = null);
+    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null);
 
     /**
      * {@inheritdoc}

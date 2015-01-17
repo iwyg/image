@@ -31,7 +31,7 @@ abstract class AbstractImage implements ImageInterface
 
     public function setFormat($format)
     {
-        $this->format = $format;
+        $this->format = $this->mapFormat($format);
     }
 
     public function save($target, $format = null, array $options = [])
@@ -53,7 +53,7 @@ abstract class AbstractImage implements ImageInterface
 
     public function getFormat()
     {
-        return $this->format;
+        return strtolower($this->format);
     }
 
     /**
@@ -130,5 +130,16 @@ abstract class AbstractImage implements ImageInterface
     protected function hasGravity()
     {
         return null !== $this->gravity;
+    }
+
+    protected function mapFormat($format)
+    {
+        $map = ['jpg' => 'jepg'];
+
+        if (isset($map[strtolower($format)])) {
+            $format = $map[$format];
+        }
+
+        return strtolower($format);
     }
 }

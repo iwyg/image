@@ -17,6 +17,7 @@ use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
+use Thapp\Image\Color\ColorInterface;
 
 /**
  * @class Image
@@ -99,7 +100,7 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, $color = null)
+    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
         $start = $this->getStartPoint($size, $start);
 
@@ -108,7 +109,7 @@ class Image extends AbstractImage
         $extent = $this->newFromGd($size);
 
         imagecopy($extent, $this->gd, 0, 0, $start->getX(), $start->getY(), $size->getWidth(), $size->getHeight());
-        imagefill($extent, 0, 0, $this->getColorId($extent, 'fff'));
+        imagefill($extent, 0, 0, $this->getColorId($extent, $color));
 
         $this->swapGd($extent);
     }
@@ -139,7 +140,7 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function crop(BoxInterface $size, PointInterface $crop = null)
+    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null)
     {
         if (null !== $crop) {
             $box = new Box($this->getWidth(), $this->getHeight());
@@ -149,17 +150,17 @@ class Image extends AbstractImage
             }
         }
 
-        $this->extent($size, $crop);
+        $this->extent($size, $crop, $color);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rotate($deg, $color = null)
+    public function rotate($deg, ColorInterface $color = null)
     {
         imagesetinterpolation($this->gd, IMG_NEAREST_NEIGHBOUR);
 
-        $rotate = imagerotate($this->gd, 0 - $deg, $this->getColorId($this->gd, 'fff'));
+        $rotate = imagerotate($this->gd, 0 - $deg, $this->getColorId($this->gd, $color));
 
         $this->swapGd($rotate);
     }
@@ -227,14 +228,17 @@ class Image extends AbstractImage
      *
      * @return void
      */
-    private function getColorId($res, $color)
+    private function getColorId($res, ColorInterface $color = null)
     {
-        list ($r, $g, $b) = explode(
-            ' ',
-            implode(' ', str_split(strtoupper(3 === strlen($color) ? $color . $color : $color), 2))
-        );
+        if (null === $color) {
+            return imagecolorallocate($res, 255, 255, 255);
+        }
 
-        return imagecolorallocate($res, hexdec($r), hexdec($g), hexdec($b));
+        if (null !== $color->getAlpha()) {
+            return imagecolorallocatealpha($res, $color->getRed(), $color->getGreen(), $color->getBlue(), $color->getAlpha());
+        }
+
+        return imagecolorallocate($res, $color->getRed(), $color->getGreen(), $color->getBlue());
     }
 
     private function mapOutputFormat($fmt)
@@ -261,7 +265,7 @@ class Image extends AbstractImage
     public static function gdCreateFromFile($file)
     {
         $gd = null;
-        $mime = finfo_file($info = finfo_open(FILEINFO_MIME), $file);
+        list($mime, ) = explode(';', finfo_file($info = finfo_open(FILEINFO_MIME), $file));
         finfo_close($info);
 
         switch ($mime) {

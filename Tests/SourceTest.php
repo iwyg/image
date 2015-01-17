@@ -18,8 +18,10 @@ namespace Thapp\Image\Tests;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-abstract class SourceTest extends ImageTest
+abstract class SourceTest extends \PHPUnit_Framework_TestCase
 {
+    use ImageTestHelper;
+
     /** @test */
     public function itShouldReadResource()
     {
