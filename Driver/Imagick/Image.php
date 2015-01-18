@@ -186,26 +186,22 @@ class Image extends AbstractImage
             $format = isset($options['format']) ? $options['format'] : $this->getFormat();
         }
 
+        if ($this->hasFrames()) {
+
+            $this->frames()->merge();
+            $this->imagick->setImageFormat($format);
+            $this->imagick->setImageCompressionQuality($this->getOption($options, 'quality', 80));
+
+            if ($this->getOption($options, 'flatten', false)) {
+                $this->imagick->flattenImages();
+            } elseif (in_array($format, ['gif'])) {
+                return $this->imagick->getImagesBlob();
+            }
+        }
+
         $this->imagick->setImageFormat($format);
 
-        if ($this->hasFrames()) {
-            $this->frames()->merge();
-            //deconstructImages creates issues on rotation
-            //$image = $this->imagick->deconstructImages();
-
-            return $this->imagick->getImagesBlob();
-        }
-
         return $this->imagick->getImageBlob();
-    }
-
-    public function filter(FilterInterface $filter)
-    {
-        if (!$filter instanceof ImagickFilter) {
-            return false;
-        }
-
-        return parent::filter($filter);
     }
 
     /**

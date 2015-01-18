@@ -184,15 +184,6 @@ class Image extends AbstractImage
         return $this->generateOutPut($fn);
     }
 
-    public function filter(FilterInterface $filter)
-    {
-        if (!$filter instanceof GdFilter) {
-            return false;
-        }
-
-        return parent::filter($filter);
-    }
-
     /**
      * generateOutPut
      *

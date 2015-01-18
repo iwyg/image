@@ -11,13 +11,24 @@
 
 namespace Thapp\Image\Filter;
 
+use Thapp\Image\Driver\ImageInterface;
+
 /**
- * @interface ImagickFilter
+ * @class Rotate
  *
  * @package Thapp\Image\Filter
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-interface ImagickFilter
+class Format Implements FilterInterface
 {
+    public function __construct($format)
+    {
+        $this->format = (string)$format;
+    }
+
+    public function apply(ImageInterface $image)
+    {
+        $image->setFormat($this->format);
+    }
 }

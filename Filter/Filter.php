@@ -11,13 +11,16 @@
 
 namespace Thapp\Image\Filter;
 
+use Thapp\Image\Driver\ImageInterface;
+
 /**
- * @interface GdFilter
+ * @class Filter
  *
  * @package Thapp\Image\Filter
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-interface GdFilter
+abstract class Filter implements FilterInterface
 {
+    abstract public function supports(ImageInterface $image);
 }

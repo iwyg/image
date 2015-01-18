@@ -16,6 +16,7 @@ use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Filter\Filter;
 use Thapp\Image\Filter\FilterInterface;
 
 /**
@@ -101,8 +102,15 @@ abstract class AbstractImage implements ImageInterface
         $this->gravity = $gravity;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function filter(FilterInterface $filter)
     {
+        if (!$filter instanceof Filter && $filter->supports($this)) {
+            return false;
+        }
+
         $filter->apply($this);
     }
 
@@ -147,5 +155,14 @@ abstract class AbstractImage implements ImageInterface
         }
 
         return strtolower($format);
+    }
+
+    protected function getOption(array $options, $option, $default = null)
+    {
+        if (array_key_exists($option, $options)) {
+            return $options[$option];
+        }
+
+        return $default;
     }
 }
