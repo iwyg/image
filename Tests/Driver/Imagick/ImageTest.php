@@ -24,6 +24,29 @@ use Thapp\Image\Tests\ImageTest as AbstractImageTest;
  */
 class ImageTest extends AbstractImageTest
 {
+    /** @test */
+    public function itShouldGetImagick()
+    {
+        $image = $this->newImage(100, 100);
+        $this->assertInstanceof('Imagick', $image->getImagick());
+    }
+
+    /** @test */
+    public function imagickShouldBeSwapabled()
+    {
+        $image = $this->newImage(100, 100);
+        $image->swapImagick($imagick = new \Imagick);
+
+        $this->assertSame($imagick, $image->getImagick());
+    }
+
+    /** @test */
+    public function itShouldDetectFrames()
+    {
+        $image = $this->newImage(100, 100);
+        $this->assertFalse($image->hasFrames());
+    }
+
     protected function newImage($w, $h, $format = 'jpeg')
     {
         $resource = $this->getTestImage($w, $h, $format);

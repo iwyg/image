@@ -28,4 +28,15 @@ class PointTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceof('Thapp\Image\Metrics\PointInterface', new Point(100, 100));
     }
+
+    /** @test */
+    public function itShouldNegatePoint()
+    {
+        $point = new Point(100, -200);
+
+        $point = $point->negate();
+
+        $this->assertSame(-100, $point->getX());
+        $this->assertSame(200, $point->getY());
+    }
 }

@@ -35,4 +35,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($channels, $rgb);
     }
+
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     */
+    public function itShouldThrowExceptionOnInvalidHexvalues()
+    {
+        $hex = Parser::hexToRgb('#ibdcefg');
+    }
+
+    /** @test */
+    public function itShouldCompensateForHexShortNotation()
+    {
+        $rgb = Parser::hexToRgb('#fff');
+        $this->assertSame([255, 255, 255], $rgb);
+    }
 }

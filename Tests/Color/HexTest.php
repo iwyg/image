@@ -23,8 +23,18 @@ use Thapp\Image\Color\Parser;
  */
 class HexTest extends ColorTest
 {
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     */
+    public function itShouldThrowExceptionIfColorstringIsInvalid()
+    {
+        $color = new Hex('#ibcdef');
+
+    }
+
     /** @test */
-    public function itIsExpectedThat()
+    public function itShouldBeStringable()
     {
         $color = new Hex('#fff');
 

@@ -26,13 +26,11 @@ class Parser
             throw new \InvalidArgumentException;
         }
 
-        if (3 === ($len = strlen($hex))) {
-            $rgb = str_split($hex);
-            list($r, $g, $b) = $rgb;
+        if (3 === ($len = strlen($color))) {
+            list($r, $g, $b) = str_split($color);
             $rgb = [hexdec($r.$r), hexdec($g.$g), hexdec($b.$b)];
         } elseif (6 === $len) {
-            $rgb = str_split($hex, 2);
-            list($r, $g, $b) = $rgb;
+            list($r, $g, $b) = str_split($color, 2);
             $rgb = [hexdec($r), hexdec($g), hexdec($b)];
         }
 
