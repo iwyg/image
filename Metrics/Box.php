@@ -107,7 +107,7 @@ class Box implements BoxInterface
      */
     public function increaseByWidth($width)
     {
-        return new static($width, (float)$width / $this->getRatio());
+        return new static((int)$width, $this->heightFromRatio($width, $this->getRatio()));
     }
 
     /**
@@ -115,7 +115,7 @@ class Box implements BoxInterface
      */
     public function increaseByHeight($height)
     {
-        return new static($height * $this->getRatio(), $height);
+        return new static($this->widthFromRatio($height, $this->getRatio()), (int)$height);
     }
 
     /**
@@ -126,35 +126,16 @@ class Box implements BoxInterface
         $width  = $this->getWidth();
         $height = $this->getHeight();
 
-        $w = $target->getWidth();
-        $h = $target->getHeight();
+        $tw = $target->getWidth();
+        $th = $target->getHeight();
 
-        $ratA = $this->ratio($width, $height);
+        $nh = $this->heightFromRatio($tw, $this->getRatio());
 
-        if ($width >= $w && $height >= $h) {
-
-            $ratM = min($ratA, $this->ratio($w, $h));
-
-            $valW = (int)round($h * $ratM);
-            $valH = (int)round($w / $ratA);
-
-            $isR = $ratM === $ratA;
-
-            list($width, $height) = $width <= $height ? [$valW, $isR ? $h : $valH] : [$isR ? $w : $valW, $valH];
-        } elseif ($width >= $w && $height < $h) {
-            $width = $w;
-            $height = (int)round($w / $ratA);
-        } elseif ($width < $w || $height < $h) {
-            $box = $this->increaseByWidth($w);
-
-            if ($h < $box->getHeight()) {
-                return $box->increaseByHeight($h);
-            }
-
-            return $box;
+        if ($nh > $th) {
+            return new static($this->widthFromRatio($th, $this->getRatio()), $th);
         }
 
-        return new static($width, $height);
+        return new static($tw, $nh);
     }
 
     /**
@@ -231,5 +212,31 @@ class Box implements BoxInterface
     private function ratio($w, $h)
     {
         return (float)($w / $h);
+    }
+
+    /**
+     * heightFromRatio
+     *
+     * @param mixed $width
+     * @param float $ratio
+     *
+     * @return int
+     */
+    private function heightFromRatio($width, $ratio = 1.0)
+    {
+        return (int)round((float)$width / $ratio);
+    }
+
+    /**
+     * widthFromRatio
+     *
+     * @param mixed $height
+     * @param float $ratio
+     *
+     * @return int
+     */
+    private function widthFromRatio($height, $ratio = 1.0)
+    {
+        return (int)round((float)$height * $ratio);
     }
 }
