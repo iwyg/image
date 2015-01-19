@@ -6,6 +6,7 @@ else
 	printf "\n" | pecl install imagick
 	echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 	php -m | grep imagick 
-	composer self-update
-	composer install --prefer-source --no-interaction --dev
 fi
+
+composer self-update
+composer install --prefer-source --no-interaction --dev
