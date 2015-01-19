@@ -38,6 +38,10 @@ class Source implements SourceInterface
      */
     public function load($file)
     {
+        if (!is_file($file)) {
+            return false;
+        }
+
         if (!$gd = Image::gdCreateFromFile($file)) {
             return false;
         }

@@ -33,12 +33,9 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldLoadImageFile()
     {
+        $file = __DIR__.'/Fixures/google.png';
         $source = $this->newSource();
-        $stream = $this->getTestImage();
-
-        $meta = stream_get_meta_data($stream);
-
-        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $source->load($meta['uri']));
+        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $source->load($file));
     }
 
     /** @test */
