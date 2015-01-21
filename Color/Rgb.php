@@ -20,11 +20,42 @@ namespace Thapp\Image\Color;
  */
 class Rgb implements ColorInterface
 {
+    /**
+     * r
+     *
+     * @var int
+     */
     private $r;
+
+    /**
+     * g
+     *
+     * @var int
+     */
     private $g;
+
+    /**
+     * b
+     *
+     * @var int
+     */
     private $b;
+
+    /**
+     * a
+     *
+     * @var float
+     */
     private $a;
 
+    /**
+     * Constructor.
+     *
+     * @param int   $r the read channel value.
+     * @param int   $g the green channel value
+     * @param int   $b the blue channel value
+     * @param float $a the alpha channel value
+     */
     public function __construct($r, $g, $b, $a = null)
     {
         $this->r = (int)$r;

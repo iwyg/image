@@ -33,10 +33,27 @@ class Image extends AbstractImage
     private $gd;
     private $frames;
 
+    /**
+     * Constructor.
+     *
+     * @param resource $resource GD Image resource
+     */
     public function __construct($resource)
     {
         $this->setResource($resource);
         $this->frames = new Frames($this);
+    }
+
+    /**
+     * Destroy GD resource;
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->gd)) {
+            imagedestroy($this->gd);
+        }
     }
 
     /**

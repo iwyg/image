@@ -50,6 +50,16 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
+    public function __destruct()
+    {
+        if (null !== $this->imagick) {
+            $this->imagick->destroy();
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getImagick()
     {
         return $this->imagick;

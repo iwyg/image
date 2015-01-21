@@ -51,7 +51,7 @@ class Parser
 
     public static function isHex($color)
     {
-        return (boolean)preg_match('#^([[:xdigit:]]{6}|[[:xdigit:]]{3})$#', $color);
+        return (boolean)preg_match('#^([[:xdigit:]]{6}|[[:xdigit:]]{3})$#', ltrim($color, '#'));
     }
 
     public static function normalize($hex)
@@ -62,7 +62,7 @@ class Parser
             return '#'.$r.$r.$g.$g.$b.$b;
         }
 
-        return $hex;
+        return $color;
     }
 }
 
