@@ -44,11 +44,10 @@ class Image extends AbstractImage
      *
      * @return void
      */
-    public function __construct(Imagick $imagick, PaletteInterface $palette)
+    public function __construct(Imagick $imagick)
     {
         $this->imagick = $imagick;
         $this->frames  = new Frames($this);
-        $this->palette = $palette;
     }
 
     /**
