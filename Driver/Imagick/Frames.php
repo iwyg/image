@@ -11,7 +11,10 @@
 
 namespace Thapp\Image\Driver\Imagick;
 
+use Imagick;
 use Thapp\Image\Driver\ImageInteface;
+use Thapp\Image\Driver\AbstractFrames;
+use Thapp\Image\Metrics\GravityInterface;
 
 /**
  * @class Frames
@@ -20,11 +23,9 @@ use Thapp\Image\Driver\ImageInteface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Frames implements \Countable, \Iterator, \ArrayAccess
+class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAccess
 {
     private $image;
-    private $offset;
-    private $frames;
 
     /**
      * Constructor.
@@ -62,35 +63,16 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
         // merge previous frames
         $this->merge();
 
-        $imagick = $this->image->getImagick();
+        $imagick  = $this->image->getImagick();
         $coalesce = $imagick->coalesceImages();
         $imagick->setFirstIterator();
 
         do {
             $index = $coalesce->getIteratorIndex();
-            //$imagick->removeImage();
-            $this->frames[$coalesce->getIteratorIndex()] = new Image($coalesce->getImage());
+            $this->setFrame($coalesce->getIteratorIndex(), $coalesce->getImage());
         } while ($coalesce->nextImage());
 
-        //$imagick->addImage($coalesce->current());
-
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($index)
-    {
-        return $this->getImageAt($index);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function set($index, ImageInterface $image)
-    {
-        $this->frames[$index] = $image;
     }
 
     /**
@@ -111,14 +93,6 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function key()
-    {
-        return $this->offset;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function rewind()
     {
         $this->image->getImagick()->rewind();
@@ -128,65 +102,9 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function next()
-    {
-        $this->offset++;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valid()
-    {
-        return $this->offset < $this->count();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function count()
     {
         return $this->image->getImagick()->getNumberImages();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function current()
-    {
-        return $this->getImageAt($this->offset);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($index)
-    {
-        $this->remove($index);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($index)
-    {
-        return $index > 0 && $index < $this->count();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($index, $value)
-    {
-        $this->set($index, $value);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($index)
-    {
-        return $this->get($index);
     }
 
     /**
@@ -201,9 +119,28 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
         if (!isset($this->frames[$index])) {
             $im = $this->image->getImagick();
             $im->setIteratorIndex($index);
-            $this->frames[$index] = new Image($im->getImage());
+            $this->setFrame($index, $im->getImage());
         }
 
         return $this->frames[$index];
+    }
+
+    /**
+     * setFrame
+     *
+     * @param mixed $index
+     * @param Gmagick $image
+     *
+     * @return void
+     */
+    protected function setFrame($index, Imagick $image)
+    {
+        $this->frames[$index] = new Image($image);
+
+        $gravity = $this->image->getGravity();
+
+        if (GravityInterface::GRAVITY_NORTHWEST !== $gravity->getMode()) {
+            $this->frames[$index]->gravity($gravity);
+        }
     }
 }

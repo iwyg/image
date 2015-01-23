@@ -18,7 +18,7 @@ namespace Thapp\Image\Color;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Hex implements ColorInterface
+class Hex extends AbstractRgb implements ColorInterface
 {
     /**
      * hex
@@ -39,6 +39,22 @@ class Hex implements ColorInterface
         }
 
         $this->hex = ltrim(Parser::normalize($color), '#');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getColor()
+    {
+        return $this->getColorValuesAsArray();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getColorAsString()
+    {
+        return $this->__toString();
     }
 
     /**

@@ -18,8 +18,11 @@ namespace Thapp\Image\Driver;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-abstract class AbstractFrames implements FramesInterface
+abstract class AbstractFrames implements FramesInterface, \ArrayAccess
 {
+    protected $key;
+    protected $offset;
+    protected $frames;
 
     /**
      * {@inheritdoc}
@@ -52,6 +55,16 @@ abstract class AbstractFrames implements FramesInterface
     {
         $this->offset++;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    abstract public function remove($index);
+
+    /**
+     * {@inheritdoc}
+     */
+    abstract public function rewind();
 
     /**
      * {@inheritdoc}

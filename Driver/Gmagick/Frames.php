@@ -13,6 +13,7 @@ namespace Thapp\Image\Driver\Gmagick;
 
 use Gmagick;
 use Thapp\Image\Driver\ImageInteface;
+use Thapp\Image\Driver\AbstractFrames;
 use Thapp\Image\Metrics\GravityInterface;
 
 /**
@@ -22,11 +23,9 @@ use Thapp\Image\Metrics\GravityInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Frames implements \Countable, \Iterator, \ArrayAccess
+class Frames extends AbstractFrames
 {
     private $image;
-    private $offset;
-    private $frames;
     private $coalesce;
 
     /**
@@ -75,10 +74,8 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
         $gmagick = $this->image->getGmagick();
 
         if ($this->supportsCoalesce()) {
-            var_dump('supports coalesce.');
             $coalesce = $gmagick->coalesceImages();
         } else {
-            var_dump('does not support coalesce.');
             $coalesce = clone $gmagick;
         }
 
@@ -90,22 +87,6 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
         } while ($coalesce->nextImage());
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($index)
-    {
-        return $this->getImageAt($index);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function set($index, ImageInterface $image)
-    {
-        $this->frames[$index] = $image;
     }
 
     /**
@@ -126,34 +107,10 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function key()
-    {
-        return $this->offset;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function rewind()
     {
         $this->image->getGmagick()->setImageIndex(0);
         $this->offset = 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function next()
-    {
-        $this->offset++;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valid()
-    {
-        return $this->offset < $this->count();
     }
 
     /**
@@ -168,46 +125,6 @@ class Frames implements \Countable, \Iterator, \ArrayAccess
         } catch (\GmagickException $e) {
             return 1;
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function current()
-    {
-        return $this->getImageAt($this->offset);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($index)
-    {
-        $this->remove($index);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($index)
-    {
-        return $index > 0 && $index < $this->count();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($index, $value)
-    {
-        $this->set($index, $value);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($index)
-    {
-        return $this->get($index);
     }
 
     /**

@@ -18,8 +18,9 @@ namespace Thapp\Image\Color;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Rgb implements ColorInterface
+class Rgb extends AbstractRgb implements ColorInterface
 {
+
     /**
      * r
      *
@@ -62,6 +63,22 @@ class Rgb implements ColorInterface
         $this->g = (int)$g;
         $this->b = (int)$b;
         $this->a = null === $a ? $a : (float)min(max($a, 0), 1.0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getColor()
+    {
+        return $this->getColorValuesAsArray();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getColorAsString()
+    {
+        return $this->__toString();
     }
 
     /**

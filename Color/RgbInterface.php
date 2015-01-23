@@ -12,42 +12,14 @@
 namespace Thapp\Image\Color;
 
 /**
- * @interface ColorInterface
+ * @interface RgbInterface
  *
  * @package Thapp\Image\Color
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-interface ColorInterface
+interface RgbInterface
 {
-    /**
-     * getColor
-     *
-     * @return void
-     */
-    public function getColor();
-
-    /**
-     * getColorAsString
-     *
-     * @return void
-     */
-    public function getColorAsString();
-
-    /**
-     * toHex
-     *
-     * @return ColorInterface
-     */
-    public function toHex();
-
-    /**
-     * toRgb
-     *
-     * @return ColorInterface
-     */
-    public function toRgb();
-
     /**
      * Get the red channel value
      *
@@ -75,11 +47,4 @@ interface ColorInterface
      * @return float
      */
     public function getAlpha();
-
-    /**
-     * Get the color as string representation
-     *
-     * @return string
-     */
-    public function __toString();
 }

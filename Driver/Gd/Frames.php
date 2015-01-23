@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Driver\Gd;
 
+use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Driver\AbstractFrames;
 use Thapp\Image\Driver\FramesInterface;
 
 /**
@@ -20,10 +22,9 @@ use Thapp\Image\Driver\FramesInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Frames implements FramesInterface
+class Frames extends AbstractFrames
 {
     private $image;
-    private $offset;
 
     /**
      * Constructor.
@@ -34,6 +35,22 @@ class Frames implements FramesInterface
     {
         $this->offset = 0;
         $this->image = $image;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws \LogicException
+     */
+    public function set($index, ImageInterface $image)
+    {
+        throw new \LogicException(sprintf('%s doesn\'t support multiple images', get_class($this)));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove($index)
+    {
     }
 
     /**
@@ -62,14 +79,6 @@ class Frames implements FramesInterface
     /**
      * {@inheritdoc}
      */
-    public function key()
-    {
-        return $this->offset;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function rewind()
     {
         $this->offset = 0;
@@ -78,24 +87,9 @@ class Frames implements FramesInterface
     /**
      * {@inheritdoc}
      */
-    public function valid()
-    {
-        return $this->offset < $this->count();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function current()
+    protected function getImageAt($index)
     {
         return $this->image;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function next()
-    {
-        $this->offset++;
-    }
 }
+
