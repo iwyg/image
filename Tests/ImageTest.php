@@ -14,6 +14,7 @@ namespace Thapp\Image\Tests;
 use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\Gravity;
+use Thapp\Image\Color\Rgb;
 
 /**
  * @class ImageTest
@@ -25,6 +26,8 @@ use Thapp\Image\Metrics\Gravity;
 abstract class ImageTest extends \PHPUnit_Framework_TestCase
 {
     use ImageTestHelper;
+
+    protected $assets;
 
     /** @test */
     public function itShouldGetImageFormat()
@@ -66,12 +69,43 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(200, $image->getHeight());
     }
 
+    /** @test */
+    public function itShouldCropWithGravity()
+    {
+        //$image->save($this->asset('pattern_copy_'.$this->getDriverName().'.png'));
+
+        if (false === $image = $this->loadImage($file = $this->asset('animated.gif'))) {
+            $this->fail(sprintf('Loading of "%s" image file %s failed.', $this->getDriverName(), $file));
+        }
+
+        $image->gravity(new Gravity(5));
+        foreach ($image->coalesce() as $frame) {
+            /*$frame->gravity(new Gravity(5));*/
+            $frame->crop(new Box(200, 100));
+        }
+
+        $image->save($this->asset('animated_'.$this->getDriverName().'.gif'));
+    }
+
     abstract protected function newImage($w, $h, $format = 'jpeg');
+
+    abstract protected function getDriverName();
+    abstract protected function loadImage($file);
 
     protected function getImagePath($resource)
     {
         $meta = stream_get_meta_data($resource);
 
         return $meta['uri'];
+    }
+
+    protected function asset($file)
+    {
+        return $this->assets.'/'.$file;
+    }
+
+    protected function setUp()
+    {
+        $this->assets = __DIR__.'/Fixures';
     }
 }

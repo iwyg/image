@@ -36,7 +36,7 @@ class HexTest extends ColorTest
     /** @test */
     public function itShouldBeStringable()
     {
-        $color = new Hex('#fff');
+        $color = new Hex('fff');
 
         $this->assertSame('#ffffff', (string)$color);
     }

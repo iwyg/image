@@ -27,11 +27,11 @@ class RgbTest extends ColorTest
     {
         $color = new Rgb(255, 255, 0);
 
-        $this->assertSame('rgb(255, 255, 0)', (string)$color);
+        $this->assertSame('rgb(255,255,0)', (string)$color);
 
         $color = new Rgb(255, 255, 0, 0.5);
 
-        $this->assertSame('rgba(255, 255, 0, 0.5)', (string)$color);
+        $this->assertSame('rgba(255,255,0,0.5)', (string)$color);
     }
 
     protected function newColor($r, $g, $b, $a = null)

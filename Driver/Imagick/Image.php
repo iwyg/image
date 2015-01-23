@@ -19,9 +19,11 @@ use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
+use Thapp\Image\Color\Rgb;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\ImagickFilter;
+use Thapp\Image\Palette\PaletteInterface;
 
 /**
  * @class Image
@@ -33,6 +35,7 @@ use Thapp\Image\Filter\ImagickFilter;
 class Image extends AbstractImage
 {
     private $imagick;
+    private static $filterMap;
 
     /**
      * Constructor.
@@ -41,10 +44,11 @@ class Image extends AbstractImage
      *
      * @return void
      */
-    public function __construct(Imagick $imagick)
+    public function __construct(Imagick $imagick, PaletteInterface $palette)
     {
         $this->imagick = $imagick;
         $this->frames  = new Frames($this);
+        $this->palette = $palette;
     }
 
     /**
@@ -52,9 +56,22 @@ class Image extends AbstractImage
      */
     public function __destruct()
     {
-        if (null !== $this->imagick) {
-            $this->imagick->destroy();
+        $this->destroy();
+    }
+
+    public function destroy()
+    {
+        if (null === $this->imagick) {
+            return false;
         }
+
+        $this->imagick->clear();
+        $this->imagick->destroy();
+        $this->imagick = null;
+
+        $this->frames = null;
+
+        return true;
     }
 
     /**
@@ -131,12 +148,11 @@ class Image extends AbstractImage
     public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
         $start = $this->getStartPoint($size, $start);
+        $color = $this->getSize()->contains($size) ? new Rgb(255, 255, 255, 0) : ($color ?: new Rgb(255, 255, 255, 0));
 
-        if (null !== $color) {
-            $this->imagick->setImageBackgroundColor(new ImagickPixel((string)$color));
-        }
+        $this->compositeCopy($size, $start, $color);
 
-        $this->imagick->extentImage($size->getWidth(), $size->getHeight(), $start->getX(), $start->getY());
+        $this->imagick->setImagePage(0, 0, 0, 0);
     }
 
     /**
@@ -158,25 +174,9 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function resize(BoxInterface $size)
+    public function resize(BoxInterface $size, $filter = self::FILTER_UNDEFINED)
     {
-        $this->imagick->resizeImage($size->getWidth(), $size->getHeight(), Imagick::FILTER_CUBIC, 1);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null)
-    {
-        if (null !== $crop) {
-            $box = new Box($this->getWidth(), $this->getHeight());
-
-            if (!$box->contains($size)) {
-                $crop = $crop->negate();
-            }
-        }
-
-        $this->extent($size, $crop, $color);
+        $this->imagick->resizeImage($size->getWidth(), $size->getHeight(), $this->getFilter($filter), 1);
     }
 
     /**
@@ -196,6 +196,14 @@ class Image extends AbstractImage
             $format = isset($options['format']) ? $options['format'] : $this->getFormat();
         }
 
+        $background = $this->imagick->getImageBackGroundColor()->getColor();
+
+        if (!in_array($format, ['png', 'gif', 'tiff']) ) {
+            // preserve color apearance when flatten images
+            $this->compositeCopy($this->getSize(), new Point(0, 0), new Rgb(255, 255, 255, 1));
+            $this->imagick->flattenImages();
+        }
+
         if ($this->hasFrames()) {
 
             $this->frames()->merge();
@@ -205,26 +213,79 @@ class Image extends AbstractImage
             if ($this->getOption($options, 'flatten', false)) {
                 $this->imagick->flattenImages();
             } elseif (in_array($format, ['gif'])) {
-                return $this->imagick->getImagesBlob();
+                //return $this->imagick->getImagesBlob();
             }
+        } else {
+            $this->imagick->setImageFormat($format);
         }
 
-        $this->imagick->setImageFormat($format);
-
-        return $this->imagick->getImageBlob();
+        return $this->imagick->getImagesBlob();
     }
 
     /**
-     * applyExtent
+     * compositeCopy
      *
      * @param BoxInterface $size
-     * @param PointInterface $start
+     * @param PointInterface $point
+     * @param ColorInterface $color
      *
      * @return void
      */
-    protected function applyExtent(BoxInterface $size, PointInterface $start)
+    protected function compositeCopy(BoxInterface $size, PointInterface $point, ColorInterface $color = null)
     {
-        $this->imagick->setImageBackgroundColor(new ImagickPixel('red'));
-        $this->imagick->extentImage($size->getWidth(), $size->getHeight(), $start->getX(), $start->getY());
+        $canvas = new Imagick();
+        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? (string)$color : 'None');
+        $canvas->compositeImage($this->imagick, Imagick::COMPOSITE_OVER, $point->getX(), $point->getY());
+        $canvas->setImageFormat($this->imagick->getImageFormat());
+        $this->swapImagick($canvas);
+    }
+
+    /**
+     * getFilter
+     *
+     * @param int $filter
+     *
+     * @return int
+     */
+    private function getFilter($filter)
+    {
+        $map = static::filterMap();
+
+        if (!isset($map[$filter])) {
+            return Imagick::FILTER_UNDEFINED;
+        }
+
+        return $map[$filter];
+    }
+
+    /**
+     * filterMap
+     *
+     * @return array
+     */
+    private static function &filterMap()
+    {
+        if (null === static::$filterMap) {
+            static::$filterMap = [
+                self::FILTER_UNDEFINED => Imagick::FILTER_UNDEFINED,
+                self::FILTER_POINT => Imagick::FILTER_POINT,
+                self::FILTER_BOX => Imagick::FILTER_BOX,
+                self::FILTER_TRIANGLE => Imagick::FILTER_TRIANGLE,
+                self::FILTER_HERMITE => Imagick::FILTER_HERMITE,
+                self::FILTER_HANNING => Imagick::FILTER_HANNING,
+                self::FILTER_HAMMING => Imagick::FILTER_HAMMING,
+                self::FILTER_BLACKMAN => Imagick::FILTER_BLACKMAN,
+                self::FILTER_GAUSSIAN => Imagick::FILTER_GAUSSIAN,
+                self::FILTER_QUADRATIC => Imagick::FILTER_QUADRATIC,
+                self::FILTER_CUBIC => Imagick::FILTER_CUBIC,
+                self::FILTER_CATROM => Imagick::FILTER_CATROM,
+                self::FILTER_MITCHELL => Imagick::FILTER_MITCHELL,
+                self::FILTER_LANCZOS => Imagick::FILTER_LANCZOS,
+                self::FILTER_BESSEL => Imagick::FILTER_BESSEL,
+                self::FILTER_SINC => Imagick::FILTER_SINC
+            ];
+        }
+
+        return static::$filterMap;
     }
 }

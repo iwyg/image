@@ -24,22 +24,25 @@ use Thapp\Image\Tests\Stubs\Filter\ImagickFilter;
 class FilterTest extends \PHPUnit_Framework_TestCase
 {
     /** @test */
-    public function itShouldSupoortDriverTypes()
+    public function itShouldSupportDriverTypes()
     {
         $filterIm = new ImagickFilter();
         $filterGd = new GdFilter();
 
+
         $gd = $this->getMockBuilder('Thapp\Image\Driver\Gd\Image')
             ->disableOriginalConstructor()
             ->getMock();
+        $this->assertTrue($filterGd->supports($gd));
+
         $im = $this->getMockBuilder('Thapp\Image\Driver\Imagick\Image')
+            ->setMethods(['filter'])
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->assertTrue($filterIm->supports($im));
         $this->assertFalse($filterIm->supports($gd));
 
-        $this->assertTrue($filterGd->supports($gd));
         $this->assertFalse($filterGd->supports($im));
     }
 }

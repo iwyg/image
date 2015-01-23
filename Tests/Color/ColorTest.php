@@ -29,7 +29,7 @@ abstract class ColorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceof('Thapp\Image\Color\Rgb', $nc);
 
         $this->assertFalse($nc === $color);
-        $this->assertSame('rgb(255, 255, 255)',  (string)$nc);
+        $this->assertSame('rgb(255,255,255)',  (string)$nc);
     }
 
     /** @test */

@@ -13,11 +13,13 @@ namespace Thapp\Image\Driver;
 
 use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
+use Thapp\Image\Metrics\Gravity;
 use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Filter\Filter;
 use Thapp\Image\Filter\FilterInterface;
+use Thapp\Image\Color\ColorInterface;
 
 /**
  * @class AbstractImage
@@ -29,7 +31,9 @@ use Thapp\Image\Filter\FilterInterface;
 abstract class AbstractImage implements ImageInterface
 {
     protected $format;
+    protected $frames;
     protected $gravity;
+    protected $palette;
 
     public function setFormat($format)
     {
@@ -56,6 +60,14 @@ abstract class AbstractImage implements ImageInterface
     public function getFormat()
     {
         return strtolower($this->format);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function destroy()
+    {
+        return false;
     }
 
     /**
@@ -91,6 +103,21 @@ abstract class AbstractImage implements ImageInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null)
+    {
+        if (null !== $crop) {
+            $box = new Box($this->getWidth(), $this->getHeight());
+            if ($box->contains($size)) {
+                $crop = $crop->negate();
+            }
+        }
+
+        $this->extent($size, $crop, $color);
+    }
+
+    /**
      * gravity
      *
      * @param GravityInterface $gravity
@@ -100,6 +127,11 @@ abstract class AbstractImage implements ImageInterface
     public function gravity(GravityInterface $gravity)
     {
         $this->gravity = $gravity;
+    }
+
+    public function getGravity()
+    {
+        return $this->gravity ?: new Gravity(GravityInterface::GRAVITY_NORTHWEST);
     }
 
     /**
@@ -133,7 +165,16 @@ abstract class AbstractImage implements ImageInterface
         }
 
         // get the point based on the garvity settings
-        return $this->gravity->getPoint($this->getSize(), $target);
+        $point = $this->gravity->getPoint($size = $this->getSize(), $target);
+
+        return $point->negate();
+        //if (!$size->contains($target)) {
+        //    return $point->negate();
+        //    /*return new Point(abs($point->getX()), abs($point->getY()));*/
+        //}
+
+        ///*return new Point(abs($point->getX()), abs($point->getY()));*/
+        //return $point;//$point->negate();
     }
 
     /**

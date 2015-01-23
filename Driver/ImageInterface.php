@@ -25,6 +25,37 @@ use Thapp\Image\Color\ColorInterface;
  */
 interface ImageInterface
 {
+    const FILTER_UNDEFINED = 0;
+    const FILTER_POINT = 1;
+    const FILTER_BOX = 2;
+    const FILTER_TRIANGLE = 3;
+    const FILTER_HERMITE = 4;
+    const FILTER_HANNING = 5;
+    const FILTER_HAMMING = 6;
+    const FILTER_BLACKMAN = 7;
+    const FILTER_GAUSSIAN = 8;
+    const FILTER_QUADRATIC = 9;
+    const FILTER_CUBIC = 10;
+    const FILTER_CATROM = 11;
+    const FILTER_MITCHELL = 12;
+    const FILTER_LANCZOS = 13;
+    const FILTER_BESSEL = 14;
+    const FILTER_SINC = 15;
+
+    const FORMAT_JPEG = 'jpeg';
+    const FORMAT_PNG = 'png';
+    const FORMAT_GIF = 'png';
+    const FORMAT_TIFF = 'tiff';
+    const FORMAT_WEBP = 'webp';
+    const FORMAT_XMB = 'xmb';
+
+    /**
+     * desctroy
+     *
+     * @return void
+     */
+    public function destroy();
+
     /**
      * coalesce
      *
@@ -42,80 +73,110 @@ interface ImageInterface
     public function hasFrames();
 
     /**
-     * getWidth
-     *
+     * Gets the current width
      *
      * @return int
      */
     public function getWidth();
 
     /**
-     * getHeight
+     * Gets the current height
      *
      * @return int
      */
     public function getHeight();
 
     /**
-     * newImage
+     * Creates a new ImageInterface instance
      *
-     * @param mixed $format
+     * @param string $format
      *
-     * @return ImageInterface
+     * @return void
      */
     public function newImage($format = null);
 
     /**
-     * getFormat
+     * Get the image output format.
      *
      * @return string
      */
     public function getFormat();
 
     /**
-     * setFormat
+     * Set the image output format.
      *
-     * @param mixed $format
+     * @param string $format
      *
      * @return void
      */
     public function setFormat($format);
 
     /**
-     * extent
+     * Resizes the image without affecting the image content size.
      *
      * @param BoxInterface $size
      * @param PointInterface $start
-     * @param mixed $color
+     * @param ColorInterface $color
      *
      * @return void
      */
     public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null);
 
     /**
-     * {@inheritdoc}
+     * scale
+     *
+     * @param mixed $perc
+     *
+     * @return void
      */
     public function scale($perc);
 
     /**
-     * {@inheritdoc}
+     * rotate
+     *
+     * @param mixed $deg
+     * @param ColorInterface $color
+     *
+     * @return void
      */
     public function rotate($deg, ColorInterface $color = null);
 
     /**
-     * {@inheritdoc}
+     * resize
+     *
+     * @param BoxInterface $size
+     *
+     * @return void
      */
     public function resize(BoxInterface $size);
 
     /**
-     * {@inheritdoc}
+     * crop
+     *
+     * @param BoxInterface $size
+     * @param PointInterface $crop
+     * @param ColorInterface $color
+     *
+     * @return void
      */
     public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null);
 
     /**
-     * {@inheritdoc}
+     * frames
+     *
+     *
+     * @return void
      */
     public function frames();
+
+    /**
+     * gravity
+     *
+     * @param GravityInterface $gravity
+     *
+     * @return void
+     */
+    public function gravity(GravityInterface $gravity);
 
     /**
      * {@inheritdoc}

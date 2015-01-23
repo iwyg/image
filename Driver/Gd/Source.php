@@ -12,6 +12,7 @@
 namespace Thapp\Image\Driver\Gd;
 
 use Thapp\Image\Driver\SourceInterface;
+use Thapp\Image\Exception\SourceException;
 
 /**
  * @class Source
@@ -27,9 +28,15 @@ class Source implements SourceInterface
      */
     public function read($resource)
     {
-        rewind($resource);
+        if (!is_resource($resource)) {
+            throw SourceException::resource();
+        }
 
-        return $this->create(stream_get_contents($resource));
+        try {
+            return $this->create(stream_get_contents($resource));
+        } catch (SourceException $e) {
+            throw SourceException::read($e->getPrevious());
+        }
 
     }
 
@@ -42,13 +49,14 @@ class Source implements SourceInterface
             return false;
         }
 
-        if (!$gd = Image::gdCreateFromFile($file)) {
-            return false;
+        $info = getimagesize($file);
+
+        if (!$gd = $this->postProcess($this->gdCreateFromFile($file, $info['mime']))) {
+            throw SourceException::load();
         }
 
         $image = new Image($gd);
-        $info = getimagesize($file);
-        $image->setFormat($this->getImageTypeFromMimetype($info['mime']));
+        $image->setSourceFormat($this->getImageTypeFromMimetype($info['mime']));
 
         return $image;
     }
@@ -58,21 +66,49 @@ class Source implements SourceInterface
      */
     public function create($content)
     {
-        $image = new Image(imagecreatefromString($content));
+        $image = new Image($this->postProcess(imagecreatefromString($content)));
+        $meta = getimagesizefromstring($content);
 
-        if ($type = $this->getImageTypeFromString(mb_substr($content, 0, 16, '8bit'))) {
-            $image->setFormat($type);
+        if (isset($meta['mime'])) {
+            $image->setSourceFormat($this->getImageTypeFromMimetype($meta['mime']));
         }
 
         return $image;
     }
 
-    protected function getImageTypeFromString($image)
+    protected function postProcess($gd)
     {
-        list($mime, ) = explode(';', finfo_buffer($info = finfo_open(FILEINFO_MIME), $image));
-        finfo_close($info);
+        if (!imageistruecolor($gd)) {
+            /*$resource = $gd;*/
+            /*$gd = imagepalettetotruecolor($resource);*/
+            /*imagedestroy($resource);*/
+        }
 
-        return $this->getImageTypeFromMimetype($mime);
+        imagealphablending($gd, false);
+        imagesavealpha($gd, true);
+
+        return $gd;
+    }
+
+    protected function gdCreateFromFile($file, $mime)
+    {
+        switch ($mime) {
+            case 'image/jpeg':
+                return imagecreatefromjpeg($file);
+            case 'image/png':
+                return imagecreatefrompng($file);
+            case 'image/gif':
+                return imagecreatefromgif($file);
+            case 'image/vnd.wap.wbmp':
+                return imagecreatefromwbmp($file);
+            case 'image/webp':
+                return imagecreatefromwebp($file);
+            case 'image/x-xbitmap':
+            case 'image/x-xbm':
+                return imagecreatefromxbm($file);
+            default:
+                return false;
+        }
     }
 
     protected function getImageTypeFromMimetype($mime)

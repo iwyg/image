@@ -13,6 +13,9 @@ namespace Thapp\Image\Tests\Driver\Imagick;
 
 use Thapp\Image\Driver\Imagick\Image;
 use Thapp\Image\Driver\Imagick\Source;
+use Thapp\Image\Metrics\Box;
+use Thapp\Image\Metrics\Point;
+use Thapp\Image\Metrics\Gravity;
 use Thapp\Image\Tests\ImageTest as AbstractImageTest;
 
 /**
@@ -24,6 +27,7 @@ use Thapp\Image\Tests\ImageTest as AbstractImageTest;
  */
 class ImageTest extends AbstractImageTest
 {
+    protected $handle;
     /** @test */
     public function itShouldGetImagick()
     {
@@ -47,11 +51,39 @@ class ImageTest extends AbstractImageTest
         $this->assertFalse($image->hasFrames());
     }
 
+    protected function loadImage($file)
+    {
+        $image = (new Source())->load($file);
+
+        return $image;
+    }
+
+    protected function getDriverName()
+    {
+        return 'imagick';
+    }
+
     protected function newImage($w, $h, $format = 'jpeg')
     {
         $resource = $this->getTestImage($w, $h, $format);
         $source = new Source;
 
         return $source->read($resource);
+    }
+
+    protected function setUp()
+    {
+        if (!class_exists('Imagick')) {
+            $this->markTestIncomplete();
+        }
+
+        parent::setUp();
+    }
+
+    protected function tearDown()
+    {
+        if (is_resource($this->handle)) {
+            fclose($this->handle);
+        }
     }
 }

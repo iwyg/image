@@ -61,7 +61,7 @@ class Rgb implements ColorInterface
         $this->r = (int)$r;
         $this->g = (int)$g;
         $this->b = (int)$b;
-        $this->a = $a === null ? $a : (float)min(max($a, 0), 1.0);
+        $this->a = null === $a ? $a : (float)min(max($a, 0), 1.0);
     }
 
     /**
@@ -109,7 +109,7 @@ class Rgb implements ColorInterface
      */
     public function getAlpha()
     {
-        return $this->a ?: 1.0;
+        return null !== $this->a ? $this->a : 1.0;
     }
 
     /**
@@ -118,9 +118,9 @@ class Rgb implements ColorInterface
     public function __toString()
     {
         if (null !== $this->a) {
-            return sprintf('rgba(%s, %s, %s, %s)', $this->r, $this->g, $this->b, $this->a);
+            return sprintf('rgba(%s,%s,%s,%s)', $this->r, $this->g, $this->b, $this->a);
         }
 
-        return sprintf('rgb(%s, %s, %s)', $this->r, $this->g, $this->b);
+        return sprintf('rgb(%s,%s,%s)', $this->r, $this->g, $this->b);
     }
 }

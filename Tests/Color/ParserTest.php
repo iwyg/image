@@ -51,4 +51,28 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $rgb = Parser::hexToRgb('#fff');
         $this->assertSame([255, 255, 255], $rgb);
     }
+
+    /** @test */
+    public function itShouldConvertRgbStringColorToRgb()
+    {
+        $rgb = Parser::toRgb('rgba(255,127, 255, 0.5)');
+
+        $this->assertInternalType('array', $rgb);
+        $this->assertSame(255, $rgb[0]);
+        $this->assertSame(127, $rgb[1]);
+        $this->assertSame(255, $rgb[2]);
+        $this->assertSame(0.5, $rgb[3]);
+    }
+
+    /** @test */
+    public function itShouldConvertChannelsArrayToRgb()
+    {
+        $rgb = Parser::toRgb([255, 127, 255]);
+
+        $this->assertInternalType('array', $rgb);
+        $this->assertSame(255, $rgb[0]);
+        $this->assertSame(127, $rgb[1]);
+        $this->assertSame(255, $rgb[2]);
+        $this->assertSame(1.0, $rgb[3]);
+    }
 }

@@ -24,6 +24,16 @@ use Thapp\Image\Tests\ImageTest as AbstractImageTest;
  */
 class ImageTest extends AbstractImageTest
 {
+    protected function getDriverName()
+    {
+        return 'gd';
+    }
+
+    protected function loadImage($file)
+    {
+        return (new Source())->load($file);
+    }
+
     protected function newImage($w, $h, $format = 'jpeg')
     {
         $resource = $this->getTestImage($w, $h, $format);

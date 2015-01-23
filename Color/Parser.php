@@ -20,6 +20,46 @@ namespace Thapp\Image\Color;
  */
 class Parser
 {
+    /**
+     * toRgb
+     *
+     * @param mixed $color
+     *
+     * @return array
+     */
+    public static function toRgb($color)
+    {
+        $channels = null;
+        if (is_array($color)) {
+            $channels = list($r, $g, $b, $a) = array_pad($color, 4, null);
+        } elseif (is_string($color)) {
+            if (preg_match('#^s?rgba?\((.*)\)$#', strtolower($color), $matches)) {
+                $channels = list($r, $g, $b, $a) = array_map(function ($val) {
+                    return 0 !== substr_count($val, '.') ? (float)$val : (int)$val;
+                }, array_pad(preg_split('~,\s?~', $matches[1], -1, PREG_SPLIT_NO_EMPTY), 4, null));
+            } elseif (static::isHex($color)) {
+                $channels = list($r, $g, $b) = array_pad(static::hexToRgb($color), 4, null);
+            }
+        }
+
+        if (null === $channels) {
+            throw new \RuntimeException;
+        }
+
+        if (null === $channels[3]) {
+            $channels[3] = 1.0;
+        }
+
+        return $channels;
+    }
+
+    /**
+     * hexToRgb
+     *
+     * @param string $hex
+     *
+     * @return array
+     */
     public static function hexToRgb($hex)
     {
         if (!static::isHex($color = ltrim($hex, '#'))) {
@@ -37,23 +77,39 @@ class Parser
         return $rgb;
     }
 
+    /**
+     * rgbToHex
+     *
+     * @param int $r
+     * @param int $g
+     * @param int $b
+     *
+     * @return string
+     */
     public static function rgbToHex($r, $g, $b)
     {
-        $hex = '';
-
-        foreach ([$r, $g, $b] as $channel) {
-            $c = dechex($channel);
-            $hex .= str_pad($c, 2, '0', STR_PAD_LEFT);
-        }
-
-        return $hex;
+        return sprintf('%02x%02x%02x', $r, $g, $b);
     }
 
+    /**
+     * isHex
+     *
+     * @param string $color
+     *
+     * @return boolean
+     */
     public static function isHex($color)
     {
         return (boolean)preg_match('#^([[:xdigit:]]{6}|[[:xdigit:]]{3})$#', ltrim($color, '#'));
     }
 
+    /**
+     * normalize
+     *
+     * @param string $hex
+     *
+     * @return string
+     */
     public static function normalize($hex)
     {
         if (3 === strlen($color = ltrim($hex, '#'))) {
@@ -62,7 +118,7 @@ class Parser
             return '#'.$r.$r.$g.$g.$b.$b;
         }
 
-        return $color;
+        return '#'.$color;
     }
 }
 

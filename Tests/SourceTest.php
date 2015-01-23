@@ -22,12 +22,14 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
 {
     use ImageTestHelper;
 
+    protected $images = [];
+
     /** @test */
     public function itShouldReadResource()
     {
         $source = $this->newSource();
         $stream = $this->getTestImage();
-        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $source->read($stream));
+        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->images[] = $source->read($stream));
     }
 
     /** @test */
@@ -45,15 +47,15 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
             $file = $meta['uri'];
         }
 
-        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $source->load($file));
+        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->images[] = $source->load($file));
     }
 
     /** @test */
-    public function itShouldCreateImageFromString()
+    public function itShouldCreateImageFromBlob()
     {
         $source = $this->newSource();
         $stream = $this->getTestImage();
-        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $source->create(stream_get_contents($stream)));
+        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->images[] = $source->create(stream_get_contents($stream)));
     }
 
     protected function newSource()
@@ -61,6 +63,16 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
         $class = $this->getSourceClass();
 
         return new $class;
+    }
+
+    protected function tearDown()
+    {
+        // prevent segfault oon Gmagick
+        foreach ($this->images as $image) {
+            $image->destroy();
+        }
+
+        $this->images = [];
     }
 
     abstract protected function getSourceClass();

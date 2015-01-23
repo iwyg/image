@@ -22,9 +22,15 @@ use Thapp\Image\Tests\SourceTest as Source;
  */
 class SourceTest extends Source
 {
-
     protected function getSourceClass()
     {
         return 'Thapp\Image\Driver\Imagick\Source';
+    }
+
+    protected function setUp()
+    {
+        if (!class_exists('Imagick')) {
+            $this->markTestIncomplete();
+        }
     }
 }

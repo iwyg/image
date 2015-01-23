@@ -13,6 +13,10 @@ namespace Thapp\Image\Driver\Imagick;
 
 use Imagick;
 use Thapp\Image\Driver\SourceInterface;
+use Thapp\Image\Palette\Rgb as PaletteRgb;
+use Thapp\Image\Palette\Greyscale as PaletteGrey;
+use Thapp\Image\Palette\Cmyk as PaletteCmyk;
+use Thapp\Image\Exception\SourceException;
 
 /**
  * @class Source
@@ -28,6 +32,10 @@ class Source implements SourceInterface
      */
     public function read($resource)
     {
+        if (!is_resource($resource)) {
+            throw SourceException::resource();
+        }
+
         $imagick = new Imagick;
 
         try {
@@ -35,7 +43,7 @@ class Source implements SourceInterface
         } catch (\Exception $e) {
             $imagick->destroy();
 
-            return false;
+            throw SourceException::resource($e);
         }
 
         return new Image($imagick);
@@ -54,7 +62,7 @@ class Source implements SourceInterface
         } catch (\Exception $e) {
             $imagick->destroy();
 
-            return false;
+            throw SourceException::resource($e);
         }
 
         return new Image($imagick);
@@ -72,9 +80,32 @@ class Source implements SourceInterface
         } catch (\Exception $e) {
             $imagick->destroy();
 
-            return false;
+            throw SourceException::resource($e);
         }
 
         return new Image($imagick);
+    }
+
+    /**
+     * getColorPalette
+     *
+     * @param Imagick $image
+     *
+     * @return PaletteInterface
+     */
+    protected function getColorPalette(Imagick $image)
+    {
+        switch ($image->getImageColorSpace()) {
+            case Imagick::COLORSPACE_RGB:
+            case Imagick::COLORSPACE_SRGB:
+                return new PaletteRgb;
+            case Imagick::COLORSPACE_GRAY:
+                return new PaletteGreyscale;
+            case Imagick::COLORSPACE_CMYK:
+                return new PaletteCmyk;
+            default:
+                throw new \InvalidArgumentException('Unsupported color space.');
+                break;
+        }
     }
 }
