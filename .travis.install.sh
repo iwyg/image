@@ -5,12 +5,12 @@ echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
 
 #if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ] || [ "$TRAVIS_PHP_VERSION" = 'hhvm-nightly' ] ; then
 #    echo "skipping imagick installation"
-if ["$IMAGE_DRIVER" = 'imagick']
+if ["$IMAGE_DRIVER" = 'imagick'] ; then
 	pear config-set preferred_state beta
 	printf "\n" | pecl install imagick
 	echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 	php --ri magick 
-elif ["$IMAGE_DRIVER" = 'gmagick']
+elif ["$IMAGE_DRIVER" = 'gmagick'] ; then
 	#sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev;
     #wget http://pecl.php.net/get/gmagick-1.1.7RC2.tgz;
 	#tar -xzf gmagick-1.1.7RC2.tgz;
