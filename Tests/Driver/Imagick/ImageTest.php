@@ -66,7 +66,7 @@ class ImageTest extends AbstractImageTest
     protected function newImage($w, $h, $format = 'jpeg')
     {
         $resource = $this->getTestImage($w, $h, $format);
-        $source = new Source;
+        $source = new Source();
 
         return $source->read($resource);
     }
