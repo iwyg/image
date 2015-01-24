@@ -3,7 +3,7 @@ sudo apt-get autoremove;
 sudo apt-get install -y libtiff-dev libjpeg-dev libdjvulibre-dev libwmf-dev pkg-config;
 
 if [ "$IMAGE_DRIVER" = "imagick" ] ; then
-	sudo apt-get install -y imagemagick;
+	sudo apt-get install -y imagemagick libmagickcore-dev libmagickwand-dev;
 	pear config-set preferred_state beta;
 	printf "\n" | pecl install imagick-3.2.0RC1;
 	echo "extension=imagick.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
