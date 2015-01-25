@@ -8,7 +8,7 @@ if [ "$IMAGE_DRIVER" = "imagick" ] ; then
 	cd ImageMagick-6.9.0-4;
 	./configure --prefix=/usr/local/imagemagick --with-libtiff;
 	make -j;
-	sudo make insall;
+	sudo make install;
 	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/imagemagick/lib/pkgconfig;
 	sudo ln -s /usr/local/imagemagick/include/ImageMagick-6 /usr/local/imagemagick/include/ImageMagick;
 	cd ..;
@@ -25,10 +25,14 @@ if [ "$IMAGE_DRIVER" = "imagick" ] ; then
 fi
 
 if [ "$IMAGE_DRIVER" = "gmagick" ] ; then
-	sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev;
-	pear config-set preferred_state beta;
-	printf "\n" | pecl install gmagick-1.1.7RC2;
-	echo "extension=gmagick.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
+	curl -O http://pecl.php.net/get/gmagick-1.1.7RC2.tgz;
+	tar xzf gmagick-1.1.7RC2;
+	cd gmagick-1.1.7RC2;
+	phpize;
+	./configure --with-gmagick=/usr/local;
+	make -j;
+	sudo make install;
+	echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 	php --ri gmagick;
 fi
 
