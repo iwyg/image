@@ -26,7 +26,7 @@ fi
 
 if [ "$IMAGE_DRIVER" = "gmagick" ] ; then
 	curl -O http://pecl.php.net/get/gmagick-1.1.7RC2.tgz;
-	tar xzf gmagick-1.1.7RC2;
+	tar xzf gmagick-1.1.7RC2.tgz;
 	cd gmagick-1.1.7RC2;
 	phpize;
 	./configure --with-gmagick=/usr/local;
