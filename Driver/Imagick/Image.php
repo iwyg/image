@@ -295,7 +295,9 @@ class Image extends AbstractImage
 
         if (!in_array($format, ['png', 'gif', 'tiff']) ) {
             // preserve color apearance when flatten images
-            $this->edit()->canvas($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
+            if (Imagick::ALPHACHANNEL_ACTIVATE === $this->imagick->getImageAlphaChannel()) {
+                $this->edit()->canvas($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
+            }
             $this->imagick->flattenImages();
         }
 

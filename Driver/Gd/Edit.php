@@ -21,6 +21,7 @@ use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Color\RgbInterface;
 use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Edit
@@ -100,7 +101,11 @@ class Edit extends AbstractEdit
         $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255]);
         $extent = $this->image->newGd($size, $color);
 
+        imagealphablending($extent, true);
+
         $this->doCopy($extent, $this->gd(), $point, 'canvas');
+
+        imagealphablending($this->gd(), false);
     }
 
     /**
@@ -128,14 +133,9 @@ class Edit extends AbstractEdit
      */
     protected function doCopy($gd, $dest, PointInterface $start, $ops = 'paste')
     {
-        try {
-            imagecopy($gd, $dest, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight());
-        }  catch (\Exception $e) {
-            var_dump($ops);
-        }
+        imagecopy($gd, $dest, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight());
 
         if ($gd !== $this->gd()) {
-            //var_dump($ops . ' swapp GD.');
             $this->image->swapGd($gd);
         }
     }

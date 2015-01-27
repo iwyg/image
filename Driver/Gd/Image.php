@@ -258,7 +258,7 @@ class Image extends AbstractImage
      */
     public function get($format = null, array $options = [])
     {
-        $format = $format ?: $this->getOption('format', $options, $this->getFormat());
+        $format = $format ?: $this->getOption($options, 'format', $this->getFormat());
 
         if (in_array($format, $fmts = ['png', 'gif'])) {
             imagealphablending($this->gd, false);

@@ -52,15 +52,25 @@ class Edit extends AbstractEdit
     {
         $start = $this->getStartPoint($size, $start);
 
-        if ($this->getSize()->contains($size)) {
-            $color = $this->newColor([255, 255, 255, 0]);
-        } else {
-            $color = $color ?: $this->newColor([255, 255, 255, 0]);
-        }
+        //if ($this->getSize()->contains($size)) {
+        //    $color = $this->newColor([255, 255, 255, 0]);
+        //} else {
+        //    $color = $color ?: $this->newColor([255, 255, 255, 0]);
+        //}
+        //
+        $color = $color ?: $this->newColor([255, 255, 255, 0]);
 
-        $this->canvas($size, $start, $color);
+        //$this->canvas($size, $start, $color);
+
+        $canvas = new Imagick();
+        $canvas->newImage($size->getWidth(), $size->getHeight(), $color ? $color->getColorAsString() : 'transparent');
+        $this->doCopy($canvas, $this->imagick(), $start, Imagick::COMPOSITE_COPY);
 
         $this->imagick()->setImagePage(0, 0, 0, 0);
+        //$canvas->compositeImage($this->imagick(), Imagick::COMPOSITE_COPY, $start->getX(), $start->getY());
+        //$canvas->setImageFormat($this->image->getFormat());
+
+        //$this->image->swapImagick($canvas);
     }
 
     /**

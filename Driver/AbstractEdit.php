@@ -13,6 +13,7 @@ namespace Thapp\Image\Driver;
 
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Metrics\BoxInterface;
+use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
