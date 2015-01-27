@@ -8,7 +8,9 @@
 [![Latest Unstable Version](https://poser.pugx.org/thapp/image/v/unstable.png)](https://packagist.org/packages/thapp/image) 
 [![License](https://poser.pugx.org/thapp/image/license.png)](https://packagist.org/packages/thapp/image)
 
-This module was create for the usage in Thapp\JitImage.
+This module was created for the usage in Thapp\JitImage, but can be used as
+a standalone library for manipulating images. It's highly inspired by the Imagine
+library, but resolves a views flaws, but also way more limited. 
 
 ## Installation
 
@@ -51,7 +53,6 @@ $image->save('newimage.jpg');
 The `Source` object is able to create `Image` instances from either filepaths,
 filehandles, or binary strings:
 
-
 ```php
 <?php
 
@@ -63,7 +64,34 @@ $image = $source->load('image.jpg');
 $handle = fopen('image.jpg', 'r+');
 $image = $source->read($handle);
 // or read the file from a binary string:
-$content = file_get_cotnents('image.jpg');
+$content = file_get_contents('image.jpg');
 $image = $source->create($content);
+
+```
+
+The `Source` class takes an instance of
+`Thapp\Image\Info\MetaDataReaderInterface` as its first argument. The `$reader`
+is used to read meta information about the image. This is useful e.g. if you
+want to autorotate the image based on its orientation. 
+
+By default, a new instance of `Thapp\Image\Info\ImageReader` is created for
+you. `ImageReader` is capable of reading basic image information derived from
+the php [`getimagesize()`](http://php.net/manual/en/function.getimagesize.php) function.
+
+You may use the `Thapp\Image\Info\ImageReader` class instead, which provides
+a wider range of information (e.g. needed for `GD` and `Gmagick` drivers to
+determine the correct image orientation).
+
+```php
+<?php
+
+use Thapp\Image\Info\ExifReader;
+use Thapp\Image\Driver\Imagick\Source;
+
+$source = new Source(new ExifReader);
+
+// ...
+
+$image = $source->load('image.jpg');
 
 ```
