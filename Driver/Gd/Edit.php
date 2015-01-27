@@ -85,7 +85,7 @@ class Edit extends AbstractEdit
         }
 
         $size = $this->getSize()->rotate($deg);
-        $rotate = imagerotate($this->gd(), (float)(-1.0 * $deg), $this->getColorId($this->gd, $color));
+        $rotate = imagerotate($this->gd(), (float)(-1.0 * $deg), $this->getColorId($this->gd(), $color));
 
         $this->image->swapGd($rotate);
 
@@ -100,7 +100,7 @@ class Edit extends AbstractEdit
         $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255]);
         $extent = $this->image->newGd($size, $color);
 
-        $this->doCopy($extent, $point, $color);
+        $this->doCopy($extent, $this->gd(), $point, 'canvas');
     }
 
     /**
@@ -112,11 +112,9 @@ class Edit extends AbstractEdit
             throw new \LogicException('Can\'t copy image from different driver.');
         }
 
-        if (self::COPY_DEFAULT !== $mode) {
-            throw new \InvalidArgumentException('Invalid value for copy mode.');
-        }
+        $start = $this->getStartPoint($image->getSize(), $start)->negate();
 
-        $this->doCopy($image->getGd(), $point ?: new Point(0, 0), self::COPY_DEFAULT);
+        $this->doCopy($this->gd(), $image->getGd(), $start, 'paste');
     }
 
     /**
@@ -128,11 +126,18 @@ class Edit extends AbstractEdit
      *
      * @return void
      */
-    protected function doCopy($gd, PointInterface $start, $mode = self::COPY_DEFAULT)
+    protected function doCopy($gd, $dest, PointInterface $start, $ops = 'paste')
     {
-        imagecopy($gd, $this->gd(), $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight());
+        try {
+            imagecopy($gd, $dest, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight());
+        }  catch (\Exception $e) {
+            var_dump($ops);
+        }
 
-        $this->image->swapGd($gd);
+        if ($gd !== $this->gd()) {
+            //var_dump($ops . ' swapp GD.');
+            $this->image->swapGd($gd);
+        }
     }
 
     /**

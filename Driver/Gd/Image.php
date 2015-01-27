@@ -98,6 +98,19 @@ class Image extends AbstractImage
         return true;
     }
 
+    //public function save($path, $format = null, array $options = [])
+    //{
+    //    $format = $format ?: $this->getOption('format', $options, $this->getFormat());
+
+    //    var_dump(sprintf('saving image %s with format %s', $path, $format));
+
+    //    if (!file_put_contents($path, $this->generateOutPut($format))) {
+    //        var_dump('FAIL');
+    //    } else {
+    //        var_dump('SUCCESS');
+    //    }
+    //}
+
     /**
      * {@inheritdoc}
      */
@@ -249,10 +262,6 @@ class Image extends AbstractImage
             $format = ($fmt = $this->getOption($options, 'format', false)) ? $fmt : $this->getFormat();
         }
 
-        if (!$fn = $this->mapOutputFormat($format)) {
-            throw new \RuntimeException(sprintf('Unsupported format "%s".', $format));
-        }
-
         if (in_array($format, $fmts = ['png', 'gif'])) {
             /*imagealphablending($this->gd, false);*/
             /*imagesavealpha($this->gd, true);*/
@@ -264,7 +273,7 @@ class Image extends AbstractImage
             /*$this->swapGd($canvas);*/
         }
 
-        return $this->generateOutPut($fn);
+        return $this->generateOutPut($format);
     }
 
     protected function newEdit()
@@ -319,8 +328,12 @@ class Image extends AbstractImage
      *
      * @return string
      */
-    private function generateOutPut($fn)
+    private function generateOutPut($format)
     {
+        if (!is_callable($fn = $this->mapOutputFormat($format))) {
+            throw new ImagException(sprintf('Unsupported format "%s".', (string)$format));
+        }
+
         ob_start();
         call_user_func($fn, $this->gd);
 

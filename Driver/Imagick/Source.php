@@ -33,9 +33,7 @@ class Source extends AbstractSource
      */
     public function read($resource)
     {
-        if (!is_resource($resource) || 'stream' !== get_resource_type($resource)) {
-            throw SourceException::resource();
-        }
+        $this->validateStream($resource);
 
         $imagick = new Imagick;
 

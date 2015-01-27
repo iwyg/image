@@ -12,7 +12,7 @@
 namespace Thapp\Image\Tests\Driver\Imagick;
 
 use Thapp\Image\Exception\ImageException;
-use Thapp\Image\Tests\SourceTest as Source;
+use Thapp\Image\Tests\Driver\SourceTest as Source;
 
 /**
  * @class SourceTest

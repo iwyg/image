@@ -13,7 +13,7 @@ namespace Thapp\Image\Tests\Driver\Gmagick;
 
 use Gmagick;
 use Thapp\Image\Driver\Gmagick\Source;
-use Thapp\Image\Tests\ImageTestHelper;
+use Thapp\Image\Tests\Driver\ImageTestHelper;
 
 /**
  * @class TestTest

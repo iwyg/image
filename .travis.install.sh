@@ -3,13 +3,13 @@ composer -vvv install --prefer-source --no-interaction --dev
 
 sudo apt-get remove -y imagemagick libmagickcore-dev libmagickwand-dev;
 sudo apt-get autoremove;
-sudo apt-get install -y libtiff-dev libjpeg-dev libdjvulibre-dev libwmf-dev pkg-config;
+sudo apt-get install -y libtiff-dev libjpeg-dev libpng-dev libdjvulibre-dev libwmf-dev pkg-config;
 
 if [ "$IMAGE_DRIVER" = "imagick" ] ; then
 	curl -O http://www.imagemagick.org/download/releases/ImageMagick-6.9.0-4.tar.gz;
 	tar xzf ImageMagick-6.9.0-4.tar.gz;
 	cd ImageMagick-6.9.0-4;
-	./configure --prefix=/usr/local/imagemagick --with-libtiff;
+	./configure --prefix=/usr/local/imagemagick;
 	make -j;
 	sudo make install;
 	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/imagemagick/lib/pkgconfig;

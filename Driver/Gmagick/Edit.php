@@ -76,7 +76,7 @@ class Edit extends AbstractEdit
      */
     public function rotate($deg, ColorInterface $color = null)
     {
-        $this->gmagick->rotateImage($px = $this->newPixel($color), (float)$deg);
+        $this->gmagick()->rotateImage($px = $this->newPixel($color), (float)$deg);
 
         $px->clear();
         $px->destroy();
@@ -90,7 +90,7 @@ class Edit extends AbstractEdit
         $canvas = new gmagick();
         $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
 
-        $this->doCopy($canvas, $size, $point, Gmagick::COMPOSITE_OVER);
+        $this->doCopy($canvas, $point, Gmagick::COMPOSITE_OVER);
     }
 
     /**
@@ -102,7 +102,7 @@ class Edit extends AbstractEdit
             throw new \LogicException('Can\'t copy image from different driver.');
         }
 
-        $this->doCopy($image->getGmagick(), $point ?: new Point(0, 0), Gmagick::COMPOSITE_DEFAULT);
+        $this->doCopy($image->getGmagick(), $start ?: new Point(0, 0), Gmagick::COMPOSITE_DEFAULT);
     }
 
     /**
@@ -115,9 +115,9 @@ class Edit extends AbstractEdit
      *
      * @return void
      */
-    protected function doCopy(Gmagick $canvas, BoxInterface $size, PointInterface $point, $mode = Gmagick::COMPOSITE_OVER)
+    protected function doCopy(Gmagick $canvas, PointInterface $point, $mode = Gmagick::COMPOSITE_OVER)
     {
-        $canvas->compositeImage($this->gmagick(), Gmagick::COMPOSITE_OVER, $point->getX(), $point->getY());
+        $canvas->compositeImage($this->gmagick(), $mode, $point->getX(), $point->getY());
         $canvas->setImageFormat($this->gmagick()->getImageFormat());
 
         $this->image->swapGmagick($canvas);

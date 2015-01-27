@@ -20,6 +20,7 @@ use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\DriverAwareFilterInterface;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class AbstractImage
@@ -107,7 +108,7 @@ abstract class AbstractImage implements ImageInterface
             return true;
         }
 
-        throw new \RuntimeException(sprintf('Couldn\'t write image to given file %s.', $path));
+        throw new ImageException(sprintf('Couldn\'t write image to given file %s.', $path));
     }
 
     /**

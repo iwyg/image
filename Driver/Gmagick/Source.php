@@ -33,9 +33,7 @@ class Source extends AbstractSource
      */
     public function read($resource)
     {
-        if (!is_resource($resource) || 'stream' !== get_resource_type($resource)) {
-            throw ImageException::resource();
-        }
+        $this->validateStream($resource);
 
         $meta = stream_get_meta_data($resource);
 

@@ -13,7 +13,7 @@ namespace Thapp\Image\Tests\Driver\Gd;
 
 use Thapp\Image\Driver\Gd\Image;
 use Thapp\Image\Driver\Gd\Source;
-use Thapp\Image\Tests\ImageTest as AbstractImageTest;
+use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
 
 /**
  * @class ImageTest
@@ -42,12 +42,12 @@ class ImageTest extends AbstractImageTest
         return $source->read($resource);
     }
 
-    protected function setUp()
-    {
-        //if (isset($_ENV['IMAGE_DRIVER']) && 'gd' !== $_ENV['IMAGE_DRIVER']) {
-        //    $this->markTestIncomplete();
-        //}
+    //protected function setUp()
+    //{
+    //    if (isset($_ENV['IMAGE_DRIVER']) && 'gd' !== $_ENV['IMAGE_DRIVER']) {
+    //        $this->markTestIncomplete();
+    //    }
 
-        parent::setUp();
-    }
+    //    parent::setUp();
+    //}
 }

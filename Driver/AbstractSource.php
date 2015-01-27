@@ -13,6 +13,7 @@ namespace Thapp\Image\Driver;
 
 use Thapp\Image\Info\ImageReader;
 use Thapp\Image\Info\MetaDataReaderInterface;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class AbstractSource
@@ -24,6 +25,22 @@ use Thapp\Image\Info\MetaDataReaderInterface;
 abstract class AbstractSource implements SourceInterface
 {
     protected $reader;
+
+    /**
+     * validateStream
+     *
+     * @param mixed $resource
+     *
+     * @return boolean
+     */
+    protected function validateStream($resource)
+    {
+        if (!is_resource($resource) || 'stream' !== get_resource_type($resource)) {
+            throw ImageException::resource();
+        }
+
+        return true;
+    }
 
     /**
      * Constructor.

@@ -11,7 +11,7 @@
 
 namespace Thapp\Image\Tests\Driver\Gmagick;
 
-use Thapp\Image\Tests\SourceTest as Source;
+use Thapp\Image\Tests\Driver\SourceTest as Source;
 
 /**
  * @class SourceTest

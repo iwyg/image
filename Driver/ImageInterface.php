@@ -27,11 +27,11 @@ interface ImageInterface
 {
     const FORMAT_JPEG = 'jpeg';
     const FORMAT_PNG  = 'png';
-    const FORMAT_GIF  = 'png';
+    const FORMAT_GIF  = 'gif';
     const FORMAT_TIFF = 'tiff';
     const FORMAT_WBMP = 'wbmp';
     const FORMAT_WEBP = 'webp';
-    const FORMAT_XMB  = 'xmb';
+    const FORMAT_XBM  = 'xbm';
 
     const FILTER_UNDEFINED = 0;
     const FILTER_POINT = 1;

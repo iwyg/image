@@ -34,7 +34,7 @@ class Gravity implements GravityInterface
      */
     public function __construct($mode)
     {
-        $this->mode = max(1, min(9, (int)$mode));
+        $this->mode = max(self::GRAVITY_NORTHWEST, min(self::GRAVITY_SOUTHEAST, (int)$mode));
     }
 
     /**

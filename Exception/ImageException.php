@@ -25,7 +25,7 @@ class ImageException extends \Exception
      *
      * @param \Exception $previous
      *
-     * @return SourceException
+     * @return ImageException
      */
     public static function read(\Exception $previous = null)
     {
@@ -37,7 +37,7 @@ class ImageException extends \Exception
      *
      * @param \Exception $previous
      *
-     * @return SourceException
+     * @return ImageException
      */
     public static function load(\Exception $previous = null)
     {
@@ -49,10 +49,22 @@ class ImageException extends \Exception
      *
      * @param \Exception $previous
      *
-     * @return SourceException
+     * @return ImageException
      */
     public static function create(\Exception $previous = null)
     {
         return new static('Creating image resource failed.', $previous ? $previous->getCode() : null, $previous);
+    }
+
+    /**
+     * resource
+     *
+     * @param \Exception $previous
+     *
+     * @return ImageException
+     */
+    public static function resource(\Exception $previous = null)
+    {
+        return new static('Supplied resource is invalid.', $previous ? $previous->getCode() : null, $previous);
     }
 }

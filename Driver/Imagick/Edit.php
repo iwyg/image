@@ -53,9 +53,9 @@ class Edit extends AbstractEdit
         $start = $this->getStartPoint($size, $start);
 
         if ($this->getSize()->contains($size)) {
-            $color = $this->image->getPalette()->getColor([255, 255, 255, 0]);
+            $color = $this->newColor([255, 255, 255, 0]);
         } else {
-            $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255, 0]);
+            $color = $color ?: $this->newColor([255, 255, 255, 0]);
         }
 
         $this->canvas($size, $start, $color);
@@ -76,7 +76,7 @@ class Edit extends AbstractEdit
      */
     public function rotate($deg, ColorInterface $color = null)
     {
-        $this->imagick->rotateImage($px = $this->newPixel($color), (float)$deg);
+        $this->imagick()->rotateImage($px = $this->newPixel($color ?: $this->newColor([255, 255, 255])), (float)$deg);
 
         $px->clear();
         $px->destroy();
@@ -90,7 +90,7 @@ class Edit extends AbstractEdit
         $canvas = new Imagick();
         $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
 
-        $this->doCopy($canvas, $size, $point, Imagick::COMPOSITE_OVER);
+        $this->doCopy($canvas, $this->imagick(), $point, Imagick::COMPOSITE_OVER);
     }
 
     /**
@@ -102,7 +102,17 @@ class Edit extends AbstractEdit
             throw new \LogicException('Can\'t copy image from different driver.');
         }
 
-        $this->doCopy($image->getImagick(), $point ?: new Point(0, 0), $this->mapMode(self::COPY_DEFAULT));
+        $start = $this->getStartPoint($image->getSize(), $start)->negate();
+
+        // use the first image:
+        $imagick = $image->getImagick();
+        $index = $imagick->getIteratorIndex();
+        $imagick->setFirstIterator();
+
+        $this->doCopy($this->imagick(), $imagick, $start, Imagick::COMPOSITE_COPY);
+
+        // reset the iterator index to the previous index:
+        $imagick->setIteratorIndex($index);
     }
 
     /**
@@ -115,12 +125,14 @@ class Edit extends AbstractEdit
      *
      * @return void
      */
-    protected function doCopy(Imagick $canvas, BoxInterface $size, PointInterface $point, $mode = Imagick::COMPOSITE_OVER)
+    protected function doCopy(Imagick $canvas, Imagick $dest, PointInterface $point, $mode = Imagick::COMPOSITE_OVER)
     {
-        $canvas->compositeImage($this->imagick(), Imagick::COMPOSITE_OVER, $point->getX(), $point->getY());
-        $canvas->setImageFormat($this->imagick()->getImageFormat());
+        $canvas->compositeImage($dest, $mode, $point->getX(), $point->getY());
 
-        $this->image->swapImagick($canvas);
+        if ($canvas !== $this->imagick() && $dest === $this->imagick()) {
+            $canvas->setImageFormat($dest->getImageFormat());
+            $this->image->swapImagick($canvas);
+        }
     }
 
     /**
@@ -181,7 +193,7 @@ class Edit extends AbstractEdit
      */
     private function newPixel(ColorInterface $color)
     {
-        return new ImagickPixel($color ? $color->getColor() : self::COLOR_NONE);
+        return new ImagickPixel($color ? $color->getColorAsString() : self::COLOR_NONE);
     }
 
     /**

@@ -118,4 +118,12 @@ abstract class AbstractEdit implements EditInterface
     {
         return $this->image;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function newColor($args)
+    {
+        return $this->getImage()->getPalette()->getColor($args);
+    }
 }

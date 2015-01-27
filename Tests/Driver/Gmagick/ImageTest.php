@@ -17,7 +17,7 @@ use Thapp\Image\Driver\Gmagick\Source;
 use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\Gravity;
-use Thapp\Image\Tests\ImageTest as AbstractImageTest;
+use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
 
 /**
  * @class ImageTest
