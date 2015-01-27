@@ -258,19 +258,17 @@ class Image extends AbstractImage
      */
     public function get($format = null, array $options = [])
     {
-        if (null === $format) {
-            $format = ($fmt = $this->getOption($options, 'format', false)) ? $fmt : $this->getFormat();
-        }
+        $format = $format ?: $this->getOption('format', $options, $this->getFormat());
 
         if (in_array($format, $fmts = ['png', 'gif'])) {
-            /*imagealphablending($this->gd, false);*/
-            /*imagesavealpha($this->gd, true);*/
+            imagealphablending($this->gd, false);
+            imagesavealpha($this->gd, true);
         } elseif (in_array($this->sourceFormat, $fmts)) {
             // copy image to white background:
-            /*$canvas = $this->newFromGd($this->getSize());*/
-            /*imagefill($canvas, 0, 0, $this->getColorId($canvas, new Rgb(255, 255, 255)));*/
-            /*imagecopy($canvas, $this->gd, 0, 0, 0, 0, $this->getWidth(), $this->getHeight());*/
-            /*$this->swapGd($canvas);*/
+            //$canvas = $this->newFromGd($this->getSize());
+            //imagefill($canvas, 0, 0, $this->getColorId($canvas, new Rgb(255, 255, 255)));
+            //imagecopy($canvas, $this->gd, 0, 0, 0, 0, $this->getWidth(), $this->getHeight());
+            //$this->swapGd($canvas);
         }
 
         return $this->generateOutPut($format);

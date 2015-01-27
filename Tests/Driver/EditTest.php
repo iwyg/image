@@ -90,12 +90,9 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itPastesImages()
     {
-        $edit = $this->newEdit([600, 600]);
+        $this->manageCi();
 
-        //if ($edit instanceof \Thapp\Image\Driver\Gd\Edit) {
-        //    var_dump('skipping test');
-        //    $this->markTestIncomplete();
-        //}
+        $edit = $this->newEdit([600, 600]);
 
         $image = $this->newImage('animated.gif');
         $prefix = strtr(get_class($edit), ['\\' => '_']);
@@ -132,6 +129,13 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         }
 
         return $file;
+    }
+
+    protected function manageCi()
+    {
+        if (isset($_ENV['TEST_RUNNING_IN_CI']) && 'true' === $_ENV['TEST_RUNNING_IN_CI']) {
+            $this->markTestIncomplete();
+        }
     }
 
     protected function mockImage()

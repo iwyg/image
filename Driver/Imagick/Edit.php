@@ -102,9 +102,10 @@ class Edit extends AbstractEdit
             throw new \LogicException('Can\'t copy image from different driver.');
         }
 
+        // use gravity to get the start point if no point is given:
         $start = $this->getStartPoint($image->getSize(), $start)->negate();
 
-        // use the first image:
+        // use the first image in the set:
         $imagick = $image->getImagick();
         $index = $imagick->getIteratorIndex();
         $imagick->setFirstIterator();
