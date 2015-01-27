@@ -22,6 +22,20 @@ use Thapp\Image\Tests\SourceTest as Source;
  */
 class SourceTest extends Source
 {
+    /** @test */
+    public function itShouldThrowExceptionForUnsupportedFormats()
+    {
+        $source = $this->newSource();
+        try {
+            $source->load($this->asset('lab.tif'));
+        } catch (ImageException $e) {
+            $this->assertEquals('Unsupported color space.', $e->getMessage());
+            return;
+        }
+
+        $this->fail();
+    }
+
     protected function getSourceClass()
     {
         return 'Thapp\Image\Driver\Gmagick\Source';
@@ -29,7 +43,7 @@ class SourceTest extends Source
 
     protected function setUp()
     {
-        if (!class_exists('Gmagick')) {
+        if (!class_exists('Gmagick') || (isset($_ENV['IMAGE_DRIVER']) && 'gmagick' !== $_ENV['IMAGE_DRIVER'])) {
             $this->markTestIncomplete();
         }
 

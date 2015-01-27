@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Tests\Driver\Gmagick;
 
+use Gmagick;
 use Thapp\Image\Driver\Gmagick\Image;
 use Thapp\Image\Driver\Gmagick\Source;
 use Thapp\Image\Metrics\Box;
@@ -32,7 +33,7 @@ class ImageTest extends AbstractImageTest
     protected $images = [];
 
     /** @test */
-    public function itShouldGetImagick()
+    public function itShouldGetGmagick()
     {
         $image = $this->newImage(100, 100);
         $this->assertInstanceof('Gmagick', $image->getGmagick());
@@ -42,7 +43,7 @@ class ImageTest extends AbstractImageTest
     public function gmagickShouldBeSwapable()
     {
         $image = $this->newImage(100, 100);
-        $image->swapGmagick($gmagick = new \Gmagick);
+        $image->swapGmagick($gmagick = $this->getMock('Gmagick'));
 
         $this->assertSame($gmagick, $image->getGmagick());
     }
@@ -80,7 +81,7 @@ class ImageTest extends AbstractImageTest
 
     protected function setUp()
     {
-        if (!class_exists('Gmagick')) {
+        if (!class_exists('Gmagick') || (isset($_ENV['IMAGE_DRIVER']) && 'gmagick' !== $_ENV['IMAGE_DRIVER'])) {
             $this->markTestIncomplete();
         }
 

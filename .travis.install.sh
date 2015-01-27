@@ -1,3 +1,6 @@
+composer self-update
+composer -vvv install --prefer-source --no-interaction --dev
+
 sudo apt-get remove -y imagemagick libmagickcore-dev libmagickwand-dev;
 sudo apt-get autoremove;
 sudo apt-get install -y libtiff-dev libjpeg-dev libdjvulibre-dev libwmf-dev pkg-config;
@@ -19,9 +22,9 @@ if [ "$IMAGE_DRIVER" = "imagick" ] ; then
 	./configure --with-imagick=/usr/local/imagemagick;
 	make -j;
 	sudo make install;
-	#echo "extension=imagick.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
 	echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 	php --ri imagick;
+	cd ..;
 fi
 
 if [ "$IMAGE_DRIVER" = "gmagick" ] ; then
@@ -34,7 +37,5 @@ if [ "$IMAGE_DRIVER" = "gmagick" ] ; then
 	sudo make install;
 	echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 	php --ri gmagick;
+	cd ..;
 fi
-
-composer self-update
-composer -vvv install --prefer-source --no-interaction --dev

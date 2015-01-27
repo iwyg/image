@@ -73,6 +73,9 @@ class Image extends AbstractImage
         $this->frames = new Frames($this);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function destroy()
     {
         if (null === $this->gmagick) {

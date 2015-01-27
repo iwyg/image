@@ -13,9 +13,6 @@ matrix:
     - php: hhvm
     - php: hhvm-nightly
   fast_finish: true
-services:
-- imagemagick
-- graphicsmagick
 before_script:
   - sh .travis.install.sh
 script: 
