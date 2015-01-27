@@ -40,7 +40,7 @@ use Thapp\Image\Driver\Imagick\Source;
 $source = new Source;
 $image = $source->load('image.jpg');
 
-$image->crop(new Box(100, 100));
+$image->edit()->crop(new Box(100, 100));
 
 $image->save('newimage.jpg');
 
