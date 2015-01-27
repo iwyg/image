@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Tests\Driver\Imagick;
 
+use Thapp\Image\Exception\ImageException;
 use Thapp\Image\Tests\SourceTest as Source;
 
 /**
@@ -22,6 +23,20 @@ use Thapp\Image\Tests\SourceTest as Source;
  */
 class SourceTest extends Source
 {
+    /** @test */
+    public function itShouldThrowExceptionForUnsupportedFormats()
+    {
+        $source = $this->newSource();
+        try {
+            $source->load($this->asset('lab.tif'));
+        } catch (ImageException $e) {
+            $this->assertEquals('Unsupported color space.', $e->getMessage());
+            return;
+        }
+
+        $this->fail();
+    }
+
     protected function getSourceClass()
     {
         return 'Thapp\Image\Driver\Imagick\Source';
@@ -29,7 +44,7 @@ class SourceTest extends Source
 
     protected function setUp()
     {
-        if (!class_exists('Imagick')) {
+        if (!class_exists('Imagick') || (isset($_ENV['IMAGE_DRIVER']) && 'imagick' !== $_ENV['IMAGE_DRIVER'])) {
             $this->markTestIncomplete();
         }
     }

@@ -20,6 +20,8 @@ namespace Thapp\Image\Tests;
  */
 trait ImageTestHelper
 {
+    protected $assets;
+
     protected function getTestImage($w = 100, $h = 100, $format = 'jpeg')
     {
         $stream = tmpfile();
@@ -34,5 +36,10 @@ trait ImageTestHelper
         rewind($stream);
 
         return $stream;
+    }
+
+    protected function asset($file)
+    {
+        return __DIR__.'/Fixures/'.$file;
     }
 }

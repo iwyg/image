@@ -25,6 +25,14 @@ use Thapp\Image\Color\ColorInterface;
  */
 interface ImageInterface
 {
+    const FORMAT_JPEG = 'jpeg';
+    const FORMAT_PNG  = 'png';
+    const FORMAT_GIF  = 'png';
+    const FORMAT_TIFF = 'tiff';
+    const FORMAT_WBMP = 'wbmp';
+    const FORMAT_WEBP = 'webp';
+    const FORMAT_XMB  = 'xmb';
+
     const FILTER_UNDEFINED = 0;
     const FILTER_POINT = 1;
     const FILTER_BOX = 2;
@@ -42,12 +50,15 @@ interface ImageInterface
     const FILTER_BESSEL = 14;
     const FILTER_SINC = 15;
 
-    const FORMAT_JPEG = 'jpeg';
-    const FORMAT_PNG = 'png';
-    const FORMAT_GIF = 'png';
-    const FORMAT_TIFF = 'tiff';
-    const FORMAT_WEBP = 'webp';
-    const FORMAT_XMB = 'xmb';
+    const ORIENT_UNDEFINED = 0;
+    const ORIENT_TOPLEFT = 1;
+    const ORIENT_TOPRIGHT = 2;
+    const ORIENT_BOTTOMRIGHT = 3;
+    const ORIENT_BOTTOMLEFT = 4;
+    const ORIENT_LEFTTOP = 5;
+    const ORIENT_RIGHTTOP = 6;
+    const ORIENT_RIGHTBOTTOM = 7;
+    const ORIENT_LEFTBOTTOM = 8;
 
     /**
      * desctroy
@@ -55,6 +66,13 @@ interface ImageInterface
      * @return void
      */
     public function destroy();
+
+    /**
+     * destroy
+     *
+     * @return void
+     */
+    public function copy();
 
     /**
      * coalesce
@@ -87,20 +105,34 @@ interface ImageInterface
     public function getHeight();
 
     /**
-     * Creates a new ImageInterface instance
+     * Get the color for a specified pixel
      *
-     * @param string $format
+     * @param PointInterface $pixel
      *
-     * @return void
+     * @return ColorInterface
      */
-    public function newImage($format = null);
+    public function getColorAt(PointInterface $pixel);
 
     /**
      * Get the image output format.
      *
-     * @return string
+     * @return string one of the ImageInterface::FORMAT_* constants
      */
     public function getFormat();
+
+    /**
+     * Get the imageorientation
+     *
+     * @return int one of the ImageInterface::ORIENT_* constants
+     */
+    public function getOrientation();
+
+    /**
+     * Get image frames
+     *
+     * @return FramesInterface
+     */
+    public function frames();
 
     /**
      * Set the image output format.
@@ -112,74 +144,63 @@ interface ImageInterface
     public function setFormat($format);
 
     /**
-     * Resizes the image without affecting the image content size.
+     * Creates a new ImageInterface instance
      *
-     * @param BoxInterface $size
-     * @param PointInterface $start
-     * @param ColorInterface $color
+     * @param string $format
      *
-     * @return void
+     * @return ImageInterface
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null);
+    public function newImage($format = null);
 
     /**
-     * scale
-     *
-     * @param mixed $perc
-     *
-     * @return void
-     */
-    public function scale($perc);
-
-    /**
-     * rotate
-     *
-     * @param mixed $deg
-     * @param ColorInterface $color
-     *
-     * @return void
-     */
-    public function rotate($deg, ColorInterface $color = null);
-
-    /**
-     * resize
-     *
-     * @param BoxInterface $size
-     *
-     * @return void
-     */
-    public function resize(BoxInterface $size);
-
-    /**
-     * crop
-     *
-     * @param BoxInterface $size
-     * @param PointInterface $crop
-     * @param ColorInterface $color
-     *
-     * @return void
-     */
-    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null);
-
-    /**
-     * frames
-     *
-     *
-     * @return void
-     */
-    public function frames();
-
-    /**
-     * gravity
+     * Get the image gravity.
      *
      * @param GravityInterface $gravity
      *
      * @return void
      */
-    public function gravity(GravityInterface $gravity);
+    public function setGravity(GravityInterface $gravity);
 
     /**
-     * {@inheritdoc}
+     * Get the image gravity.
+     *
+     * @return GravityInterface
+     */
+    public function getGravity();
+
+    /**
+     * @deprecated use ImageInterface::getBlob() instead.
+     *
+     * @param string $format
+     * @param array $options
+     *
+     * @return string
      */
     public function get($format = null, array $options = []);
+
+    /**
+     * Get the image content as binary string.
+     *
+     * @param string $asFormat Image format, on of the ImageInterface::FORMAT_*
+     * constants.
+     *
+     * @param array $options Output options
+     *
+     * @return string
+     */
+    public function getBlob($imageFormat = null, array $options = []);
+
+    /**
+     * getMetaData
+     *
+     * @return mixed
+     */
+    public function getMetaData();
+
+    /**
+     * getPalette
+     *
+     * @return PaletteInterface
+     */
+    public function getPalette();
 }

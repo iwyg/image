@@ -23,6 +23,9 @@ use Thapp\Image\Driver\ImageInterface;
  */
 abstract class ImagickFilter extends Filter
 {
+    /**
+     * {@inheritdoc}
+     */
     public function supports(ImageInterface $image)
     {
         return $image instanceof Thapp\Image\Driver\Imagick\Image;

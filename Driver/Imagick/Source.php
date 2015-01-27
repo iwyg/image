@@ -12,11 +12,12 @@
 namespace Thapp\Image\Driver\Imagick;
 
 use Imagick;
-use Thapp\Image\Driver\SourceInterface;
-use Thapp\Image\Palette\Rgb as PaletteRgb;
-use Thapp\Image\Palette\Greyscale as PaletteGrey;
-use Thapp\Image\Palette\Cmyk as PaletteCmyk;
-use Thapp\Image\Exception\SourceException;
+use ImagickException;
+use Thapp\Image\Color\Palette\Rgb;
+use Thapp\Image\Color\Palette\Cmyk;
+use Thapp\Image\Color\Palette\Grayscale;
+use Thapp\Image\Driver\AbstractSource;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Source
@@ -25,14 +26,14 @@ use Thapp\Image\Exception\SourceException;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Source implements SourceInterface
+class Source extends AbstractSource
 {
     /**
      * {@inheritdoc}
      */
     public function read($resource)
     {
-        if (!is_resource($resource)) {
+        if (!is_resource($resource) || 'stream' !== get_resource_type($resource)) {
             throw SourceException::resource();
         }
 
@@ -40,13 +41,13 @@ class Source implements SourceInterface
 
         try {
             $imagick->readImageFile($resource);
-        } catch (\Exception $e) {
+        } catch (ImagickException $e) {
             $imagick->destroy();
 
-            throw SourceException::resource($e);
+            throw ImageException::read($e);
         }
 
-        return new Image($imagick);
+        return new Image($imagick, $this->getColorPalette($imagick), $this->getReader()->readFromStream($resource));
 
     }
 
@@ -59,13 +60,13 @@ class Source implements SourceInterface
 
         try {
             $imagick->readImage($file);
-        } catch (\Exception $e) {
+        } catch (ImagickException $e) {
             $imagick->destroy();
 
-            throw SourceException::resource($e);
+            throw ImageException::load($e);
         }
 
-        return new Image($imagick);
+        return new Image($imagick, $this->getColorPalette($imagick), $this->getReader()->readFromFile($file));
     }
 
     /**
@@ -77,35 +78,36 @@ class Source implements SourceInterface
 
         try {
             $imagick->readImageBlob($image);
-        } catch (\Exception $e) {
+        } catch (ImagickException $e) {
             $imagick->destroy();
 
-            throw SourceException::resource($e);
+            throw ImageException::create($e);
         }
 
-        return new Image($imagick);
+        return new Image($imagick, $this->getColorPalette($imagick), $this->getReader()->readFromBlob($image));
     }
 
     /**
      * getColorPalette
      *
-     * @param Imagick $image
+     * @param Imagick $imagick
      *
-     * @return PaletteInterface
+     * @return Thapp\Image\Color\PaletteInterface
      */
-    protected function getColorPalette(Imagick $image)
+    protected function getColorPalette(Imagick $imagick)
     {
-        switch ($image->getImageColorSpace()) {
+        switch($imagick->getImageColorspace()) {
             case Imagick::COLORSPACE_RGB:
             case Imagick::COLORSPACE_SRGB:
-                return new PaletteRgb;
-            case Imagick::COLORSPACE_GRAY:
-                return new PaletteGreyscale;
+                return new Rgb;
             case Imagick::COLORSPACE_CMYK:
-                return new PaletteCmyk;
+                return new Cmyk;
+            case Imagick::COLORSPACE_GRAY:
+                return new Grayscale;
             default:
-                throw new \InvalidArgumentException('Unsupported color space.');
                 break;
         }
+
+        throw new ImageException('Unsupported color space.');
     }
 }

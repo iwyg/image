@@ -17,10 +17,12 @@ use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
-use Thapp\Image\Color\Rgb;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\Palette\RgbPaletteInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\GdFilter;
+use Thapp\Image\Info\MetaData;
+use Thapp\Image\Info\MetaDataInterface;
 
 /**
  * @class Image
@@ -31,7 +33,10 @@ use Thapp\Image\Filter\GdFilter;
  */
 class Image extends AbstractImage
 {
+    use GdHelper;
+
     private $gd;
+    private $meta;
     private $sourceFormat;
 
     /**
@@ -39,9 +44,11 @@ class Image extends AbstractImage
      *
      * @param resource $resource GD Image resource
      */
-    public function __construct($resource)
+    public function __construct($resource, RgbPaletteInterface $palette, MetaDataInterface $meta = null)
     {
         $this->setResource($resource);
+        $this->palette = $palette;
+        $this->meta = $meta ?: new MetaData([]);
         $this->frames = new Frames($this);
     }
 
@@ -55,6 +62,30 @@ class Image extends AbstractImage
         $this->destroy();
     }
 
+    /**
+     * __clone
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->gd = $this->copyGd();
+        $this->meta = clone $this->meta;
+        $this->palette = clone $this->palette;
+        $this->frames = new Frames($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function copy()
+    {
+        return clone $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function destroy()
     {
         if ($this->isValidResource($this->gd)) {
@@ -70,52 +101,6 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function frames()
-    {
-        return $this->frames;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function newImage($format = null)
-    {
-        $resource = imagecreatetrucolor($this->getWidth(), $this->getHeight());
-
-        return new static($resource);
-    }
-
-    /**
-     * getGd
-     *
-     * @return resource
-     */
-    public function getGd()
-    {
-        return $this->gd;
-    }
-
-    /**
-     * swapGd
-     *
-     * @param resource $resource GD image resource
-     *
-     * @return void
-     */
-    public function swapGd($resource)
-    {
-        if (is_resource($this->gd)) {
-            imagedestroy($this->gd);
-        }
-
-        $this->setResource($resource);
-    }
-
-    public function setSourceFormat($format)
-    {
-        $this->sourceFormat = $this->mapFormat($format);
-    }
-
     public function getFormat()
     {
         if (null === $this->format) {
@@ -144,52 +129,115 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
+    public function frames()
     {
-        $start = $this->getStartPoint($size, $start);
-
-        $color = $color ?: new Rgb(255, 255, 255, 0);
-        $extent = $this->newFromGd($size, $color);
-        imagecopy($extent, $this->gd, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight());
-        $this->swapGd($extent);
+        return $this->frames;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function resize(BoxInterface $size, $filter = self::FILTER_UNDEFINED)
+    public function newImage($format = null)
     {
-        $resized = $this->newFromGd($size);
+        $resource = imagecreatetrucolor($this->getWidth(), $this->getHeight());
 
-        $dw = $size->getWidth();
-        $dh = $size->getHeight();
-        $w  = $this->getWidth();
-        $h  = $this->getHeight();
-
-        if (true !== imagecopyresampled($resized, $this->gd, 0, 0, 0, 0, $dw, $dh, $w, $h)) {
-            throw new \RuntimeException('Resizing of image failed.');
-        }
-
-        $this->swapGd($resized);
-
-        imagealphablending($resized, false);
+        return new static($resource, $this->meta);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rotate($deg, ColorInterface $color = null)
+    public function getMetaData()
     {
-        if (0.0 === (float)($deg % 360)) {
-            return;
+        return $this->meta;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPalette()
+    {
+        return $this->palette;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getColorAt(PointInterface $pixel)
+    {
+        if (!$this->getSize()->has($pixel)) {
+            throw new \OutOfBoundsException('Sample is outside of image.');
         }
 
-        $size = $this->getSize()->rotate($deg);
-        $rotate = imagerotate($this->gd, (float)(-1.0 * $deg), $this->getColorId($this->gd, $color));
+        $rgb = imagecolorat($this->gd, $pixel->getX(), $pixel->getY());
+        list ($r, $g, $b, $a) = array_values($color = imagecolorsforindex($this->gd, $rgb));
+        $a = 1 - round(($a / 127), 2);
 
-        $this->swapGd($rotate);
+        return $this->palette->getColor([$r, $g, $b, $a]);
+    }
 
-        $this->resize($size);
+    /**
+     * getGd
+     *
+     * @return resource
+     */
+    public function getGd()
+    {
+        return $this->gd;
+    }
+
+    /**
+     * swapGd
+     *
+     * @param resource $resource GD image resource
+     *
+     * @return void
+     */
+    public function swapGd($resource)
+    {
+        $this->setResource($resource);
+    }
+
+    /**
+     * Creates a new truecolorimage
+     *
+     * @internal
+     * @param BoxInterface $size image size
+     * @param ColorInterface $color image background
+     *
+     * @return resource A GD image resource
+     */
+    public function newGd(BoxInterface $size, ColorInterface $color = null)
+    {
+        return $this->newFromGd($size, $color);
+    }
+
+    /**
+     * setSourceFormat
+     *
+     * @internal
+     * @param mixed $format
+     *
+     * @return void
+     */
+    public function setSourceFormat($format)
+    {
+        $this->sourceFormat = $this->mapFormat($format);
+    }
+
+    /**
+     * Get the image content as binary string.
+     *
+     * @param string $asFormat Image format, on of the ImageInterface::FORMAT_*
+     * constants.
+     *
+     * @param array $options Output options
+     *
+     * @return string
+     */
+    public function getBlob($imageFormat = null, array $options = [])
+    {
+        return $this->get($imageFormat, $options);
     }
 
     /**
@@ -217,6 +265,23 @@ class Image extends AbstractImage
         }
 
         return $this->generateOutPut($fn);
+    }
+
+    protected function newEdit()
+    {
+        return new Edit($this);
+    }
+
+    private function copyGd()
+    {
+        $size = $this->getSize();
+        $copy = $this->newFromGd($size);
+
+        if (false === ($gd = imagecopy($copy, $this->gd, 0, 0, 0, 0, $size->getWidth(), $size->getHeight()))) {
+            throw new \RuntimeException;
+        }
+
+        return $gd;
     }
 
     /**
@@ -272,7 +337,7 @@ class Image extends AbstractImage
     private function newFromGd(BoxInterface $size, ColorInterface $color = null)
     {
         $gd = imagecreatetruecolor($w = $size->getWidth(), $h = $size->getHeight());
-        $color = $color ?: new Rgb(255, 255, 255);
+        $color = $color ?: $this->palette->getColor([255, 255, 255]);
 
         if (!(bool)imagealphablending($gd, false) || !(bool)imagesavealpha($gd, true)) {
             throw new \RuntimeException('Cannot create image.');
@@ -300,35 +365,15 @@ class Image extends AbstractImage
             throw new \InvalidArgumentException('Invalid resource.');
         }
 
+        if (!imageistruecolor($resource)) {
+            throw new \InvalidArgumentException(sprintf('%s only supports truecolor images.', get_class($this)));
+        }
+
+        if (is_resource($this->gd)) {
+            imagedestroy($this->gd);
+        }
+
         $this->gd = $resource;
-    }
-
-    /**
-     * getColorId
-     *
-     * @param mixed $res
-     * @param mixed $color
-     *
-     * @return void
-     */
-    private function getColorId($res, ColorInterface $color = null)
-    {
-        if (null === $color) {
-            return imagecolorallocate($res, 255, 255, 255);
-        }
-
-        if (null !== $color->getAlpha()) {
-
-            if (0.0 === $a = $color->getAlpha()) {
-                $alpha = 127;
-            } else {
-                $alpha = (int)round(abs(($a * 127) - 127));
-            }
-
-            return imagecolorallocatealpha($res, $color->getRed(), $color->getGreen(), $color->getBlue(), $alpha);
-        }
-
-        return imagecolorallocate($res, $color->getRed(), $color->getGreen(), $color->getBlue());
     }
 
     /**
@@ -336,23 +381,23 @@ class Image extends AbstractImage
      *
      * @param mixed $fmt
      *
-     * @return void
+     * @return string
      */
     private function mapOutputFormat($fmt)
     {
         switch ($fmt) {
             case 'jpg':
-            case 'jpeg':
+            case self::FORMAT_JPEG:
                 return 'imagejpeg';
-            case 'png':
+            case self::FORMAT_PNG:
                 return 'imagepng';
-            case 'gif':
+            case self::FORMAT_GIF:
                 return 'imagegif';
-            case 'wbmp':
+            case self::FORMAT_WBMP:
                 return 'imagewbmp';
-            case 'webp':
+            case self::FORMAT_WEBP:
                 return 'imagewebp';
-            case 'xbm':
+            case self::FORMAT_XBM:
                 return 'imagexbm';
             default:
                 return false;

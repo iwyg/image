@@ -13,17 +13,21 @@ namespace Thapp\Image\Driver\Gmagick;
 
 use Gmagick;
 use GmagickPixel;
+use GmagickException;
 use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
-use Thapp\Image\Color\Rgb;
+use Thapp\Image\Color\Palette\Rgb;
+use Thapp\Image\Color\Palette\PaletterInterface;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\GmagickFilter;
 use Thapp\Image\Palette\PaletteInterface;
+use Thapp\Image\Info\MetaDataInterface;
+use Thapp\Image\Info\MetaData;
 
 /**
  * @class Image
@@ -35,6 +39,7 @@ use Thapp\Image\Palette\PaletteInterface;
 class Image extends AbstractImage
 {
     private $gmagick;
+    private $meta;
     private static $filterMap;
 
     /**
@@ -44,10 +49,12 @@ class Image extends AbstractImage
      *
      * @return void
      */
-    public function __construct(Gmagick $gmagick)
+    public function __construct(Gmagick $gmagick, PaletteInterface $palette, MetaDataInterface $meta = null)
     {
         $this->gmagick = $gmagick;
+        $this->palette = $palette;
         $this->frames  = new Frames($this);
+        $this->meta    = $meta ?: new MetaData([]);
     }
 
     /**
@@ -56,6 +63,14 @@ class Image extends AbstractImage
     public function __destruct()
     {
         $this->destroy();
+    }
+
+    public function __clone()
+    {
+        $this->gmagick = clone $this->gmagick;
+        $this->meta = clone $this->meta;
+        $this->palette = clone $this->palette;
+        $this->frames = new Frames($this);
     }
 
     public function destroy()
@@ -87,6 +102,25 @@ class Image extends AbstractImage
         $this->gmagick = $gmagick;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetaData()
+    {
+        return $this->meta;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPalette()
+    {
+        return $this->palette;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasFrames()
     {
         return 1 < $this->getNumberImages();
@@ -114,7 +148,7 @@ class Image extends AbstractImage
     public function newImage($format = null)
     {
         $gmagick = new Gmagick;
-        $gmagick->newImage($this->getWitdt(), $this->getHeight(), $this->getBackgroundColor());
+        $gmagick->newImage($this->getWitdt(), $this->getHeight(), $this->gmagick->getImageBackgroundColor());
 
         if (null === $format && $fmt = $this->getFormat()) {
             $format = $fmt;
@@ -124,7 +158,7 @@ class Image extends AbstractImage
             $gmagick->setImageFormat($fmt);
         }
 
-        return new static($gmagick);
+        return new static($gmagick, clone $this->palette);
     }
 
     /**
@@ -142,46 +176,17 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
-    {
-        $start = $this->getStartPoint($size, $start);
-        $color = $this->getSize()->contains($size) ? new Rgb(255, 255, 255, 0) : ($color ?: new Rgb(255, 255, 255, 0));
-
-        $this->compositeCopy($size, $start, $color);
-
-        /*$this->gmagick->setImagePage(0, 0, 0, 0);*/
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function scale($perc)
-    {
-        return $this->resize($this->getSize()->scale($perc));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rotate($deg, ColorInterface $color = null)
-    {
-        $this->gmagick->rotateImage(new GmagickPixel((string)$color ?: '#ffffff'), (float)$deg);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resize(BoxInterface $size, $filter = self::FILTER_UNDEFINED)
-    {
-        $this->gmagick->resizeImage($size->getWidth(), $size->getHeight(), $this->getFilter($filter), 1);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function frames()
     {
         return $this->frames;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlob($imageFormat = null, array $options = [])
+    {
+        return $this->get($imageFormat, $options);
     }
 
     /**
@@ -193,20 +198,18 @@ class Image extends AbstractImage
             $format = isset($options['format']) ? $options['format'] : $this->getFormat();
         }
 
+        $size = $this->getSize();
         $background = $this->gmagick->getImageBackGroundColor()->getColor();
 
         if (!in_array($format, ['png', 'gif', 'tiff']) ) {
             // preserve color apearance when flatten images
-            $this->compositeCopy($this->getSize(), new Point(0, 0), new Rgb(255, 255, 255, 1));
+            $this->edit()->canvas($size, new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
             $this->gmagick->flattenImages();
         }
 
         if ($this->hasFrames()) {
-
             $this->frames()->merge();
             // always flatten images:
-            /*$this->gmagick->setImageFormat($format);*/
-            /*$this->gmagick->setCompressionQuality($this->getOption($options, 'quality', 80));*/
 
             if ($this->getOption($options, 'flatten', false)) {
                 $this->gmagick->flattenImages();
@@ -223,28 +226,23 @@ class Image extends AbstractImage
     }
 
     /**
-     * compositeCopy
-     *
-     * @param BoxInterface $size
-     * @param PointInterface $point
-     * @param ColorInterface $color
+     * {@inheritdoc}
+     */
+    protected function newEdit()
+    {
+        return new Edit($this);
+    }
+
+    /**
+     * getNumberImages
      *
      * @return void
      */
-    protected function compositeCopy(BoxInterface $size, PointInterface $point, ColorInterface $color = null)
-    {
-        $canvas = new Gmagick();
-        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? (string)$color : 'None');
-        $canvas->compositeImage($this->gmagick, Gmagick::COMPOSITE_OVER, $point->getX(), $point->getY());
-        $canvas->setImageFormat($this->gmagick->getImageFormat());
-        $this->swapGmagick($canvas);
-    }
-
     private function getNumberImages()
     {
         try {
             return $this->getGmagick()->getNumberImages();
-        } catch (\GmagickException $e) {
+        } catch (GmagickException $e) {
             throw $e;
         }
     }

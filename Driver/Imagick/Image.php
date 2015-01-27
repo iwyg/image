@@ -13,17 +13,22 @@ namespace Thapp\Image\Driver\Imagick;
 
 use Imagick;
 use ImagickPixel;
+use ImagickException;
 use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\BoxInterface;
 use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
-use Thapp\Image\Color\Rgb;
-use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\ImagickFilter;
-use Thapp\Image\Palette\PaletteInterface;
+use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
+use Thapp\Image\Color\Palette\RgbPaletteInterface;
+use Thapp\Image\Color\Palette\CmykPaletteInterface;
+use Thapp\Image\Color\Palette\GrayscalePaletteInterface;
+use Thapp\Image\Info\MetaData;
+use Thapp\Image\Info\MetaDataInterface;
 
 /**
  * @class Image
@@ -35,7 +40,10 @@ use Thapp\Image\Palette\PaletteInterface;
 class Image extends AbstractImage
 {
     private $imagick;
+    private $meta;
     private static $filterMap;
+    private static $orientMap;
+    private static $colorMap;
 
     /**
      * Constructor.
@@ -44,9 +52,11 @@ class Image extends AbstractImage
      *
      * @return void
      */
-    public function __construct(Imagick $imagick)
+    public function __construct(Imagick $imagick, PaletteInterface $palette, MetaDataInterface $meta = null)
     {
         $this->imagick = $imagick;
+        $this->palette  = $palette;
+        $this->meta  = $meta ?: new MetaData([]);
         $this->frames  = new Frames($this);
     }
 
@@ -58,6 +68,30 @@ class Image extends AbstractImage
         $this->destroy();
     }
 
+    /**
+     * Returns a copy of this image.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->imagick  = $this->cloneImagick();
+        $this->meta     = clone $this->meta;
+        $this->palette  = clone $this->palette;
+        $this->frames   = new Frames($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function copy()
+    {
+        return clone $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function destroy()
     {
         if (null === $this->imagick) {
@@ -76,19 +110,61 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function getImagick()
+    public function getColorAt(PointInterface $pixel)
     {
-        return $this->imagick;
+        if (!$this->getSize()->has($pixel)) {
+            throw new \OutOfBoundsException('Sample is outside of image.');
+        }
+
+        return $this->pixelToColor($this->imagick->getImagePixelColor($pixel->getX(), $pixel->getY()));
+    }
+
+    private function pixelToColor(ImagickPixel $px)
+    {
+        $colorMap = static::colorMap();
+        $multiply = $this->palette instanceof CmykPaletteInterface ? 100 : 255;
+
+        $colors = array_map(function ($color) use ($colorMap, $px, $multiply) {
+            if (!isset($colorMap[$color])) {
+                throw new \RuntimeException;
+            }
+
+            $value = $px->getColorValue($colorMap[$color]);
+
+            return ColorInterface::CHANNEL_ALPHA === $color ? (float)$value : ($value * $multiply);
+
+        }, $keys = $this->palette->getDefinition());
+
+        return $this->palette->getColor(array_combine($keys, $colors));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function swapImagick(Imagick $imagick)
+    public function getMetaData()
     {
-        $this->imagick = $imagick;
+        return $this->meta;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getPalette()
+    {
+        return $this->palette;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function newEdit()
+    {
+        return new Edit($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasFrames()
     {
         return 1 < $this->imagick->getNumberImages();
@@ -113,25 +189,6 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function newImage($format = null)
-    {
-        $imagick = new Imagick;
-        $imagick->newImage($this->getWitdt(), $this->getHeight(), $this->getBackgroundColor());
-
-        if (null === $format && $fmt = $this->getFormat()) {
-            $format = $fmt;
-        }
-
-        if (null !== $format) {
-            $imagick->setImageFormat($fmt);
-        }
-
-        return new static($imagick);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getFormat()
     {
         if (null === $this->format) {
@@ -144,38 +201,69 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
+    public function getOrientation()
     {
-        $start = $this->getStartPoint($size, $start);
-        $color = $this->getSize()->contains($size) ? new Rgb(255, 255, 255, 0) : ($color ?: new Rgb(255, 255, 255, 0));
+        if (!$orient = $this->meta->get($key = 'ifd0.Orentation')) {
+            $map = static::orientMap();
+            $this->meta->set($key, $orient = $map[$this->imagick->getImageOrientation()]);
+        }
 
-        $this->compositeCopy($size, $start, $color);
-
-        $this->imagick->setImagePage(0, 0, 0, 0);
+        return $this->mapOrientation($orient);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function scale($perc)
+    public function newImage($format = null)
     {
-        return $this->resize($this->getSize()->scale($perc));
+        $imagick = new Imagick;
+        $imagick->newImage($this->getWitdt(), $this->getHeight(), $this->imagick->getImageBackgroundColor());
+
+        if (null === $format && $fmt = $this->getFormat()) {
+            $format = $fmt;
+        }
+
+        if (null !== $format) {
+            $imagick->setImageFormat($fmt);
+        }
+
+        return new static($imagick, clone $this->palette);
     }
 
     /**
-     * {@inheritdoc}
+     * Get the current imagick resource
+     *
+     * @return Imagick
      */
-    public function rotate($deg, ColorInterface $color = null)
+    public function getImagick()
     {
-        $this->imagick->rotateImage(new ImagickPixel((string)$color ?: '#ffffff'), (float)$deg);
+        return $this->imagick;
     }
 
     /**
-     * {@inheritdoc}
+     * Swaps the current imagick resource.
+     *
+     * @param Imagick $imagick
+     *
+     * @return void
      */
-    public function resize(BoxInterface $size, $filter = self::FILTER_UNDEFINED)
+    public function swapImagick(Imagick $imagick)
     {
-        $this->imagick->resizeImage($size->getWidth(), $size->getHeight(), $this->getFilter($filter), 1);
+        if (null !== $this->imagick) {
+
+            $map = array_flip(static::orientMap());
+            $orient = $map[$this->getOrientation()];
+
+            $this->imagick->clear();
+            $this->imagick->destroy();
+
+            try {
+                $imagick->setImageOrientation($orient);
+            } catch (ImagickException $orient) {
+            }
+        }
+
+        $this->imagick = $imagick;
     }
 
     /**
@@ -184,6 +272,14 @@ class Image extends AbstractImage
     public function frames()
     {
         return $this->frames;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlob($imageFormat = null, array $options = [])
+    {
+        return $this->get($imageFormat, $options);
     }
 
     /**
@@ -199,7 +295,7 @@ class Image extends AbstractImage
 
         if (!in_array($format, ['png', 'gif', 'tiff']) ) {
             // preserve color apearance when flatten images
-            $this->compositeCopy($this->getSize(), new Point(0, 0), new Rgb(255, 255, 255, 1));
+            $this->edit()->canvas($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
             $this->imagick->flattenImages();
         }
 
@@ -239,6 +335,15 @@ class Image extends AbstractImage
         $this->swapImagick($canvas);
     }
 
+    private function cloneImagick()
+    {
+        if (version_compare(phpversion('imagick'), '3.1.0b1', '>=') || defined('HHVM_VERSION')) {
+            return clone $this->imagick;
+        }
+
+        return $this->imagick->clone();
+    }
+
     /**
      * getFilter
      *
@@ -267,24 +372,67 @@ class Image extends AbstractImage
         if (null === static::$filterMap) {
             static::$filterMap = [
                 self::FILTER_UNDEFINED => Imagick::FILTER_UNDEFINED,
-                self::FILTER_POINT => Imagick::FILTER_POINT,
-                self::FILTER_BOX => Imagick::FILTER_BOX,
-                self::FILTER_TRIANGLE => Imagick::FILTER_TRIANGLE,
-                self::FILTER_HERMITE => Imagick::FILTER_HERMITE,
-                self::FILTER_HANNING => Imagick::FILTER_HANNING,
-                self::FILTER_HAMMING => Imagick::FILTER_HAMMING,
-                self::FILTER_BLACKMAN => Imagick::FILTER_BLACKMAN,
-                self::FILTER_GAUSSIAN => Imagick::FILTER_GAUSSIAN,
+                self::FILTER_POINT     => Imagick::FILTER_POINT,
+                self::FILTER_BOX       => Imagick::FILTER_BOX,
+                self::FILTER_TRIANGLE  => Imagick::FILTER_TRIANGLE,
+                self::FILTER_HERMITE   => Imagick::FILTER_HERMITE,
+                self::FILTER_HANNING   => Imagick::FILTER_HANNING,
+                self::FILTER_HAMMING   => Imagick::FILTER_HAMMING,
+                self::FILTER_BLACKMAN  => Imagick::FILTER_BLACKMAN,
+                self::FILTER_GAUSSIAN  => Imagick::FILTER_GAUSSIAN,
                 self::FILTER_QUADRATIC => Imagick::FILTER_QUADRATIC,
-                self::FILTER_CUBIC => Imagick::FILTER_CUBIC,
-                self::FILTER_CATROM => Imagick::FILTER_CATROM,
-                self::FILTER_MITCHELL => Imagick::FILTER_MITCHELL,
-                self::FILTER_LANCZOS => Imagick::FILTER_LANCZOS,
-                self::FILTER_BESSEL => Imagick::FILTER_BESSEL,
-                self::FILTER_SINC => Imagick::FILTER_SINC
+                self::FILTER_CUBIC     => Imagick::FILTER_CUBIC,
+                self::FILTER_CATROM    => Imagick::FILTER_CATROM,
+                self::FILTER_MITCHELL  => Imagick::FILTER_MITCHELL,
+                self::FILTER_LANCZOS   => Imagick::FILTER_LANCZOS,
+                self::FILTER_BESSEL    => Imagick::FILTER_BESSEL,
+                self::FILTER_SINC      => Imagick::FILTER_SINC
             ];
         }
 
         return static::$filterMap;
+    }
+
+    /**
+     * &orientMap
+     *
+     * @return array
+     */
+    private static function &orientMap()
+    {
+        if (null === static::$orientMap) {
+            static::$orientMap = [
+                self::ORIENT_UNDEFINED   => Imagick::ORIENTATION_UNDEFINED,
+                self::ORIENT_TOPLEFT     => Imagick::ORIENTATION_TOPLEFT,
+                self::ORIENT_TOPRIGHT    => Imagick::ORIENTATION_TOPRIGHT,
+                self::ORIENT_BOTTOMRIGHT => Imagick::ORIENTATION_BOTTOMRIGHT,
+                self::ORIENT_BOTTOMLEFT  => Imagick::ORIENTATION_BOTTOMLEFT,
+                self::ORIENT_LEFTTOP     => Imagick::ORIENTATION_LEFTTOP,
+                self::ORIENT_RIGHTTOP    => Imagick::ORIENTATION_RIGHTTOP,
+                self::ORIENT_RIGHTBOTTOM => Imagick::ORIENTATION_RIGHTBOTTOM,
+                self::ORIENT_LEFTBOTTOM  => Imagick::ORIENTATION_LEFTBOTTOM
+            ];
+        }
+
+        return static::$orientMap;
+    }
+
+    private static function &colorMap()
+    {
+        if (null === static::$colorMap) {
+            static::$colorMap = [
+                ColorInterface::CHANNEL_RED => Imagick::COLOR_RED,
+                ColorInterface::CHANNEL_GREEN => Imagick::COLOR_GREEN,
+                ColorInterface::CHANNEL_BLUE => Imagick::COLOR_BLUE,
+                ColorInterface::CHANNEL_ALPHA => Imagick::COLOR_ALPHA,
+                ColorInterface::CHANNEL_CYAN => Imagick::COLOR_CYAN,
+                ColorInterface::CHANNEL_MAGENTA => Imagick::COLOR_MAGENTA,
+                ColorInterface::CHANNEL_YELLOW => Imagick::COLOR_YELLOW,
+                ColorInterface::CHANNEL_KEY => Imagick::COLOR_BLACK,
+                ColorInterface::CHANNEL_GRAY => Imagick::COLOR_RED
+            ];
+        }
+
+        return static::$colorMap;
     }
 }

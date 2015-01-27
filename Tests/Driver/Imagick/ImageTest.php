@@ -73,7 +73,7 @@ class ImageTest extends AbstractImageTest
 
     protected function setUp()
     {
-        if (!class_exists('Imagick')) {
+        if (!class_exists('Imagick') || (isset($_ENV['IMAGE_DRIVER']) && 'imagick' !== $_ENV['IMAGE_DRIVER'])) {
             $this->markTestIncomplete();
         }
 

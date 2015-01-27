@@ -23,36 +23,25 @@ abstract class ColorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function rgbConversionShouldReturnNewObject()
     {
-        $color = $this->newColor(255, 255, 255);
-        $nc = $color->toRgb();
+        //$color = $this->newColor(255, 255, 255);
+        //$nc = $color->toRgb();
 
-        $this->assertInstanceof('Thapp\Image\Color\Rgb', $nc);
+        //$this->assertInstanceof('Thapp\Image\Color\Rgb', $nc);
 
-        $this->assertFalse($nc === $color);
-        $this->assertSame('rgb(255,255,255)',  (string)$nc);
+        //$this->assertFalse($nc === $color);
+        //$this->assertSame('rgb(255,255,255)',  (string)$nc);
     }
 
     /** @test */
     public function hexConversionShouldReturnNewObject()
     {
-        $color = $this->newColor(255, 255, 255);
-        $nc = $color->toHex();
+        //$color = $this->newColor(255, 255, 255);
+        //$nc = $color->toHex();
 
-        $this->assertInstanceof('Thapp\Image\Color\Hex', $nc);
+        //$this->assertInstanceof('Thapp\Image\Color\Hex', $nc);
 
-        $this->assertFalse($nc === $color);
-        $this->assertSame('#ffffff',  (string)$nc);
-    }
-
-    /** @test */
-    public function itShouldGetChannels()
-    {
-        $color = $this->newColor(255, 0, 255);
-
-        $this->assertSame(255, $color->getRed());
-        $this->assertSame(0, $color->getGreen());
-        $this->assertSame(255, $color->getBlue());
-        $this->assertSame(1.0, $color->getAlpha());
+        //$this->assertFalse($nc === $color);
+        //$this->assertSame('#ffffff',  (string)$nc);
     }
 
     abstract protected function newColor($r, $g, $b, $a = null);

@@ -11,6 +11,9 @@
 
 namespace Thapp\Image\Color;
 
+use Thapp\Image\Color\Palette\Rgb as Palette;
+use Thapp\Image\Color\Palette\RgbPaletteInterface;
+
 /**
  * @class Rgb
  *
@@ -18,35 +21,18 @@ namespace Thapp\Image\Color;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Rgb extends AbstractRgb implements ColorInterface
+class Rgb extends AbstractColor implements RgbInterface
 {
+    protected static $keys = [
+        ColorInterface::CHANNEL_RED,
+        ColorInterface::CHANNEL_GREEN,
+        ColorInterface::CHANNEL_BLUE,
+        ColorInterface::CHANNEL_ALPHA
+    ];
 
-    /**
-     * r
-     *
-     * @var int
-     */
     private $r;
-
-    /**
-     * g
-     *
-     * @var int
-     */
     private $g;
-
-    /**
-     * b
-     *
-     * @var int
-     */
     private $b;
-
-    /**
-     * a
-     *
-     * @var float
-     */
     private $a;
 
     /**
@@ -57,12 +43,10 @@ class Rgb extends AbstractRgb implements ColorInterface
      * @param int   $b the blue channel value
      * @param float $a the alpha channel value
      */
-    public function __construct($r, $g, $b, $a = null)
+    public function __construct(array $values, RgbPaletteInterface $palette = null)
     {
-        $this->r = (int)$r;
-        $this->g = (int)$g;
-        $this->b = (int)$b;
-        $this->a = null === $a ? $a : (float)min(max($a, 0), 1.0);
+        $this->setValues($values);
+        $this->palette = $palette ?: new Palette;
     }
 
     /**
@@ -70,7 +54,28 @@ class Rgb extends AbstractRgb implements ColorInterface
      */
     public function getColor()
     {
-        return $this->getColorValuesAsArray();
+        return array_combine(self::keys(), [$this->r, $this->g, $this->b, $this->getAlpha()]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValue($channel)
+    {
+        switch ($channel) {
+            case self::CHANNEL_RED:
+                return $this->r;
+            case self::CHANNEL_GREEN:
+                return $this->g;
+            case self::CHANNEL_BLUE:
+                return $this->b;
+            case self::CHANNEL_ALPHA:
+                return $this->getAlapha();
+            default:
+                break;
+        }
+
+        throw new InvalidArgumentException();
     }
 
     /**
@@ -78,7 +83,11 @@ class Rgb extends AbstractRgb implements ColorInterface
      */
     public function getColorAsString()
     {
-        return $this->__toString();
+        if (null !== $this->a) {
+            return sprintf('rgba(%s,%s,%s,%s)', $this->r, $this->g, $this->b, $this->a);
+        }
+
+        return sprintf('rgb(%s,%s,%s)', $this->r, $this->g, $this->b);
     }
 
     /**
@@ -86,7 +95,12 @@ class Rgb extends AbstractRgb implements ColorInterface
      */
     public function toHex()
     {
-        return new Hex(Parser::rgbToHex($this->r, $this->g, $this->b));
+        $a = $this->getAlpha();
+        return new Hex(Parser::rgbToHex(
+            (int)max(0, $this->r * $a),
+            (int)max(0, $this->g * $a),
+            (int)max(0, $this->b * $a)
+        ));
     }
 
     /**
@@ -130,14 +144,25 @@ class Rgb extends AbstractRgb implements ColorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * setValues
+     *
+     * @param array $values
+     *
+     * @return void
      */
-    public function __toString()
+    private function setValues(array $values)
     {
-        if (null !== $this->a) {
-            return sprintf('rgba(%s,%s,%s,%s)', $this->r, $this->g, $this->b, $this->a);
+        if (3 > ($count = count($values)) || 4 < $count) {
+            throw new InvalidArgumentException;
         }
 
-        return sprintf('rgb(%s,%s,%s)', $this->r, $this->g, $this->b);
+        if (4 === $count) {
+            $a = array_pop($values);
+            $this->a = null !== $a ? (float)max(0, min(1, $a)) : null;
+        }
+
+        list ($this->r, $this->g, $this->b) = array_map(function ($color) {
+            return (int)max(0, min(255, $color));
+        }, array_values($values));
     }
 }

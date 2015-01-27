@@ -12,11 +12,12 @@
 namespace Thapp\Image\Driver\Gmagick;
 
 use Gmagick;
-use Thapp\Image\Driver\SourceInterface;
-use Thapp\Image\Palette\Rgb as PaletteRgb;
-use Thapp\Image\Palette\Greyscale as PaletteGrey;
-use Thapp\Image\Palette\Cmyk as PaletteCmyk;
-use Thapp\Image\Exception\SourceException;
+use GmagickException;
+use Thapp\Image\Color\Palette\Rgb;
+use Thapp\Image\Color\Palette\Cmyk;
+use Thapp\Image\Color\Palette\Grayscale;
+use Thapp\Image\Driver\AbstractSource;
+use Thapp\Image\Exception\ImageExceptoion;
 
 /**
  * @class Source
@@ -25,7 +26,7 @@ use Thapp\Image\Exception\SourceException;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Source implements SourceInterface
+class Source extends AbstractSource
 {
     /**
      * {@inheritdoc}
@@ -33,23 +34,19 @@ class Source implements SourceInterface
     public function read($resource)
     {
         if (!is_resource($resource) || 'stream' !== get_resource_type($resource)) {
-            throw SourceException::resource();
+            throw ImageException::resource();
         }
 
-        /*$gmagick = new Gmagick;*/
-        /*if ($gm = $gmagick->readImageFile($resource)) {*/
-            /*var_dump($gm);*/
+        $meta = stream_get_meta_data($resource);
 
-            /*$gm->clear();*/
-            /*$gm->destroy();*/
-            /*$gmagick->clear();*/
-            /*$gmagick->destroy();*/
-        /*}*/
         try {
             // Gmagick::readImageFile may cause segfault error.
+            if (isset($meta['uri']) && stream_is_local($file = $meta['uri'])) {
+                return $this->load($file);
+            }
             return $this->create(stream_get_contents($resource));
-        } catch (SourceException $e) {
-            throw SourceException::read($e->getPrevious());
+        } catch (ImageException $e) {
+            throw ImageException::read($e);
         }
     }
 
@@ -59,13 +56,15 @@ class Source implements SourceInterface
     public function load($file)
     {
         $gmagick = new Gmagick;
+
         try {
             $gmagick->readImage($file);
-        } catch (\Exception $e) {
-            throw SourceException::load($e->getPrevious());
+        } catch (GmagickException $e) {
+            $gmagick->destroy();
+            throw ImageException::load($e);
         }
 
-        return new Image($gmagick);
+        return new Image($gmagick, $this->getColorPalette($gmagick), $this->getReader()->readFromFile($file));
     }
 
     /**
@@ -74,13 +73,15 @@ class Source implements SourceInterface
     public function create($image)
     {
         $gmagick = new Gmagick;
+
         try {
             $gmagick->readImageBlob($image);
-        } catch (SourceException $e) {
-            throw new SourceException('could not create image.');
+        } catch (GmagickException $e) {
+            $gmagick->destroy();
+            throw ImageException::create($e);
         }
 
-        return new Image($gmagick);
+        return new Image($gmagick, $this->getColorPalette($gmagick), $this->getReader()->readFromBlob($image));
     }
 
     /**
@@ -95,13 +96,13 @@ class Source implements SourceInterface
         switch ($image->getImageColorSpace()) {
             case Gmagick::COLORSPACE_RGB:
             case Gmagick::COLORSPACE_SRGB:
-                return new PaletteRgb;
-            case Gmagick::COLORSPACE_GRAY:
-                return new PaletteGreyscale;
+                return new Rgb;
             case Gmagick::COLORSPACE_CMYK:
-                return new PaletteCmyk;
+                return new Cmyk;
+            case Gmagick::COLORSPACE_GRAY:
+                return new Grayscale;
             default:
-                throw new \InvalidArgumentException('Unsupported color space.');
+                throw new ImageException('Unsupported color space.');
                 break;
         }
     }

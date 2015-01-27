@@ -11,8 +11,6 @@
 
 namespace Thapp\Image\Filter;
 
-use Thapp\Image\Driver\ImageInterface;
-
 /**
  * @class Filter
  *
@@ -20,7 +18,6 @@ use Thapp\Image\Driver\ImageInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-abstract class Filter implements FilterInterface
+abstract class Filter implements DriverAwareFilterInterface
 {
-    abstract public function supports(ImageInterface $image);
 }

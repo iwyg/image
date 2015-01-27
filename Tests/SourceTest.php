@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Tests;
 
+use Thapp\Image\Info\MetaDataReaderInterface;
+
 /**
  * @class ImageTest
  *
@@ -23,6 +25,9 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
     use ImageTestHelper;
 
     protected $images = [];
+
+    /** @test */
+    //abstract public function itShouldThrowExceptionForUnsupportedFormats();
 
     /** @test */
     public function itShouldReadResource()
@@ -42,7 +47,7 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
 
         if (empty($meta['uri'])) {
             fclose($stream);
-            $file = __DIR__.'/Fixures/google.png';
+            $file = $this->asset('google.png');
         } else {
             $file = $meta['uri'];
         }
@@ -58,11 +63,37 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->images[] = $source->create(stream_get_contents($stream)));
     }
 
-    protected function newSource()
+    /**
+     * @test
+     * @dataProvider paletteTestProvider
+     */
+    public function itShouldSetCorrectPalette($file, $palette)
+    {
+        $source = $this->newSource();
+        $image  = $source->load($this->asset($file));
+
+        $this->assertInstanceOf($palette, $image->getPalette());
+    }
+
+    public function paletteTestProvider()
+    {
+        return [
+            ['pattern.png', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
+            ['grayscale.jpg', 'Thapp\Image\Color\Palette\GrayscalePaletteInterface'],
+            ['pattern4c.jpg', 'Thapp\Image\Color\Palette\CmykPaletteInterface'],
+        ];
+    }
+
+    protected function newSource(MetaDataReaderInterface $reader = null)
     {
         $class = $this->getSourceClass();
 
-        return new $class;
+        return new $class($reader);
+    }
+
+    protected function setUp()
+    {
+        $this->assets = __DIR__.'/Fixures';
     }
 
     protected function tearDown()
