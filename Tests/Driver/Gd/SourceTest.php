@@ -53,9 +53,9 @@ class SourceTest extends Source
 
     protected function setUp()
     {
-        //if (isset($_ENV['IMAGE_DRIVER']) && 'gd' !== $_ENV['IMAGE_DRIVER']) {
-        //    $this->markTestIncomplete();
-        //}
+        if (isset($_ENV['IMAGE_DRIVER']) && 'gd' !== $_ENV['IMAGE_DRIVER']) {
+            $this->markTestIncomplete();
+        }
 
         parent::setUp();
     }

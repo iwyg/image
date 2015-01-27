@@ -46,12 +46,12 @@ class ImageTest extends AbstractImageTest
         return $source->read($resource);
     }
 
-    //protected function setUp()
-    //{
-    //    if (isset($_ENV['IMAGE_DRIVER']) && 'gd' !== $_ENV['IMAGE_DRIVER']) {
-    //        $this->markTestIncomplete();
-    //    }
+    protected function setUp()
+    {
+        if (isset($_ENV['IMAGE_DRIVER']) && 'gd' !== $_ENV['IMAGE_DRIVER']) {
+            $this->markTestIncomplete();
+        }
 
-    //    parent::setUp();
-    //}
+        parent::setUp();
+    }
 }

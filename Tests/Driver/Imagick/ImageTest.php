@@ -29,26 +29,6 @@ use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
 class ImageTest extends AbstractImageTest
 {
     protected $handle;
-
-    /** @test */
-    public function itShouldPreserveAlpha()
-    {
-        //$image = $this->loadImage($this->asset('transparent4.png'));
-        //$this->assertAlphaChannel($image, Imagick::ALPHACHANNEL_ACTIVATE);
-
-        //$image = $this->loadImage($this->asset('transparent4.png'));
-        //$image->edit()->rotate(45, $c = $image->getPalette()->getColor([255,255,255,0]));
-        //$this->assertAlphaChannel($image, Imagick::ALPHACHANNEL_ACTIVATE);
-
-        $image = $this->loadImage($this->asset('transparent4.png'));
-        //$image->edit()->canvas(new Box(400, 400), new Point(100, 100), $image->getPalette()->getColor([0,0,0,0.2]));
-        //$image->edit()->extent(new Box(400, 400), new Point(100, 100));
-        //$this->assertAlphaChannel($image, Imagick::ALPHACHANNEL_ACTIVATE);
-        $image->setGravity(new Gravity(1));
-        $image->edit()->crop(new Box(100, 100));
-
-        $image->save($this->asset('trans_crop_im.png'));
-    }
     /** @test */
     public function itShouldGetImagick()
     {
