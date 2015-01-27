@@ -58,4 +58,13 @@ class EditTest extends AbstractEditTest
     {
         return new Source;
     }
+
+    protected function setUp()
+    {
+        if (!class_exists('Imagick') || (isset($_ENV['IMAGE_DRIVER']) && 'imagick' !== $_ENV['IMAGE_DRIVER'])) {
+            $this->markTestIncomplete();
+        }
+
+        parent::setUp();
+    }
 }
