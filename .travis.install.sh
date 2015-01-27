@@ -39,3 +39,5 @@ if [ "$IMAGE_DRIVER" = "gmagick" ] ; then
 	php --ri gmagick;
 	cd ..;
 fi
+
+export TEST_RUNNING_IN_CI=true;
