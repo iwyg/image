@@ -74,7 +74,7 @@ class ImageReader extends AbstractReader implements ImagesizeReaderInterface
         rewind($resource);
 
         $meta = $this->readFromBlob(stream_get_contents($resource));
-        fseek($pos);
+        fseek($resource, $pos);
 
         return $meta;
     }
