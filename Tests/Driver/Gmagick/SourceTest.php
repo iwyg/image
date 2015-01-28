@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Tests\Driver\Gmagick;
 
+use Thapp\Image\Exception\ImageException;
 use Thapp\Image\Tests\Driver\SourceTest as Source;
 
 /**
@@ -33,7 +34,17 @@ class SourceTest extends Source
             return;
         }
 
-        $this->fail();
+        $this->fail('Sorry');
+    }
+
+    public function paletteTestProvider()
+    {
+        // Gmagick doesn't reckognize grayscale color spaces.
+        return [
+            //['grayscale.jpg', 'Thapp\Image\Color\Palette\GrayscalePaletteInterface'],
+            ['pattern.png', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
+            ['pattern4c.jpg', 'Thapp\Image\Color\Palette\CmykPaletteInterface'],
+        ];
     }
 
     protected function getSourceClass()

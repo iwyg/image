@@ -155,7 +155,7 @@ class Frames extends AbstractFrames
      */
     protected function setFrame($index, Gmagick $image)
     {
-        $this->frames[$index] = new Image($image);
+        $this->frames[$index] = new Image($image, $this->image->getPalette(), $this->image->getMetaData());
 
         $gravity = $this->image->getGravity();
 

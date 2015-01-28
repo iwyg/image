@@ -14,6 +14,7 @@ namespace Thapp\Image\Driver\Gmagick;
 use Gmagick;
 use GmagickPixel;
 use GmagickException;
+use GmagickPixelException;
 use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\BoxInterface;
@@ -25,9 +26,10 @@ use Thapp\Image\Color\Palette\PaletterInterface;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\GmagickFilter;
-use Thapp\Image\Palette\PaletteInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
 use Thapp\Image\Info\MetaDataInterface;
 use Thapp\Image\Info\MetaData;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Image
@@ -39,15 +41,23 @@ use Thapp\Image\Info\MetaData;
 class Image extends AbstractImage
 {
     private $gmagick;
-    private $meta;
-    private static $filterMap;
+
+    private static $colorMap = [
+        ColorInterface::CHANNEL_RED     => Gmagick::COLOR_RED,
+        ColorInterface::CHANNEL_GREEN   => Gmagick::COLOR_GREEN,
+        ColorInterface::CHANNEL_BLUE    => Gmagick::COLOR_BLUE,
+        ColorInterface::CHANNEL_ALPHA   => Gmagick::COLOR_OPACITY,
+        ColorInterface::CHANNEL_CYAN    => Gmagick::COLOR_CYAN,
+        ColorInterface::CHANNEL_MAGENTA => Gmagick::COLOR_MAGENTA,
+        ColorInterface::CHANNEL_YELLOW  => Gmagick::COLOR_YELLOW,
+        ColorInterface::CHANNEL_KEY     => Gmagick::COLOR_BLACK,
+        ColorInterface::CHANNEL_GRAY    => Gmagick::COLOR_RED
+    ];
 
     /**
      * Constructor.
      *
      * @param Gmagick $gmagick
-     *
-     * @return void
      */
     public function __construct(Gmagick $gmagick, PaletteInterface $palette, MetaDataInterface $meta = null)
     {
@@ -57,19 +67,10 @@ class Image extends AbstractImage
         $this->meta    = $meta ?: new MetaData([]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function __destruct()
-    {
-        $this->destroy();
-    }
-
     public function __clone()
     {
         $this->gmagick = clone $this->gmagick;
         $this->meta = clone $this->meta;
-        $this->palette = clone $this->palette;
         $this->frames = new Frames($this);
     }
 
@@ -108,22 +109,6 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function getMetaData()
-    {
-        return $this->meta;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPalette()
-    {
-        return $this->palette;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function hasFrames()
     {
         return 1 < $this->getNumberImages();
@@ -148,7 +133,7 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function newImage($format = null)
+    public function newImage($format = null, ColorInterface $color = null)
     {
         $gmagick = new Gmagick;
         $gmagick->newImage($this->getWitdt(), $this->getHeight(), $this->gmagick->getImageBackgroundColor());
@@ -182,6 +167,34 @@ class Image extends AbstractImage
     public function frames()
     {
         return $this->frames;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getColorAt(PointInterface $pixel)
+    {
+        if (!$this->getSize()->has($pixel)) {
+            throw new \OutOfBoundsException('Sample is outside of image.');
+        }
+
+        // Gmagick does not have a dedicated method for retreiving pixel colors
+        // at a given point:
+        try {
+            $magick = clone $this->gmagick;
+            $magick->cropImage(1, 1, $pixel->getX(), $pixel->getY());
+            $colors = $magick->getImageHistogram();
+        } catch (GmagickException $e) {
+            throw new ImageException('Unable to retrive color sample', $e->getCode(), $e);
+        }
+
+        $px = array_shift($colors);
+
+        $magick->clear();
+        $magick->destroy();
+        unset($magick, $colors);
+
+        return $this->colorFromPixel($px);
     }
 
     /**
@@ -237,6 +250,34 @@ class Image extends AbstractImage
     }
 
     /**
+     * pixelToColor
+     *
+     * @param ImagickPixel $px
+     *
+     * @return void
+     */
+    private function colorFromPixel(GmagickPixel $px)
+    {
+        $colorMap =& static::$colorMap;
+        $multiply = $this->palette instanceof CmykPaletteInterface ? 100 : 255;
+
+        $colors = array_map(function ($color) use ($colorMap, $px, $multiply) {
+            if (!isset($colorMap[$color])) {
+                throw new \RuntimeException;
+            }
+
+            $value = $px->getColorValue($colorMap[$color]);
+
+            // Gmagick will error when using COLOR_ALPHA, instead use color
+            // opcity and reverse result.
+            return ColorInterface::CHANNEL_ALPHA === $color ? 1 - (float)$value : ($value * $multiply);
+
+        }, $keys = $this->palette->getDefinition());
+
+        return $this->palette->getColor(array_combine($keys, $colors));
+    }
+
+    /**
      * getNumberImages
      *
      * @return void
@@ -248,54 +289,5 @@ class Image extends AbstractImage
         } catch (GmagickException $e) {
             throw $e;
         }
-    }
-
-    /**
-     * getFilter
-     *
-     * @param int $filter
-     *
-     * @return int
-     */
-    private function getFilter($filter)
-    {
-        $map = static::filterMap();
-
-        if (!isset($map[$filter])) {
-            return Gmagick::FILTER_UNDEFINED;
-        }
-
-        return $map[$filter];
-    }
-
-    /**
-     * filterMap
-     *
-     * @return array
-     */
-    private static function &filterMap()
-    {
-        if (null === static::$filterMap) {
-            static::$filterMap = [
-                self::FILTER_UNDEFINED => Gmagick::FILTER_UNDEFINED,
-                self::FILTER_POINT => Gmagick::FILTER_POINT,
-                self::FILTER_BOX => Gmagick::FILTER_BOX,
-                self::FILTER_TRIANGLE => Gmagick::FILTER_TRIANGLE,
-                self::FILTER_HERMITE => Gmagick::FILTER_HERMITE,
-                self::FILTER_HANNING => Gmagick::FILTER_HANNING,
-                self::FILTER_HAMMING => Gmagick::FILTER_HAMMING,
-                self::FILTER_BLACKMAN => Gmagick::FILTER_BLACKMAN,
-                self::FILTER_GAUSSIAN => Gmagick::FILTER_GAUSSIAN,
-                self::FILTER_QUADRATIC => Gmagick::FILTER_QUADRATIC,
-                self::FILTER_CUBIC => Gmagick::FILTER_CUBIC,
-                self::FILTER_CATROM => Gmagick::FILTER_CATROM,
-                self::FILTER_MITCHELL => Gmagick::FILTER_MITCHELL,
-                self::FILTER_LANCZOS => Gmagick::FILTER_LANCZOS,
-                self::FILTER_BESSEL => Gmagick::FILTER_BESSEL,
-                self::FILTER_SINC => Gmagick::FILTER_SINC
-            ];
-        }
-
-        return static::$filterMap;
     }
 }

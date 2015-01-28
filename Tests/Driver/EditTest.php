@@ -103,10 +103,6 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         $this->image->save($this->asset($prefix.'_pasted.gif'), 'gif');
     }
 
-    abstract protected function newEdit($file, ImageInterface $image = null);
-
-    abstract protected function newSource();
-
     protected function newImage($file = null)
     {
         $source = $this->newSource();
@@ -144,4 +140,8 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
     }
+
+    abstract protected function newEdit($file, ImageInterface $image = null);
+
+    abstract protected function newSource();
 }

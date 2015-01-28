@@ -36,7 +36,16 @@ abstract class AbstractImage implements ImageInterface
     protected $frames;
     protected $gravity;
     protected $palette;
+    protected $meta;
     protected static $orients;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __destruct()
+    {
+        $this->destroy();
+    }
 
     /**
      * {@inheritdoc}
@@ -86,6 +95,21 @@ abstract class AbstractImage implements ImageInterface
         return strtolower($this->format);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getPalette()
+    {
+        return $this->palette;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetaData()
+    {
+        return $this->meta;
+    }
 
     /**
      * {@inheritdoc}
@@ -141,6 +165,14 @@ abstract class AbstractImage implements ImageInterface
     public function hasFrames()
     {
         return 1 < count($this->frames());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function frames()
+    {
+        return $this->frames;
     }
 
     /**

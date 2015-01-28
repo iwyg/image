@@ -135,7 +135,7 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
      */
     protected function setFrame($index, Imagick $image)
     {
-        $this->frames[$index] = new Image($image);
+        $this->frames[$index] = new Image($image, $this->image->getPalette(), $this->image->getMetaData());
 
         $gravity = $this->image->getGravity();
 

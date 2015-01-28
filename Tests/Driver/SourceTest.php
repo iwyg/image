@@ -127,7 +127,7 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
     public function itShouldSetCorrectPalette($file, $palette)
     {
         $source = $this->newSource();
-        $image  = $source->load($this->asset($file));
+        $image  = $this->images[] = $source->load($this->asset($file));
 
         $this->assertInstanceOf($palette, $image->getPalette());
     }

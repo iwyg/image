@@ -28,26 +28,6 @@ class Source extends AbstractSource
     /**
      * {@inheritdoc}
      */
-    public function read($resource)
-    {
-        $this->validateStream($resource);
-
-        $meta = stream_get_meta_data($resource);
-
-        try {
-            if (isset($meta['uri']) && stream_is_local($meta['uri'])) {
-                return $this->load($meta['uri']);
-            }
-            return $this->create(stream_get_contents($resource));
-        } catch (ImageException $e) {
-            throw ImageException::read($e);
-        }
-
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function load($file)
     {
         try {

@@ -36,7 +36,6 @@ class Image extends AbstractImage
     use GdHelper;
 
     private $gd;
-    private $meta;
     private $sourceFormat;
 
     /**
@@ -53,25 +52,14 @@ class Image extends AbstractImage
     }
 
     /**
-     * Destroy GD resource;
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        $this->destroy();
-    }
-
-    /**
      * __clone
      *
      * @return void
      */
     public function __clone()
     {
-        $this->gd = $this->copyGd();
+        $this->gd = $this->cloneGd();
         $this->meta = clone $this->meta;
-        $this->palette = clone $this->palette;
         $this->frames = new Frames($this);
     }
 
@@ -97,19 +85,6 @@ class Image extends AbstractImage
 
         return true;
     }
-
-    //public function save($path, $format = null, array $options = [])
-    //{
-    //    $format = $format ?: $this->getOption('format', $options, $this->getFormat());
-
-    //    var_dump(sprintf('saving image %s with format %s', $path, $format));
-
-    //    if (!file_put_contents($path, $this->generateOutPut($format))) {
-    //        var_dump('FAIL');
-    //    } else {
-    //        var_dump('SUCCESS');
-    //    }
-    //}
 
     /**
      * {@inheritdoc}
@@ -142,35 +117,11 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function frames()
-    {
-        return $this->frames;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function newImage($format = null)
+    public function newImage($format = null, ColorInterface $color = null)
     {
         $resource = imagecreatetrucolor($this->getWidth(), $this->getHeight());
 
         return new static($resource, $this->meta);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMetaData()
-    {
-        return $this->meta;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPalette()
-    {
-        return $this->palette;
     }
 
     /**
@@ -279,44 +230,21 @@ class Image extends AbstractImage
         return new Edit($this);
     }
 
-    private function copyGd()
+    /**
+     * copyGd
+     *
+     * @return void
+     */
+    private function cloneGd()
     {
         $size = $this->getSize();
         $copy = $this->newFromGd($size);
 
         if (false === ($gd = imagecopy($copy, $this->gd, 0, 0, 0, 0, $size->getWidth(), $size->getHeight()))) {
-            throw new \RuntimeException;
+            throw new ImageException('Cloning GD resource failed.');
         }
 
         return $gd;
-    }
-
-    /**
-     * hasAlpha
-     *
-     * @param mixed $gd
-     *
-     * @return void
-     */
-    private function hasAlpha($gd = null)
-    {
-        $channels = $this->channels($gd ?: $this->gd);
-
-        return isset($channels['alpha']);
-    }
-
-    /**
-     * channels
-     *
-     * @param mixed $gd
-     *
-     * @return void
-     */
-    private function channels($gd)
-    {
-        $rgb = imagecolorat($gd, 0, 0);
-
-        return imagecolorsforindex($gd, $rgb);
     }
 
     /**
@@ -352,6 +280,10 @@ class Image extends AbstractImage
 
         if (!(bool)imagealphablending($gd, false) || !(bool)imagesavealpha($gd, true)) {
             throw new \RuntimeException('Cannot create image.');
+        }
+
+        if (function_exists('imageantialias')) {
+            imageantialias($this->gd, true);
         }
 
         imagefill($gd, 0, 0, $index = $this->getColorId($gd, $color));

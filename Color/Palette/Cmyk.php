@@ -12,7 +12,7 @@
 namespace Thapp\Image\Color\Palette;
 
 use Thapp\Image\Color\Parser;
-use Thapp\Image\Color\Cmyk as Color;
+use Thapp\Image\Color\Cmyk as CmykColor;
 use Thapp\Image\Color\ColorInterface;
 
 /**
@@ -26,7 +26,7 @@ class Cmyk extends AbstractPalette implements CmykPaletteInterface
 {
     public function getDefinition()
     {
-        return Color::keys();
+        return CmykColor::keys();
     }
 
     /**
@@ -34,7 +34,7 @@ class Cmyk extends AbstractPalette implements CmykPaletteInterface
      */
     protected function createColor(array $colors)
     {
-        return new Color($colors, $this);
+        return new CmykColor($colors, $this);
     }
 
     /**

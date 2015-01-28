@@ -12,7 +12,7 @@
 namespace Thapp\Image\Color\Palette;
 
 use Thapp\Image\Color\Parser;
-use Thapp\Image\Color\Grayscale as Color;
+use Thapp\Image\Color\Grayscale as GrayscaleColor;
 
 /**
  * @class Greyscale
@@ -30,7 +30,7 @@ class Grayscale extends AbstractPalette implements GrayscalePaletteInterface
      */
     public function getDefinition()
     {
-        return Color::keys();
+        return GrayscaleColor::keys();
     }
 
     /**
@@ -38,7 +38,7 @@ class Grayscale extends AbstractPalette implements GrayscalePaletteInterface
      */
     protected function createColor(array $colors)
     {
-        return new Color($colors, $this);
+        return new GrayscaleColor($colors, $this);
     }
 
     /**

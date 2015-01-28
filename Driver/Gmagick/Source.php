@@ -17,7 +17,7 @@ use Thapp\Image\Color\Palette\Rgb;
 use Thapp\Image\Color\Palette\Cmyk;
 use Thapp\Image\Color\Palette\Grayscale;
 use Thapp\Image\Driver\AbstractSource;
-use Thapp\Image\Exception\ImageExceptoion;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Source
@@ -28,26 +28,6 @@ use Thapp\Image\Exception\ImageExceptoion;
  */
 class Source extends AbstractSource
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function read($resource)
-    {
-        $this->validateStream($resource);
-
-        $meta = stream_get_meta_data($resource);
-
-        try {
-            // Gmagick::readImageFile may cause segfault error.
-            if (isset($meta['uri']) && stream_is_local($file = $meta['uri'])) {
-                return $this->load($file);
-            }
-            return $this->create(stream_get_contents($resource));
-        } catch (ImageException $e) {
-            throw ImageException::read($e);
-        }
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -92,13 +72,13 @@ class Source extends AbstractSource
     protected function getColorPalette(Gmagick $image)
     {
         switch ($image->getImageColorSpace()) {
+            case Gmagick::COLORSPACE_GRAY:
+                return new Grayscale;
             case Gmagick::COLORSPACE_RGB:
             case Gmagick::COLORSPACE_SRGB:
                 return new Rgb;
             case Gmagick::COLORSPACE_CMYK:
                 return new Cmyk;
-            case Gmagick::COLORSPACE_GRAY:
-                return new Grayscale;
             default:
                 throw new ImageException('Unsupported color space.');
                 break;

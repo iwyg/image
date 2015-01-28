@@ -15,6 +15,7 @@ use Thapp\Image\Metrics\Box;
 use Thapp\Image\Metrics\Point;
 use Thapp\Image\Metrics\Gravity;
 use Thapp\Image\Color\Rgb;
+use Thapp\Image\Color\Palette\Rgb as RgbPalette;
 
 /**
  * @class ImageTest
@@ -49,21 +50,11 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    ///** @test */
-    //public function itShouldBeInstantiable()
-    //{
-    //    $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->newImage(100, 100));
-    //}
-
-    ///** @test */
-    //public function itShouldRotateImage()
-    //{
-    //    $image = $this->newImage(200, 100);
-    //    $image->rotate(90);
-
-    //    $this->assertSame(100, $image->getWidth());
-    //    $this->assertSame(200, $image->getHeight());
-    //}
+    /** @test */
+    public function itShouldBeInstantiable()
+    {
+        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->newImage(100, 100));
+    }
 
     /** @test */
     public function itShouldCropWithGravity()
@@ -92,21 +83,22 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
     public function itShouldCopyInstance()
     {
         $image = $this->newImage(200, 200);
-        $copy  = $image->copy();
+        $copy  = $this->images[] = $image->copy();
 
         $this->assertFalse($image === $copy, 'Image should not equal copy.');
         $this->assertFalse($image->frames() === $copy->frames(), 'frames should not equal copied frames.');
         $this->assertFalse($image->getMetaData() === $copy->getMetaData(), 'metadata should not equal copied metadata.');
-        $this->assertFalse($image->getPalette() === $copy->getPalette(), 'palette should not equal copied palette.');
+        $this->assertSame($image->getPalette(), $copy->getPalette(), 'palette should equal copied palette.');
+        $copy->destroy();
     }
 
     /** @test */
     public function itShouldGetColorAtPixel()
     {
-        $image = $this->loadImage($file = $this->asset('pattern.png'));
+        $image = $this->loadImage($file = $this->asset('transparent4.png'));
 
         $colorA = $image->getColorAt(new Point(0, 0));
-        $colorB = $image->getColorAt(new Point(200, 0));
+        $colorB = $image->getColorAt(new Point(150, 0));
 
         $this->assertInstanceof('Thapp\Image\Color\RgbInterface', $colorA);
     }

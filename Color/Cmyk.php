@@ -11,7 +11,7 @@
 
 namespace Thapp\Image\Color;
 
-use Thapp\Image\Color\Palette\Cmyk as Palette;
+use Thapp\Image\Color\Palette\Cmyk as CmykPalette;
 use Thapp\Image\Color\Palette\CmykPaletteInterface;
 
 /**
@@ -38,7 +38,7 @@ class Cmyk extends AbstractColor implements CmykInterface
     public function __construct(array $values, CmykPaletteInterface $palette)
     {
         $this->setValues($values);
-        $this->palette = $palette ?: new Palette;
+        $this->palette = $palette ?: new CmykPalette;
     }
 
     /**

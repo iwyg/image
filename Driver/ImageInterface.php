@@ -147,10 +147,11 @@ interface ImageInterface
      * Creates a new ImageInterface instance
      *
      * @param string $format
+     * @param ColorInterface $color
      *
      * @return ImageInterface
      */
-    public function newImage($format = null);
+    public function newImage($format = null, ColorInterface $color = null);
 
     /**
      * Get the image gravity.

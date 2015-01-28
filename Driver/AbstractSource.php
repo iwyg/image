@@ -27,6 +27,37 @@ abstract class AbstractSource implements SourceInterface
     protected $reader;
 
     /**
+     * Constructor.
+     *
+     * @param MetaDataReaderInterface $reader
+     */
+    public function __construct(MetaDataReaderInterface $reader = null)
+    {
+        $this->reader = $reader ?: new ImageReader;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function read($resource)
+    {
+        $this->validateStream($resource);
+
+        $meta = stream_get_meta_data($resource);
+
+        try {
+            // e.g. Gmagick::readImageFile may cause segfault error.
+            // GD has no opton to read file streams.
+            if (isset($meta['uri']) && stream_is_local($file = $meta['uri'])) {
+                return $this->load($file);
+            }
+            return $this->create(stream_get_contents($resource));
+        } catch (ImageException $e) {
+            throw ImageException::read($e);
+        }
+    }
+
+    /**
      * validateStream
      *
      * @param mixed $resource
@@ -40,16 +71,6 @@ abstract class AbstractSource implements SourceInterface
         }
 
         return true;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param MetaDataReaderInterface $reader
-     */
-    public function __construct(MetaDataReaderInterface $reader = null)
-    {
-        $this->reader = $reader ?: new ImageReader;
     }
 
     /**

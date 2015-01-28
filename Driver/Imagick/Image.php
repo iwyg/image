@@ -40,10 +40,29 @@ use Thapp\Image\Info\MetaDataInterface;
 class Image extends AbstractImage
 {
     private $imagick;
-    private $meta;
-    private static $filterMap;
-    private static $orientMap;
-    private static $colorMap;
+    private static $orientMap = [
+        Imagick::ORIENTATION_UNDEFINED   => self::ORIENT_UNDEFINED,
+        Imagick::ORIENTATION_TOPLEFT     => self::ORIENT_TOPLEFT,
+        Imagick::ORIENTATION_TOPRIGHT    => self::ORIENT_TOPRIGHT,
+        Imagick::ORIENTATION_BOTTOMRIGHT => self::ORIENT_BOTTOMRIGHT,
+        Imagick::ORIENTATION_BOTTOMLEFT  => self::ORIENT_BOTTOMLEFT,
+        Imagick::ORIENTATION_LEFTTOP     => self::ORIENT_LEFTTOP,
+        Imagick::ORIENTATION_RIGHTTOP    => self::ORIENT_RIGHTTOP,
+        Imagick::ORIENTATION_RIGHTBOTTOM => self::ORIENT_RIGHTBOTTOM,
+        Imagick::ORIENTATION_LEFTBOTTOM  => self::ORIENT_LEFTBOTTOM
+    ];
+
+    private static $colorMap = [
+        ColorInterface::CHANNEL_RED     => Imagick::COLOR_RED,
+        ColorInterface::CHANNEL_GREEN   => Imagick::COLOR_GREEN,
+        ColorInterface::CHANNEL_BLUE    => Imagick::COLOR_BLUE,
+        ColorInterface::CHANNEL_ALPHA   => Imagick::COLOR_ALPHA,
+        ColorInterface::CHANNEL_CYAN    => Imagick::COLOR_CYAN,
+        ColorInterface::CHANNEL_MAGENTA => Imagick::COLOR_MAGENTA,
+        ColorInterface::CHANNEL_YELLOW  => Imagick::COLOR_YELLOW,
+        ColorInterface::CHANNEL_KEY     => Imagick::COLOR_BLACK,
+        ColorInterface::CHANNEL_GRAY    => Imagick::COLOR_RED
+    ];
 
     /**
      * Constructor.
@@ -61,14 +80,6 @@ class Image extends AbstractImage
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function __destruct()
-    {
-        $this->destroy();
-    }
-
-    /**
      * Returns a copy of this image.
      *
      * @return void
@@ -76,9 +87,8 @@ class Image extends AbstractImage
     public function __clone()
     {
         $this->imagick  = $this->cloneImagick();
-        $this->meta     = clone $this->meta;
-        $this->palette  = clone $this->palette;
         $this->frames   = new Frames($this);
+        $this->meta     = clone $this->meta;
     }
 
     /**
@@ -116,50 +126,7 @@ class Image extends AbstractImage
             throw new \OutOfBoundsException('Sample is outside of image.');
         }
 
-        return $this->pixelToColor($this->imagick->getImagePixelColor($pixel->getX(), $pixel->getY()));
-    }
-
-    private function pixelToColor(ImagickPixel $px)
-    {
-        $colorMap = static::colorMap();
-        $multiply = $this->palette instanceof CmykPaletteInterface ? 100 : 255;
-
-        $colors = array_map(function ($color) use ($colorMap, $px, $multiply) {
-            if (!isset($colorMap[$color])) {
-                throw new \RuntimeException;
-            }
-
-            $value = $px->getColorValue($colorMap[$color]);
-
-            return ColorInterface::CHANNEL_ALPHA === $color ? (float)$value : ($value * $multiply);
-
-        }, $keys = $this->palette->getDefinition());
-
-        return $this->palette->getColor(array_combine($keys, $colors));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMetaData()
-    {
-        return $this->meta;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPalette()
-    {
-        return $this->palette;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function newEdit()
-    {
-        return new Edit($this);
+        return $this->colorFromPixel($this->imagick->getImagePixelColor($pixel->getX(), $pixel->getY()));
     }
 
     /**
@@ -204,8 +171,7 @@ class Image extends AbstractImage
     public function getOrientation()
     {
         if (!$orient = $this->meta->get($key = 'ifd0.Orentation')) {
-            $map = static::orientMap();
-            $this->meta->set($key, $orient = $map[$this->imagick->getImageOrientation()]);
+            $this->meta->set($key, $orient = static::$orientMap[$this->imagick->getImageOrientation()]);
         }
 
         return $this->mapOrientation($orient);
@@ -214,7 +180,7 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function newImage($format = null)
+    public function newImage($format = null, ColorInterface $color = null)
     {
         $imagick = new Imagick;
         $imagick->newImage($this->getWitdt(), $this->getHeight(), $this->imagick->getImageBackgroundColor());
@@ -251,7 +217,7 @@ class Image extends AbstractImage
     {
         if (null !== $this->imagick) {
 
-            $map = array_flip(static::orientMap());
+            $map = array_flip(static::$orientMap);
             $orient = $map[$this->getOrientation()];
 
             $this->imagick->clear();
@@ -264,14 +230,6 @@ class Image extends AbstractImage
         }
 
         $this->imagick = $imagick;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function frames()
-    {
-        return $this->frames;
     }
 
     /**
@@ -320,23 +278,18 @@ class Image extends AbstractImage
     }
 
     /**
-     * compositeCopy
-     *
-     * @param BoxInterface $size
-     * @param PointInterface $point
-     * @param ColorInterface $color
+     * {@inheritdoc}
+     */
+    protected function newEdit()
+    {
+        return new Edit($this);
+    }
+
+    /**
+     * cloneImagick
      *
      * @return void
      */
-    protected function compositeCopy(BoxInterface $size, PointInterface $point, ColorInterface $color = null)
-    {
-        $canvas = new Imagick();
-        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? (string)$color : 'None');
-        $canvas->compositeImage($this->imagick, Imagick::COMPOSITE_OVER, $point->getX(), $point->getY());
-        $canvas->setImageFormat($this->imagick->getImageFormat());
-        $this->swapImagick($canvas);
-    }
-
     private function cloneImagick()
     {
         if (version_compare(phpversion('imagick'), '3.1.0b1', '>=') || defined('HHVM_VERSION')) {
@@ -347,94 +300,28 @@ class Image extends AbstractImage
     }
 
     /**
-     * getFilter
+     * pixelToColor
      *
-     * @param int $filter
+     * @param ImagickPixel $px
      *
-     * @return int
+     * @return void
      */
-    private function getFilter($filter)
+    private function colorFromPixel(ImagickPixel $px)
     {
-        $map = static::filterMap();
+        $colorMap =& static::$colorMap;
+        $multiply = $this->palette instanceof CmykPaletteInterface ? 100 : 255;
 
-        if (!isset($map[$filter])) {
-            return Imagick::FILTER_UNDEFINED;
-        }
+        $colors = array_map(function ($color) use ($colorMap, $px, $multiply) {
+            if (!isset($colorMap[$color])) {
+                throw new \RuntimeException;
+            }
 
-        return $map[$filter];
-    }
+            $value = $px->getColorValue($colorMap[$color]);
 
-    /**
-     * filterMap
-     *
-     * @return array
-     */
-    private static function &filterMap()
-    {
-        if (null === static::$filterMap) {
-            static::$filterMap = [
-                self::FILTER_UNDEFINED => Imagick::FILTER_UNDEFINED,
-                self::FILTER_POINT     => Imagick::FILTER_POINT,
-                self::FILTER_BOX       => Imagick::FILTER_BOX,
-                self::FILTER_TRIANGLE  => Imagick::FILTER_TRIANGLE,
-                self::FILTER_HERMITE   => Imagick::FILTER_HERMITE,
-                self::FILTER_HANNING   => Imagick::FILTER_HANNING,
-                self::FILTER_HAMMING   => Imagick::FILTER_HAMMING,
-                self::FILTER_BLACKMAN  => Imagick::FILTER_BLACKMAN,
-                self::FILTER_GAUSSIAN  => Imagick::FILTER_GAUSSIAN,
-                self::FILTER_QUADRATIC => Imagick::FILTER_QUADRATIC,
-                self::FILTER_CUBIC     => Imagick::FILTER_CUBIC,
-                self::FILTER_CATROM    => Imagick::FILTER_CATROM,
-                self::FILTER_MITCHELL  => Imagick::FILTER_MITCHELL,
-                self::FILTER_LANCZOS   => Imagick::FILTER_LANCZOS,
-                self::FILTER_BESSEL    => Imagick::FILTER_BESSEL,
-                self::FILTER_SINC      => Imagick::FILTER_SINC
-            ];
-        }
+            return ColorInterface::CHANNEL_ALPHA === $color ? (float)$value : ($value * $multiply);
 
-        return static::$filterMap;
-    }
+        }, $keys = $this->palette->getDefinition());
 
-    /**
-     * &orientMap
-     *
-     * @return array
-     */
-    private static function &orientMap()
-    {
-        if (null === static::$orientMap) {
-            static::$orientMap = [
-                self::ORIENT_UNDEFINED   => Imagick::ORIENTATION_UNDEFINED,
-                self::ORIENT_TOPLEFT     => Imagick::ORIENTATION_TOPLEFT,
-                self::ORIENT_TOPRIGHT    => Imagick::ORIENTATION_TOPRIGHT,
-                self::ORIENT_BOTTOMRIGHT => Imagick::ORIENTATION_BOTTOMRIGHT,
-                self::ORIENT_BOTTOMLEFT  => Imagick::ORIENTATION_BOTTOMLEFT,
-                self::ORIENT_LEFTTOP     => Imagick::ORIENTATION_LEFTTOP,
-                self::ORIENT_RIGHTTOP    => Imagick::ORIENTATION_RIGHTTOP,
-                self::ORIENT_RIGHTBOTTOM => Imagick::ORIENTATION_RIGHTBOTTOM,
-                self::ORIENT_LEFTBOTTOM  => Imagick::ORIENTATION_LEFTBOTTOM
-            ];
-        }
-
-        return static::$orientMap;
-    }
-
-    private static function &colorMap()
-    {
-        if (null === static::$colorMap) {
-            static::$colorMap = [
-                ColorInterface::CHANNEL_RED => Imagick::COLOR_RED,
-                ColorInterface::CHANNEL_GREEN => Imagick::COLOR_GREEN,
-                ColorInterface::CHANNEL_BLUE => Imagick::COLOR_BLUE,
-                ColorInterface::CHANNEL_ALPHA => Imagick::COLOR_ALPHA,
-                ColorInterface::CHANNEL_CYAN => Imagick::COLOR_CYAN,
-                ColorInterface::CHANNEL_MAGENTA => Imagick::COLOR_MAGENTA,
-                ColorInterface::CHANNEL_YELLOW => Imagick::COLOR_YELLOW,
-                ColorInterface::CHANNEL_KEY => Imagick::COLOR_BLACK,
-                ColorInterface::CHANNEL_GRAY => Imagick::COLOR_RED
-            ];
-        }
-
-        return static::$colorMap;
+        return $this->palette->getColor(array_combine($keys, $colors));
     }
 }

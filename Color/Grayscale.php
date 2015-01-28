@@ -11,7 +11,7 @@
 
 namespace Thapp\Image\Color;
 
-use Thapp\Image\Color\Palette\Grayscale as Palette;
+use Thapp\Image\Color\Palette\Grayscale as GrayscalePalette;
 use Thapp\Image\Color\Palette\GrayscalePaletteInterface;
 
 /**
@@ -40,7 +40,7 @@ class Grayscale extends AbstractColor implements GrayscaleInterface
     public function __construct(array $values, GrayscalePaletteInterface $palette = null)
     {
         $this->setValues(array_values($values));
-        $this->palette = $palette ?: new Palette;
+        $this->palette = $palette ?: new GrayscalePalette;
     }
 
     /**

@@ -11,7 +11,7 @@
 
 namespace Thapp\Image\Color;
 
-use Thapp\Image\Color\Palette\Rgb as Palette;
+use Thapp\Image\Color\Palette\Rgb as RgbPalette;
 use Thapp\Image\Color\Palette\RgbPaletteInterface;
 
 /**
@@ -46,7 +46,7 @@ class Rgb extends AbstractColor implements RgbInterface
     public function __construct(array $values, RgbPaletteInterface $palette = null)
     {
         $this->setValues($values);
-        $this->palette = $palette ?: new Palette;
+        $this->palette = $palette ?: new RgbPalette;
     }
 
     /**

@@ -12,7 +12,7 @@
 namespace Thapp\Image\Color\Palette;
 
 use Thapp\Image\Color\Parser;
-use Thapp\Image\Color\Rgb as Color;
+use Thapp\Image\Color\Rgb as RgbColor;
 use Thapp\Image\Color\ColorInterface;
 
 /**
@@ -31,7 +31,7 @@ class Rgb extends AbstractPalette implements RgbPaletteInterface
      */
     public function getDefinition()
     {
-        return Color::keys();
+        return RgbColor::keys();
     }
 
     /**
@@ -39,7 +39,7 @@ class Rgb extends AbstractPalette implements RgbPaletteInterface
      */
     protected function createColor(array $colors)
     {
-        return new Color($colors, $this);
+        return new RgbColor($colors, $this);
     }
 
     /**
