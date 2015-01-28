@@ -12,8 +12,8 @@
 
 namespace Thapp\Image\Filter\Gmagick;
 
-use Thapp\Image\Filter\Filter;
 use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Filter\DriverAwareFilterInterface;
 
 /**
  * @class GmagickFilter
@@ -24,13 +24,13 @@ use Thapp\Image\Driver\ImageInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-abstract class ImagickFilter extends Filter
+abstract class GmagickFilter implements DriverAwareFilterInterface
 {
     /**
      * {@inheritdoc}
      */
     public function supports(ImageInterface $image)
     {
-        return $image instanceof Thapp\Image\Driver\Gmagick\Image;
+        return $image instanceof \Thapp\Image\Driver\Gmagick\Image;
     }
 }

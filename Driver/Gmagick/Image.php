@@ -40,8 +40,22 @@ use Thapp\Image\Exception\ImageException;
  */
 class Image extends AbstractImage
 {
+    /**
+     * The Gmagick instance
+     *
+     * @var Gmagick
+     */
     private $gmagick;
 
+    /**
+     * Documentation at http://php.net/manual/en/gmagickpixel.getcolorvalue.php
+     * is wrong. Gmagick::getcolorvalue needs a Gmagick::COLOR_* constant, not
+     * a Gmagick::CHANNEL_* constant.
+     *
+     * Gmagick::COLOR_ALPHA will error. Use Gmagick::COLOR_OPACITY and reverse results.
+     *
+     * @var array
+     */
     private static $colorMap = [
         ColorInterface::CHANNEL_RED     => Gmagick::COLOR_RED,
         ColorInterface::CHANNEL_GREEN   => Gmagick::COLOR_GREEN,
@@ -266,10 +280,10 @@ class Image extends AbstractImage
                 throw new \RuntimeException;
             }
 
+            // GmagickPixel will throw an exception when using Gmagick::COLOR_ALPHA, instead use color
+            // opacity and reverse result.
             $value = $px->getColorValue($colorMap[$color]);
 
-            // Gmagick will error when using COLOR_ALPHA, instead use color
-            // opcity and reverse result.
             return ColorInterface::CHANNEL_ALPHA === $color ? 1 - (float)$value : ($value * $multiply);
 
         }, $keys = $this->palette->getDefinition());

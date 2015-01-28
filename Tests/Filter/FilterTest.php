@@ -13,6 +13,7 @@ namespace Thapp\Image\Tests\Filter;
 
 use Thapp\Image\Tests\Stubs\Filter\GdFilter;
 use Thapp\Image\Tests\Stubs\Filter\ImagickFilter;
+use Thapp\Image\Tests\Stubs\Filter\GmagickFilter;
 
 /**
  * @class FilterTest
@@ -24,8 +25,13 @@ use Thapp\Image\Tests\Stubs\Filter\ImagickFilter;
 class FilterTest extends \PHPUnit_Framework_TestCase
 {
     /** @test */
-    public function itShouldSupportDriverTypes()
+    public function itShouldSupportDriverTypesForImagick()
     {
+        if (!class_exists('Imagick')) {
+            $this->markTestIncomplete();
+        }
+
+
         $filterIm = new ImagickFilter();
         $filterGd = new GdFilter();
 
@@ -36,6 +42,32 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($filterGd->supports($gd));
 
         $im = $this->getMockBuilder('Thapp\Image\Driver\Imagick\Image')
+            ->setMethods(['filter'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->assertTrue($filterIm->supports($im));
+        $this->assertFalse($filterIm->supports($gd));
+
+        $this->assertFalse($filterGd->supports($im));
+    }
+
+    /** @test */
+    public function itShouldSupportDriverTypesForGmagick()
+    {
+        if (!class_exists('Gmagick')) {
+            $this->markTestIncomplete();
+        }
+
+        $filterIm = new GmagickFilter();
+        $filterGd = new GdFilter();
+
+        $gd = $this->getMockBuilder('Thapp\Image\Driver\Gd\Image')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->assertTrue($filterGd->supports($gd));
+
+        $im = $this->getMockBuilder('Thapp\Image\Driver\Gmagick\Image')
             ->setMethods(['filter'])
             ->disableOriginalConstructor()
             ->getMock();

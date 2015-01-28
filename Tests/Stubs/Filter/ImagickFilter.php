@@ -11,9 +11,9 @@
 
 namespace Thapp\Image\Tests\Stubs\Filter;
 
-use Thapp\Image\Filter\Filter;
 use Thapp\Image\Driver\Imagick\Image;
 use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Filter\Imagick\ImagickFilter as Filter;
 
 /**
  * @class FilterStub
@@ -26,10 +26,5 @@ class ImagickFilter extends Filter
 {
     public function apply(ImageInterface $image)
     {
-    }
-
-    public function supports(ImageInterface $image)
-    {
-        return $image instanceof Image;
     }
 }

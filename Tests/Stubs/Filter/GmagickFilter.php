@@ -11,9 +11,9 @@
 
 namespace Thapp\Image\Tests\Stubs\Filter;
 
-use Thapp\Image\Driver\Gd\Image;
+use Thapp\Image\Driver\Gmagick\Image;
 use Thapp\Image\Driver\ImageInterface;
-use Thapp\Image\Filter\Gd\GdFilter as Filter;
+use Thapp\Image\Filter\Gmagick\GmagickFilter as Filter;
 
 /**
  * @class FilterStub
@@ -22,7 +22,7 @@ use Thapp\Image\Filter\Gd\GdFilter as Filter;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class GdFilter extends Filter
+class GmagickFilter extends Filter
 {
     public function apply(ImageInterface $image)
     {
