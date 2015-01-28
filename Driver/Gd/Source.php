@@ -25,6 +25,8 @@ use Thapp\Image\Exception\ImageException;
  */
 class Source extends AbstractSource
 {
+    use GdHelper;
+
     /**
      * {@inheritdoc}
      */
@@ -68,7 +70,7 @@ class Source extends AbstractSource
      */
     protected function postProcess(&$gd)
     {
-        if (!is_resource($gd) || (!imageistruecolor($gd) && false === @imagepalettetotruecolor($gd))) {
+        if (!is_resource($gd) || !$this->ensureTrueColor($gd)) {
             throw new ImageException('Can\'t prepare image.');
         }
 
@@ -148,6 +150,7 @@ class Source extends AbstractSource
         if (!$mime = $this->getMimeFromFile($file)) {
             throw new \RuntimeException(sprintf('Cannot detect image type for %s.', $file));
         }
+
 
         if (!function_exists($fn = $this->getCreateFunc($mime))) {
             throw new \RuntimeException(sprintf('Unsupported image type in  %s.', $file));

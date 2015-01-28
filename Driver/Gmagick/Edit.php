@@ -20,6 +20,7 @@ use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Driver\MagickHelper;
 use Thapp\Image\Color\ColorInterface;
 
 /**
@@ -31,6 +32,8 @@ use Thapp\Image\Color\ColorInterface;
  */
 class Edit extends AbstractEdit
 {
+    use MagickHelper;
+
     private static $filterMap;
 
     /**
@@ -142,7 +145,7 @@ class Edit extends AbstractEdit
      */
     private function mapFilter($filter)
     {
-        $map = static::filterMap();
+        $map = $this->filterMap();
 
         if (!isset($map[$filter])) {
             return Gmagick::FILTER_UNDEFINED;
@@ -185,33 +188,17 @@ class Edit extends AbstractEdit
     }
 
     /**
-     * filterMap
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    private static function &filterMap()
+    protected function getMagickFilters()
     {
-        if (null === static::$filterMap) {
-            static::$filterMap = [
-                ImageInterface::FILTER_UNDEFINED => Gmagick::FILTER_UNDEFINED,
-                ImageInterface::FILTER_POINT     => Gmagick::FILTER_POINT,
-                ImageInterface::FILTER_BOX       => Gmagick::FILTER_BOX,
-                ImageInterface::FILTER_TRIANGLE  => Gmagick::FILTER_TRIANGLE,
-                ImageInterface::FILTER_HERMITE   => Gmagick::FILTER_HERMITE,
-                ImageInterface::FILTER_HANNING   => Gmagick::FILTER_HANNING,
-                ImageInterface::FILTER_HAMMING   => Gmagick::FILTER_HAMMING,
-                ImageInterface::FILTER_BLACKMAN  => Gmagick::FILTER_BLACKMAN,
-                ImageInterface::FILTER_GAUSSIAN  => Gmagick::FILTER_GAUSSIAN,
-                ImageInterface::FILTER_QUADRATIC => Gmagick::FILTER_QUADRATIC,
-                ImageInterface::FILTER_CUBIC     => Gmagick::FILTER_CUBIC,
-                ImageInterface::FILTER_CATROM    => Gmagick::FILTER_CATROM,
-                ImageInterface::FILTER_MITCHELL  => Gmagick::FILTER_MITCHELL,
-                ImageInterface::FILTER_LANCZOS   => Gmagick::FILTER_LANCZOS,
-                ImageInterface::FILTER_BESSEL    => Gmagick::FILTER_BESSEL,
-                ImageInterface::FILTER_SINC      => Gmagick::FILTER_SINC
-            ];
-        }
-
-        return static::$filterMap;
+        return [
+            Gmagick::FILTER_UNDEFINED, Gmagick::FILTER_POINT,    Gmagick::FILTER_BOX,
+            Gmagick::FILTER_TRIANGLE,  Gmagick::FILTER_HERMITE,  Gmagick::FILTER_HANNING,
+            Gmagick::FILTER_HAMMING,   Gmagick::FILTER_BLACKMAN, Gmagick::FILTER_GAUSSIAN,
+            Gmagick::FILTER_QUADRATIC, Gmagick::FILTER_CUBIC,    Gmagick::FILTER_CATROM,
+            Gmagick::FILTER_MITCHELL,  Gmagick::FILTER_LANCZOS,  Gmagick::FILTER_BESSEL,
+            Gmagick::FILTER_SINC
+        ];
     }
 }

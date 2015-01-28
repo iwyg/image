@@ -45,4 +45,34 @@ trait GdHelper
 
         return imagecolorallocatealpha($gd, $color->getRed(), $color->getGreen(), $color->getBlue(), $alpha);
     }
+
+    /**
+     * ensureTrueColor
+     *
+     * @param mixed $gd
+     *
+     * @return void
+     */
+    protected function ensureTrueColor(&$gd)
+    {
+        if (imageistruecolor($gd)) {
+            return true;
+        }
+
+        // php >= 5.5
+        if (function_exists('imagepalettetotruecolor')) {
+            return imagepalettetotruecolor($gd);
+        }
+
+        $truecolor = imagecreatetruecolor($w = imagesx($gd), $h = imagesy($gd));
+        if (true !== imagecopy($truecolor, $gd, 0, 0, 0, 0, $w, $h)) {
+            var_dump('sorry');
+            return false;
+        }
+
+        imagedestroy($gd);
+        $gd = $truecolor;
+
+        return true;
+    }
 }

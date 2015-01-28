@@ -91,7 +91,6 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
     public function itPastesImages()
     {
         $this->manageCi();
-
         $edit = $this->newEdit([600, 600]);
 
         $image = $this->newImage('animated.gif');
@@ -99,8 +98,6 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
 
         $this->image->setGravity(new Gravity(5));
         $edit->paste($image);
-
-        $this->image->save($this->asset($prefix.'_pasted.gif'), 'gif');
     }
 
     protected function newImage($file = null)

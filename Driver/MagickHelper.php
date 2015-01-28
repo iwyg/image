@@ -20,4 +20,28 @@ namespace Thapp\Image\Driver;
  */
 trait MagickHelper
 {
+    private static $filterKeys = [
+        ImageInterface::FILTER_UNDEFINED, ImageInterface::FILTER_POINT,    ImageInterface::FILTER_BOX,
+        ImageInterface::FILTER_TRIANGLE,  ImageInterface::FILTER_HERMITE,  ImageInterface::FILTER_HANNING,
+        ImageInterface::FILTER_HAMMING,   ImageInterface::FILTER_BLACKMAN, ImageInterface::FILTER_GAUSSIAN,
+        ImageInterface::FILTER_QUADRATIC, ImageInterface::FILTER_CUBIC,    ImageInterface::FILTER_CATROM,
+        ImageInterface::FILTER_MITCHELL,  ImageInterface::FILTER_LANCZOS,  ImageInterface::FILTER_BESSEL,
+        ImageInterface::FILTER_SINC
+    ];
+
+    /**
+     * &filterMap
+     *
+     * @return array
+     */
+    private function &filterMap()
+    {
+        if (null === static::$filterMap) {
+            static::$filterMap = array_combine(static::$filterKeys, $this->getMagickFilters());
+        }
+
+        return static::$filterMap;
+    }
+
+    abstract protected function getMagickFilters();
 }

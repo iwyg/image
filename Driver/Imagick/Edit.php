@@ -20,6 +20,7 @@ use Thapp\Image\Metrics\PointInterface;
 use Thapp\Image\Metrics\GravityInterface;
 use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Driver\MagickHelper;
 use Thapp\Image\Color\ColorInterface;
 
 /**
@@ -31,6 +32,8 @@ use Thapp\Image\Color\ColorInterface;
  */
 class Edit extends AbstractEdit
 {
+    use MagickHelper;
+
     private static $filterMap;
 
     /**
@@ -165,7 +168,7 @@ class Edit extends AbstractEdit
      */
     private function mapFilter($filter)
     {
-        $map = static::filterMap();
+        $map = $this->filterMap();
 
         if (!isset($map[$filter])) {
             return Imagick::FILTER_UNDEFINED;
@@ -185,7 +188,7 @@ class Edit extends AbstractEdit
     {
         if (array_key_exists($mode, $map = [
             self::COPY_DEFAULT => Imagick::COMPOSITE_COPY,
-            self::COPY_OVER => Imagick::COMPOSITE_OVER,
+            self::COPY_OVER    => Imagick::COMPOSITE_OVER,
             self::COPY_OVERLAY => Imagick::COMPOSITE_OVERLAY
         ])
         ) {
@@ -208,33 +211,17 @@ class Edit extends AbstractEdit
     }
 
     /**
-     * filterMap
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    private static function &filterMap()
+    protected function getMagickFilters()
     {
-        if (null === static::$filterMap) {
-            static::$filterMap = [
-                ImageInterface::FILTER_UNDEFINED => Imagick::FILTER_UNDEFINED,
-                ImageInterface::FILTER_POINT     => Imagick::FILTER_POINT,
-                ImageInterface::FILTER_BOX       => Imagick::FILTER_BOX,
-                ImageInterface::FILTER_TRIANGLE  => Imagick::FILTER_TRIANGLE,
-                ImageInterface::FILTER_HERMITE   => Imagick::FILTER_HERMITE,
-                ImageInterface::FILTER_HANNING   => Imagick::FILTER_HANNING,
-                ImageInterface::FILTER_HAMMING   => Imagick::FILTER_HAMMING,
-                ImageInterface::FILTER_BLACKMAN  => Imagick::FILTER_BLACKMAN,
-                ImageInterface::FILTER_GAUSSIAN  => Imagick::FILTER_GAUSSIAN,
-                ImageInterface::FILTER_QUADRATIC => Imagick::FILTER_QUADRATIC,
-                ImageInterface::FILTER_CUBIC     => Imagick::FILTER_CUBIC,
-                ImageInterface::FILTER_CATROM    => Imagick::FILTER_CATROM,
-                ImageInterface::FILTER_MITCHELL  => Imagick::FILTER_MITCHELL,
-                ImageInterface::FILTER_LANCZOS   => Imagick::FILTER_LANCZOS,
-                ImageInterface::FILTER_BESSEL    => Imagick::FILTER_BESSEL,
-                ImageInterface::FILTER_SINC      => Imagick::FILTER_SINC
-            ];
-        }
-
-        return static::$filterMap;
+        return [
+            Imagick::FILTER_UNDEFINED, Imagick::FILTER_POINT,    Imagick::FILTER_BOX,
+            Imagick::FILTER_TRIANGLE,  Imagick::FILTER_HERMITE,  Imagick::FILTER_HANNING,
+            Imagick::FILTER_HAMMING,   Imagick::FILTER_BLACKMAN, Imagick::FILTER_GAUSSIAN,
+            Imagick::FILTER_QUADRATIC, Imagick::FILTER_CUBIC,    Imagick::FILTER_CATROM,
+            Imagick::FILTER_MITCHELL,  Imagick::FILTER_LANCZOS,  Imagick::FILTER_BESSEL,
+            Imagick::FILTER_SINC
+        ];
     }
 }
