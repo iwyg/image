@@ -6,9 +6,8 @@ php:
   - hhvm
   - hhvm-nightly
 env:
-  - IMAGE_DRIVER=gd
-  - IMAGE_DRIVER=imagick
   - IMAGE_DRIVER=gmagick
+  - IMAGE_DRIVER=imagick
 matrix: 
   allow_failures: 
     - php: hhvm
