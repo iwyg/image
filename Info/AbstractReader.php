@@ -21,6 +21,18 @@ namespace Thapp\Image\Info;
 abstract class AbstractReader implements MetaDataReaderInterface
 {
     /**
+     * {@inheritdoc}
+     */
+    public function readFromStream($resource)
+    {
+        if ($path = $this->getStreamUri($resource)) {
+            return $this->readFromFile($path);
+        }
+
+        return $this->readFromBlob(stream_get_contents($resource));
+    }
+
+    /**
      * getStreamUri
      *
      * @param mixed $resource
@@ -31,7 +43,7 @@ abstract class AbstractReader implements MetaDataReaderInterface
     {
         $meta = stream_get_meta_data($resource);
 
-        if (!isset($meta['uri']) && !stream_is_local($meta['uri'])) {
+        if (!isset($meta['uri']) || !stream_is_local($meta['uri'])) {
             return false;
         }
 

@@ -44,6 +44,10 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
      */
     public function merge()
     {
+        if (0 === $this->count()) {
+            return;
+        }
+
         $resource = $this->image->getImagick();
         $resource->setFirstIterator();
 
@@ -60,17 +64,19 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
      */
     public function coalesce()
     {
-        // merge previous frames
-        $this->merge();
+        if (0 < $this->count()) {
+            // merge previous frames
+            $this->merge();
 
-        $imagick  = $this->image->getImagick();
-        $coalesce = $imagick->coalesceImages();
-        $imagick->setFirstIterator();
+            $imagick  = $this->image->getImagick();
+            $coalesce = $imagick->coalesceImages();
+            $imagick->setFirstIterator();
 
-        do {
-            $index = $coalesce->getIteratorIndex();
-            $this->setFrame($coalesce->getIteratorIndex(), $coalesce->getImage());
-        } while ($coalesce->nextImage());
+            do {
+                $index = $coalesce->getIteratorIndex();
+                $this->setFrame($coalesce->getIteratorIndex(), $coalesce->getImage());
+            } while ($coalesce->nextImage());
+        }
 
         return $this;
     }
@@ -140,7 +146,7 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
         $gravity = $this->image->getGravity();
 
         if (GravityInterface::GRAVITY_NORTHWEST !== $gravity->getMode()) {
-            $this->frames[$index]->gravity($gravity);
+            $this->frames[$index]->setGravity($gravity);
         }
     }
 }

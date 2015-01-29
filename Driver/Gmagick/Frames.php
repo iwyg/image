@@ -52,6 +52,10 @@ class Frames extends AbstractFrames
      */
     public function merge()
     {
+        if (0 === $this->count()) {
+            return;
+        }
+
         $resource = $this->image->getGmagick();
         $resource->setImageIndex(0);
 
@@ -68,23 +72,25 @@ class Frames extends AbstractFrames
      */
     public function coalesce()
     {
-        // merge previous frames
-        $this->merge();
+        if (0 < $this->count()) {
+            // merge previous frames
+            $this->merge();
 
-        $gmagick = $this->image->getGmagick();
+            $gmagick = $this->image->getGmagick();
 
-        if ($this->supportsCoalesce()) {
-            $coalesce = $gmagick->coalesceImages();
-        } else {
-            $coalesce = clone $gmagick;
+            if ($this->supportsCoalesce()) {
+                $coalesce = $gmagick->coalesceImages();
+            } else {
+                $coalesce = clone $gmagick;
+            }
+
+            $gmagick->setImageIndex(0);
+
+            do {
+                $index = $coalesce->getImageIndex();
+                $this->setFrame($coalesce->getImageIndex(), $coalesce->getImage());
+            } while ($coalesce->nextImage());
         }
-
-        $gmagick->setImageIndex(0);
-
-        do {
-            $index = $coalesce->getImageIndex();
-            $this->setFrame($coalesce->getImageIndex(), $coalesce->getImage());
-        } while ($coalesce->nextImage());
 
         return $this;
     }
@@ -160,7 +166,7 @@ class Frames extends AbstractFrames
         $gravity = $this->image->getGravity();
 
         if (GravityInterface::GRAVITY_NORTHWEST !== $gravity->getMode()) {
-            $this->frames[$index]->gravity($gravity);
+            $this->frames[$index]->setGravity($gravity);
         }
     }
 

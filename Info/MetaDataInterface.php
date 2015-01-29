@@ -14,6 +14,13 @@ namespace Thapp\Image\Info;
 interface MetaDataInterface extends \ArrayAccess
 {
     /**
+     * Get all attributes as map.
+     *
+     * @return array
+     */
+    public function all();
+
+    /**
      * set
      *
      * @param mixed $attr

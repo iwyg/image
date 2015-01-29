@@ -23,7 +23,7 @@ class ImageReader extends AbstractReader implements ImagesizeReaderInterface
     static $mappedKeys = [
         0 => 'width',
         1 => 'height',
-        'meta' => 'MimeType',
+        'mime' => 'MimeType',
     ];
 
     /**
@@ -35,8 +35,8 @@ class ImageReader extends AbstractReader implements ImagesizeReaderInterface
      */
     public function readFromFile($file)
     {
-        if (!$size = getimagesize($file)) {
-            $size = [];
+        if (false === $size = @getimagesize($file)) {
+            throw new \RuntimeException('Cannot read file.');
         }
 
         return new MetaData($this->map($size));
@@ -50,33 +50,11 @@ class ImageReader extends AbstractReader implements ImagesizeReaderInterface
      */
     public function readFromBlob($blob)
     {
-        if (!$size = getimagesizefromstring($blob)) {
-            $size = [];
+        if (false === ($size = @getimagesizefromstring($blob))) {
+            throw new \RuntimeException('Cannot read info from string.');
         }
 
         return new MetaData($this->map($size));
-    }
-
-    /**
-     * readFromResource
-     *
-     * @param mixed $resource
-     *
-     * @return MetaDataInterface
-     */
-    public function readFromStream($resource)
-    {
-        if ($path = $this->getStreamUri($resource)) {
-            return $this->readFromFile($path);
-        }
-
-        $pos = ftell($resource);
-        rewind($resource);
-
-        $meta = $this->readFromBlob(stream_get_contents($resource));
-        fseek($resource, $pos);
-
-        return $meta;
     }
 
     protected function getMappedKeys()

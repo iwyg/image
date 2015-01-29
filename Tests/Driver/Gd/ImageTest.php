@@ -28,6 +28,43 @@ use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
 class ImageTest extends AbstractImageTest
 {
 
+    /** @test */
+    public function itShouldErrorWhenInjectingPaletteImages()
+    {
+        $gd = imagecreate(200, 200);
+        try {
+            $image = new Image($gd, $this->mockPalette());
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame('Thapp\Image\Driver\Gd\Image only supports truecolor images.', $e->getMessage());
+            return;
+        }
+
+        $this->fail();
+    }
+
+    /** @test */
+    public function itShouldLoadRemoteImage()
+    {
+        $url = 'http://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png';
+
+        $stream = fopen($url, 'r');
+
+        $src = new Source;
+        $image = $src->read($stream);
+
+        $data = $image->getMetaData()->all();
+        $this->assertTrue(!empty($data));
+
+        fclose($stream);
+    }
+
+    protected function mockPalette()
+    {
+        return $this->getMockBuilder('Thapp\Image\Color\Palette\Rgb')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
     protected function getDriverName()
     {
         return 'gd';

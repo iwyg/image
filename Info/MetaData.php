@@ -31,6 +31,14 @@ class MetaData implements MetaDataInterface
     /**
      * {@inheritdoc}
      */
+    public function all()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function set($attr, $value)
     {
         return $this->attributes[$attr] = $value;
@@ -57,7 +65,7 @@ class MetaData implements MetaDataInterface
      */
     public function delete($attr)
     {
-        unset($this->attributes[$offset]);
+        unset($this->attributes[$attr]);
     }
 
     /**

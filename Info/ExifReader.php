@@ -36,44 +36,9 @@ class ExifReader extends AbstractReader
             $mime = 'image/jpeg';
         }
 
-        /*$info = getimagesizefromstring($blob);*/
         $url = 'data://'.$mime.';base64,'.base64_encode($blob);
 
         return new MetaData($this->readExifData($url));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function readFromStream($resource)
-    {
-        if (false === ($data = @stream_get_meta_data($resource))) {
-            $data = [];
-        }
-
-        if (isset($data['uri']) && stream_is_local($data['uri'])) {
-            return $this->readFromFile($data['uri']);
-        }
-
-        return $this->readFromBlob(stream_get_contents($resource));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supports($type)
-    {
-        if (is_string($type)) {
-            if (is_file($type) && stream_is_local($type)) {
-                return true;
-            }
-        }
-
-        if (is_resource($type) && 'file' === get_resource_type($type)) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -104,7 +69,7 @@ class ExifReader extends AbstractReader
             }
         }
 
-        return $file + $data;
+        return $this->map($file + $data);
     }
 
     protected function getMappedKeys()
