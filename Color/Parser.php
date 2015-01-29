@@ -85,17 +85,19 @@ final class Parser
         $colors = static::parse($color);
 
         if (!array_key_exists(ColorInterface::CHANNEL_KEY, $colors)) {
-            $a = $colors[ColorInterface::CHANNEL_ALPHA];
-            $r = ($colors[ColorInterface::CHANNEL_RED] / 255) * $a;
-            $g = ($colors[ColorInterface::CHANNEL_GREEN] / 255) * $a;
-            $b = ($colors[ColorInterface::CHANNEL_BLUE] / 255) * $a;
+            $r = ($colors[ColorInterface::CHANNEL_RED] / 255);
+            $g = ($colors[ColorInterface::CHANNEL_GREEN] / 255);
+            $b = ($colors[ColorInterface::CHANNEL_BLUE] / 255);
             $k = (float)(1 - max($r, $g, $b));
 
+            // transform the alpha values to saturation of 4c colors.
+            $a = $colors[ColorInterface::CHANNEL_ALPHA];
+
             $colors = [
-                1.0 === $k ? 0 : round(100 * ((1 - $r - $k) / (1 - $k)), 2),
-                1.0 === $k ? 0 : round(100 * ((1 - $g - $k) / (1 - $k)), 2),
-                1.0 === $k ? 0 : round(100 * ((1 - $b - $k) / (1 - $k)), 2),
-                $key = round(($k * 100), 2)
+                1.0 === $k ? 0 : round((100 * $a) * ((1 - $r - $k) / (1 - $k)), 2),
+                1.0 === $k ? 0 : round((100 * $a) * ((1 - $g - $k) / (1 - $k)), 2),
+                1.0 === $k ? 0 : round((100 * $a) * ((1 - $b - $k) / (1 - $k)), 2),
+                $key = round($a * ($k * 100), 2)
             ];
         }
 
@@ -236,9 +238,13 @@ final class Parser
 
         // case matches rgb():
         if (preg_match('#^s?rgba?\((.*)\)$#', strtolower($color), $matches)) {
+            if (3 > count($parts = preg_split('~,\s?~', $matches[1], -1, PREG_SPLIT_NO_EMPTY))) {
+                throw new \InvalidArgumentException(sprintf('Invalid rgb definition "%s".', $color));
+            }
+
             $colors = array_map(function ($val) {
-                return is_string($val) && 0 !== substr_count($val, '.') ? (float)$val : (int)$val;
-            }, array_pad(preg_split('~,\s?~', $matches[1], -1, PREG_SPLIT_NO_EMPTY), 4, null));
+                return (float)$val;//is_string($val) && 0 !== substr_count($val, '.') ? (float)$val : (int)$val;
+            }, array_pad($parts, 4, 1.0));
 
             return array_combine(Rgb::keys(), $colors);
         }
@@ -246,17 +252,18 @@ final class Parser
         // case cmyk()
         if (0 === strpos($color, 'cmyk(')) {
             $cmyk = array_map(function ($val) {
-                return is_string($val) ? (int)trim($val, ' %') : (string)$val;
+                $ret = is_string($val) ? trim($val, ' %') : (string)$val;
+                return is_numeric($ret) ? (float)$ret : $ret;
             }, array_pad(explode(',', substr($color, 5, -1)), 4, null));
 
             if (!ctype_digit(implode('', $cmyk))) {
-                throw new \InvalidArgumentException(sprintf('Invalid cmyk definition %s.', $color));
+                throw new \InvalidArgumentException(sprintf('Invalid cmyk definition "%s".', $color));
             }
 
             return array_combine(Cmyk::keys(), $cmyk);
         }
 
-        throw new \InvalidArgumentException;
+        throw new \InvalidArgumentException(sprintf('Invalid color definition "%s".', (string)$color));
     }
 
     private static function fourCToRgb(array $cmyk)

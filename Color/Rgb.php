@@ -70,12 +70,12 @@ class Rgb extends AbstractColor implements RgbInterface
             case self::CHANNEL_BLUE:
                 return $this->b;
             case self::CHANNEL_ALPHA:
-                return $this->getAlapha();
+                return $this->getAlpha();
             default:
                 break;
         }
 
-        throw new InvalidArgumentException();
+        throw new \InvalidArgumentException('Undefined color.');
     }
 
     /**
@@ -88,27 +88,6 @@ class Rgb extends AbstractColor implements RgbInterface
         }
 
         return sprintf('rgb(%s,%s,%s)', $this->r, $this->g, $this->b);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toHex()
-    {
-        $a = $this->getAlpha();
-        return new Hex(Parser::rgbToHex(
-            (int)max(0, $this->r * $a),
-            (int)max(0, $this->g * $a),
-            (int)max(0, $this->b * $a)
-        ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toRgb()
-    {
-        return clone $this;
     }
 
     /**
@@ -153,7 +132,7 @@ class Rgb extends AbstractColor implements RgbInterface
     private function setValues(array $values)
     {
         if (3 > ($count = count($values)) || 4 < $count) {
-            throw new InvalidArgumentException;
+            throw new \InvalidArgumentException('Invalid RGB values.');
         }
 
         if (4 === $count) {

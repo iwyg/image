@@ -56,7 +56,7 @@ class Grayscale extends AbstractColor implements GrayscaleInterface
      */
     public function getColorAsString()
     {
-        return sprintf('rgba(%1$d,%1$d,%1$d,%2$d)', $this->g, $this->getAlpha());
+        return sprintf('rgba(%1$d,%1$d,%1$d,%2$s)', $this->g, $this->getAlpha());
     }
 
     /**
@@ -80,7 +80,7 @@ class Grayscale extends AbstractColor implements GrayscaleInterface
             return $this->getAlpha();
         }
 
-        throw new \InvalidArgumentException;
+        throw new \InvalidArgumentException('Undefined color.');
     }
 
     /**
@@ -94,7 +94,7 @@ class Grayscale extends AbstractColor implements GrayscaleInterface
     protected function setValues(array $values)
     {
         if (empty($values) || 2 < count($values)) {
-            throw new \InvalidArgumentException('Invalid values.');
+            throw new \InvalidArgumentException('Invalid Grayscale values.');
         }
 
         $this->g = (int)max(0, min(255, $values[0]));

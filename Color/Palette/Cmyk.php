@@ -56,6 +56,8 @@ class Cmyk extends AbstractPalette implements CmykPaletteInterface
     {
         list($c, $m, $y, $k) = $colors;
 
-        return sprintf('cmyk(%d,%d,%d,%d)', $c, $m, $y, $k);
+        return sprintf('cmyk(%s,%s,%s,%s)', $c, $m, $y, $k);
+        //var_dump($key);
+        //return $key;
     }
 }

@@ -35,7 +35,7 @@ class Cmyk extends AbstractColor implements CmykInterface
     private $y;
     private $k;
 
-    public function __construct(array $values, CmykPaletteInterface $palette)
+    public function __construct(array $values, CmykPaletteInterface $palette = null)
     {
         $this->setValues($values);
         $this->palette = $palette ?: new CmykPalette;
@@ -75,12 +75,12 @@ class Cmyk extends AbstractColor implements CmykInterface
                 break;
         }
 
-        throw new InvalidArgumentException();
+        throw new \InvalidArgumentException('Undefined color.');
     }
 
     public function getAlpha()
     {
-        throw new \LogicException;
+        throw new \LogicException('Alpha is unsuported on Cmyk colors.');
     }
 
     /**
@@ -123,7 +123,7 @@ class Cmyk extends AbstractColor implements CmykInterface
     protected function setValues(array $values)
     {
         if (4 !== count($values)) {
-            throw new \InvalidArgumentException;
+            throw new \InvalidArgumentException('Invalid CMYK values.');
         }
 
         list ($this->c, $this->m, $this->y, $this->k) = array_map(function ($color) {
