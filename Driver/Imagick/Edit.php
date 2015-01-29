@@ -53,27 +53,19 @@ class Edit extends AbstractEdit
      */
     public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
-        $start = $this->getStartPoint($size, $start);
-
-        //if ($this->getSize()->contains($size)) {
-        //    $color = $this->newColor([255, 255, 255, 0]);
-        //} else {
-        //    $color = $color ?: $this->newColor([255, 255, 255, 0]);
-        //}
-        //
         $color = $color ?: $this->newColor([255, 255, 255, 0]);
 
-        //$this->canvas($size, $start, $color);
-
-        $canvas = new Imagick();
-        $canvas->newImage($size->getWidth(), $size->getHeight(), $color ? $color->getColorAsString() : 'transparent');
-        $this->doCopy($canvas, $this->imagick(), $start, Imagick::COMPOSITE_COPY);
+        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_COPY);
 
         $this->imagick()->setImagePage(0, 0, 0, 0);
-        //$canvas->compositeImage($this->imagick(), Imagick::COMPOSITE_COPY, $start->getX(), $start->getY());
-        //$canvas->setImageFormat($this->image->getFormat());
+    }
 
-        //$this->image->swapImagick($canvas);
+    /**
+     * {@inheritdoc}
+     */
+    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
+    {
+        $this->createCanvas($size, $point, $color, Imagick::COMPOSITE_OVER);
     }
 
     /**
@@ -93,17 +85,6 @@ class Edit extends AbstractEdit
 
         $px->clear();
         $px->destroy();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
-    {
-        $canvas = new Imagick();
-        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
-
-        $this->doCopy($canvas, $this->imagick(), $point, Imagick::COMPOSITE_OVER);
     }
 
     /**
@@ -148,6 +129,25 @@ class Edit extends AbstractEdit
             $this->image->swapImagick($canvas);
         }
     }
+
+    /**
+     * createCanvas
+     *
+     * @param SizeInterface $size
+     * @param PointInterface $point
+     * @param ColorInterface $color
+     * @param mixed $mode
+     *
+     * @return void
+     */
+    protected function createCanvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null, $mode = Imagick::COMPOSITE_OVER)
+    {
+        $canvas = new Imagick();
+        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
+
+        $this->doCopy($canvas, $this->imagick(), $point, $mode);
+    }
+
 
     /**
      * imagick

@@ -53,17 +53,17 @@ class Edit extends AbstractEdit
      */
     public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
-        $start = $this->getStartPoint($size, $start);
+        $color = $color ?: $this->newColor([255, 255, 255, 0]);
 
-        if ($this->getSize()->contains($size)) {
-            $color = $this->image->getPalette()->getColor([255, 255, 255, 0]);
-        } else {
-            $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255, 0]);
-        }
+        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Gmagick::COMPOSITE_COPY);
+    }
 
-        $this->canvas($size, $start, $color);
-
-        $this->gmagick()->setImagePage(0, 0, 0, 0);
+    /**
+     * {@inheritdoc}
+     */
+    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
+    {
+        $this->createCanvas($size, $start, $color, Gmagick::COMPOSITE_OVER);
     }
 
     /**
@@ -83,17 +83,6 @@ class Edit extends AbstractEdit
 
         $px->clear();
         $px->destroy();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
-    {
-        $canvas = new gmagick();
-        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
-
-        $this->doCopy($canvas, $point, Gmagick::COMPOSITE_OVER);
     }
 
     /**
@@ -124,6 +113,24 @@ class Edit extends AbstractEdit
         $canvas->setImageFormat($this->gmagick()->getImageFormat());
 
         $this->image->swapGmagick($canvas);
+    }
+
+    /**
+     * createCanvas
+     *
+     * @param SizeInterface $size
+     * @param PointInterface $point
+     * @param ColorInterface $color
+     * @param mixed $mode
+     *
+     * @return void
+     */
+    protected function createCanvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null, $mode = Gmagick::COMPOSITE_OVER)
+    {
+        $canvas = new Gmagick();
+        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
+
+        $this->doCopy($canvas, $this->gmagick(), $point, $mode);
     }
 
     /**

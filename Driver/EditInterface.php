@@ -40,6 +40,21 @@ interface EditInterface
     public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null);
 
     /**
+     * Like extent but ignores the images gravity setting.
+     *
+     * Unlike extent the canvas region will be placed "beneath" the image, and
+     * the image will be copied on top of the canvas. If the image is
+     * transparent, the background of the canvas will shine through.
+     *
+     * @param SizeInterface $size
+     * @param PointInterface $point
+     * @param ColorInterface $color
+     *
+     * @return void
+     */
+    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null);
+
+    /**
      * scale
      *
      * @param mixed $perc
@@ -77,17 +92,6 @@ interface EditInterface
      * @return void
      */
     public function crop(SizeInterface $size, PointInterface $crop = null, ColorInterface $color = null);
-
-    /**
-     * Like extent but ignores the images gravity setting.
-     *
-     * @param SizeInterface $size
-     * @param PointInterface $point
-     * @param ColorInterface $color
-     *
-     * @return void
-     */
-    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null);
 
     /**
      * copy
