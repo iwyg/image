@@ -150,7 +150,7 @@ class Image extends AbstractImage
     public function newImage($format = null, ColorInterface $color = null)
     {
         $gmagick = new Gmagick;
-        $gmagick->newImage($this->getWitdt(), $this->getHeight(), $this->gmagick->getImageBackgroundColor());
+        $gmagick->newImage($this->getWidth(), $this->getHeight(), $this->gmagick->getImageBackgroundColor());
 
         if (null === $format && $fmt = $this->getFormat()) {
             $format = $fmt;
@@ -173,14 +173,6 @@ class Image extends AbstractImage
         }
 
         return parent::getFormat();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function frames()
-    {
-        return $this->frames;
     }
 
     /**
@@ -215,14 +207,6 @@ class Image extends AbstractImage
      * {@inheritdoc}
      */
     public function getBlob($imageFormat = null, array $options = [])
-    {
-        return $this->get($imageFormat, $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($format = null, array $options = [])
     {
         if (null === $format) {
             $format = isset($options['format']) ? $options['format'] : $this->getFormat();

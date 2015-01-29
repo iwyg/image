@@ -177,26 +177,26 @@ class Edit extends AbstractEdit
         return $map[$filter];
     }
 
-    /**
-     * mapMode
-     *
-     * @param string $mode
-     *
-     * @return int
-     */
-    private function mapMode($mode)
-    {
-        if (array_key_exists($mode, $map = [
-            self::COPY_DEFAULT => Imagick::COMPOSITE_COPY,
-            self::COPY_OVER    => Imagick::COMPOSITE_OVER,
-            self::COPY_OVERLAY => Imagick::COMPOSITE_OVERLAY
-        ])
-        ) {
-            return $map[$mode];
-        }
+    ///**
+    // * mapMode
+    // *
+    // * @param string $mode
+    // *
+    // * @return int
+    // */
+    //private function mapMode($mode)
+    //{
+    //    if (array_key_exists($mode, $map = [
+    //        self::COPY_DEFAULT => Imagick::COMPOSITE_COPY,
+    //        self::COPY_OVER    => Imagick::COMPOSITE_OVER,
+    //        self::COPY_OVERLAY => Imagick::COMPOSITE_OVERLAY
+    //    ])
+    //    ) {
+    //        return $map[$mode];
+    //    }
 
-        return Imagick::COMPOSITE_DEFAULT;
-    }
+    //    return Imagick::COMPOSITE_DEFAULT;
+    //}
 
     /**
      * newPixel

@@ -42,6 +42,17 @@ class EditTest extends AbstractEditTest
         $this->assertTransparent($this->image, true);
     }
 
+    /** @test */
+    public function itShouldThrowIfPasteImageIsInvalid()
+    {
+        $edit = $this->newEdit([200, 200]);
+        try {
+            $edit->paste($this->mockImage('Thapp\Image\Driver\ImageInterface'));
+        } catch (\LogicException $e) {
+            $this->assertSame('Can\'t copy image from different driver.', $e->getMessage());
+        }
+    }
+
     protected function newEdit($file, ImageInterface $image = null)
     {
         return new Edit($this->image = $image ?: $this->newImage($file));

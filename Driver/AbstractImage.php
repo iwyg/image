@@ -252,6 +252,28 @@ abstract class AbstractImage implements ImageInterface
     }
 
     /**
+     * formatToInterlace
+     *
+     * @param string $format
+     *
+     * @return void
+     */
+    protected function formatToInterlace($format)
+    {
+        $map = [
+            'gif'  => self::INTERLACE_GIF,
+            'jpeg' => self::INTERLACE_JPEG,
+            'png'  => self::INTERLACE_PNG
+        ];
+
+        if (isset($map[$format])) {
+            return $map[$format];
+        }
+
+        return self::INTERLACE_UNDEFINED;
+    }
+
+    /**
      * mapOrientation
      *
      * @param mixed $orient

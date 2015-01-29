@@ -60,6 +60,15 @@ interface ImageInterface
     const ORIENT_RIGHTBOTTOM = 7;
     const ORIENT_LEFTBOTTOM = 8;
 
+    const INTERLACE_UNDEFINED = 0;
+    const INTERLACE_NO = 1;
+    const INTERLACE_LINE = 2;
+    const INTERLACE_PLANE = 3;
+    const INTERLACE_PARTITION = 4;
+    const INTERLACE_GIF = 5;
+    const INTERLACE_JPEG = 6;
+    const INTERLACE_PNG = 7;
+
     /**
      * desctroy
      *
@@ -170,22 +179,18 @@ interface ImageInterface
     public function getGravity();
 
     /**
-     * @deprecated use ImageInterface::getBlob() instead.
-     *
-     * @param string $format
-     * @param array $options
-     *
-     * @return string
-     */
-    public function get($format = null, array $options = []);
-
-    /**
      * Get the image content as binary string.
      *
      * @param string $asFormat Image format, on of the ImageInterface::FORMAT_*
      * constants.
      *
      * @param array $options Output options
+     *
+     * - $format [string]
+     * - $flatten [boolean]
+     * - $interlace [int]
+     * - $comperession_quality [int]
+     * - $comperession_quality_png [int]
      *
      * @return string
      */

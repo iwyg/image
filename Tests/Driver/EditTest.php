@@ -14,6 +14,7 @@ namespace Thapp\Image\Tests\Driver;
 use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\Gravity;
+use Thapp\Image\Driver\Imagick\Image;
 use Thapp\Image\Driver\ImageInterface;
 
 /**
@@ -79,12 +80,22 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
     {
         $edit = $this->newEdit([200, 100]);
         $new = new Size(400, 400);
-        $edit->resize($new);
+        $edit->resize($new, null);
 
         $size = $this->image->getSize();
 
         $this->assertSame($size->getWidth(), $new->getWidth());
         $this->assertSame($size->getHeight(), $new->getHeight());
+
+        $edit = $this->newEdit([200, 100]);
+        $size = $this->image->getSize()->scale(150);
+
+        $edit->resize($size);
+
+        $size = $this->image->getSize();
+
+        $this->assertSame($size->getWidth(), $size->getWidth());
+        $this->assertSame($size->getHeight(), $size->getHeight());
     }
 
     /** @test */
@@ -98,6 +109,25 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
 
         $this->image->setGravity(new Gravity(5));
         $edit->paste($image);
+    }
+
+    /** @test */
+    public function itShouldThrowIfPasteImageIsInvalid()
+    {
+        $edit = $this->newEdit([200, 200]);
+        try {
+            $edit->paste($this->mockImage('Thapp\Image\Driver\ImageInterface'));
+        } catch (\LogicException $e) {
+            $this->assertSame('Can\'t copy image from different driver.', $e->getMessage());
+            return;
+        }
+
+        $this->fail();
+    }
+
+    protected function getImageClass()
+    {
+        return 'Thapp\Image\Driver\Imagick\Image';
     }
 
     protected function newImage($file = null)

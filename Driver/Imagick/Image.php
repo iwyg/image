@@ -183,7 +183,7 @@ class Image extends AbstractImage
     public function newImage($format = null, ColorInterface $color = null)
     {
         $imagick = new Imagick;
-        $imagick->newImage($this->getWitdt(), $this->getHeight(), $this->imagick->getImageBackgroundColor());
+        $imagick->newImage($this->getWidth(), $this->getHeight(), $this->imagick->getImageBackgroundColor());
 
         if (null === $format && $fmt = $this->getFormat()) {
             $format = $fmt;
@@ -235,15 +235,7 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
-    public function getBlob($imageFormat = null, array $options = [])
-    {
-        return $this->get($imageFormat, $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($format = null, array $options = [])
+    public function getBlob($format = null, array $options = [])
     {
         if (null === $format) {
             $format = isset($options['format']) ? $options['format'] : $this->getFormat();
@@ -256,23 +248,23 @@ class Image extends AbstractImage
             if (Imagick::ALPHACHANNEL_ACTIVATE === $this->imagick->getImageAlphaChannel()) {
                 $this->edit()->canvas($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
             }
-            $this->imagick->flattenImages();
+            //$this->imagick->flattenImages();
         }
 
         if ($this->hasFrames()) {
-
             $this->frames()->merge();
-            $this->imagick->setImageFormat($format);
-            $this->imagick->setImageCompressionQuality($this->getOption($options, 'quality', 80));
 
             if ($this->getOption($options, 'flatten', false)) {
                 $this->imagick->flattenImages();
-            } elseif (in_array($format, ['gif'])) {
-                //return $this->imagick->getImagesBlob();
             }
-        } else {
-            $this->imagick->setImageFormat($format);
         }
+
+        $this->imagick->setImageFormat($format);
+
+        if ($interlace = $this->getOption($options, 'interlace', false)) {
+        }
+
+        $this->imagick->setImageCompressionQuality($this->getOption($options, 'quality', 80));
 
         return $this->imagick->getImagesBlob();
     }

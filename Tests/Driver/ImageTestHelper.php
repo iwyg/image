@@ -74,4 +74,11 @@ trait ImageTestHelper
 
         $this->assertSame($alpha, $channel);
     }
+
+    protected function mockImage($class = 'Thapp\Image\Driver\Gd\Image')
+    {
+        return $this->getMockBuilder($class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
 }

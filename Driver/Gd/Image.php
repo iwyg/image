@@ -119,9 +119,12 @@ class Image extends AbstractImage
      */
     public function newImage($format = null, ColorInterface $color = null)
     {
-        $resource = imagecreatetrucolor($this->getWidth(), $this->getHeight());
+        $resource = $this->newFromGd($this->getSize(), $color);
 
-        return new static($resource, $this->meta);
+        $image = new static($resource, $this->palette, clone $this->meta);
+        $image->setSourceFormat($this->sourceFormat);
+
+        return $image;
     }
 
     /**
@@ -190,24 +193,9 @@ class Image extends AbstractImage
     }
 
     /**
-     * Get the image content as binary string.
-     *
-     * @param string $asFormat Image format, on of the ImageInterface::FORMAT_*
-     * constants.
-     *
-     * @param array $options Output options
-     *
-     * @return string
-     */
-    public function getBlob($imageFormat = null, array $options = [])
-    {
-        return $this->get($imageFormat, $options);
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function get($format = null, array $options = [])
+    public function getBlob($format = null, array $options = [])
     {
         $format = $format ?: $this->getOption($options, 'format', $this->getFormat());
 
@@ -257,11 +245,21 @@ class Image extends AbstractImage
     private function generateOutPut($format)
     {
         if (!is_callable($fn = $this->mapOutputFormat($format))) {
-            throw new ImagException(sprintf('Unsupported format "%s".', (string)$format));
+            throw new ImageException(sprintf('Unsupported format "%s".', (string)$format));
+        }
+
+        $path = null;
+
+        if (in_array($fn, ['imagewebp', 'imagexbm'])) {
+            $path = tempnam(sys_get_temp_dir(), time());
         }
 
         ob_start();
-        call_user_func($fn, $this->gd);
+        call_user_func($fn, $this->gd, $path);
+
+        if (null !== $path) {
+            unlink($path);
+        }
 
         return ob_get_clean();
     }
@@ -338,6 +336,7 @@ class Image extends AbstractImage
                 return 'imagegif';
             case self::FORMAT_WBMP:
                 return 'imagewbmp';
+            // webp and xbm need save paths
             case self::FORMAT_WEBP:
                 return 'imagewebp';
             case self::FORMAT_XBM:

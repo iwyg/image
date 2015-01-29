@@ -57,6 +57,70 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
+    public function gettingColorOfInvalidPointShouldThrowExpcetion()
+    {
+        $image = $this->newImage(1, 1);
+        try {
+            $image->getColorAt(new Point(2, 2));
+        } catch (\OutOfBoundsException $e) {
+            $this->assertTrue(true);
+            return;
+        }
+
+        $this->fail();
+    }
+
+    /** @test */
+    public function itShouldCreateNewImage()
+    {
+        $image = $this->newImage(200, 100);
+        $new = $image->newImage();
+
+        $this->assertInstanceof(get_class($image), $new);
+        $this->assertFalse($image === $new);
+
+        $this->assertSame($image->getFormat(), $new->getFormat());
+        $this->assertSame($image->getWidth(), $new->getWidth());
+        $this->assertSame($image->getHeight(), $new->getHeight());
+    }
+
+    /**
+     * @test
+     * @dataProvider formatMimeProvider
+     */
+    public function itShouldSaveToFormat($format, $mime)
+    {
+        $image = $this->newImage(100, 100);
+        $path = tempnam(sys_get_temp_dir(), 'image');
+
+        $image->setFormat($format);
+
+        try {
+            file_put_contents($path, $image->getBlob());
+        } catch(\Exception $e) {
+            unlink($path);
+            throw $e;
+        }
+
+        $info = getimagesize($path);
+        unlink($path);
+
+        $this->assertSame($mime, $info['mime']);
+    }
+
+    public function formatMimeProvider()
+    {
+        return [
+            ['jpg', 'image/jpeg'],
+            ['jpeg', 'image/jpeg'],
+            ['gif', 'image/gif'],
+            ['png', 'image/png'],
+            ['wbmp', 'image/vnd.wap.wbmp'],
+            ['xbm', 'image/xbm'],
+        ];
+    }
+
+    /** @test */
     public function itShouldCropWithGravity()
     {
         //$image->save($this->asset('pattern_copy_'.$this->getDriverName().'.png'));
