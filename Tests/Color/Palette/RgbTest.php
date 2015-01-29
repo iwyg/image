@@ -12,6 +12,7 @@
 namespace Thapp\Image\Tests\Color\Palette;
 
 use Thapp\Image\Color\Palette\Rgb;
+use Thapp\Image\Color\ColorInterface;
 
 /**
  * @class RgbTest
@@ -27,5 +28,31 @@ class RgbTest extends \PHPUnit_Framework_TestCase
     {
         $palette = new Rgb;
         $this->assertInstanceof('Thapp\Image\Color\ColorInterface', $palette->getColor([255,255,255]));
+    }
+
+    /** @test */
+    public function itShouldCacheColors()
+    {
+        $palette = new Rgb;
+
+        $colorA = $palette->getColor('#ff0000');
+        $colorB = $palette->getColor([255, 0, 0]);
+
+        $this->assertSame($colorA, $colorB);
+    }
+
+    /** @test */
+    public function itShouldGetColorDefinitions()
+    {
+        $palette = new Rgb;
+        $this->assertSame(
+            [
+                ColorInterface::CHANNEL_RED,
+                ColorInterface::CHANNEL_GREEN,
+                ColorInterface::CHANNEL_BLUE,
+                ColorInterface::CHANNEL_ALPHA
+            ],
+            $palette->getDefinition()
+        );
     }
 }

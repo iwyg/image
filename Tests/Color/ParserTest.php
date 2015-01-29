@@ -37,6 +37,37 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($channels, $rgb);
     }
 
+    /** @test */
+    public function itThrowOnInvalidInputType()
+    {
+        try {
+            Parser::toRgb('cmyk(200,200,foo,bar)');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame('Invalid cmyk definition "cmyk(200,200,foo,bar)".', $e->getMessage());
+        }
+
+        try {
+            Parser::toRgb('rgb(200,200)');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame('Invalid rgb definition "rgb(200,200)".', $e->getMessage());
+        }
+
+        try {
+            Parser::toRgb('foo_bar');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame('Invalid color definition "foo_bar".', $e->getMessage());
+        }
+
+        try {
+            Parser::toRgb(new \stdClass);
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame('Unsupported argument value of type object.', $e->getMessage());
+            return;
+        }
+
+        $this->fail();
+    }
+
     /**
      * @test
      * @dataProvider normalizeHexProvider
@@ -124,6 +155,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
+    public function itShouldAlwaysReturnAlphaChannel()
+    {
+        $values = Parser::toRgb([0, 0, 0]);
+
+        $this->assertSame([0, 0, 0, 1.0], $values);
+    }
+
+    /** @test */
     public function itShouldThrowOnInvalidInput()
     {
         try {
@@ -185,6 +224,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [[0, 0, 255], [100.0, 100.0, 0, 0,]],
             [[255, 0, 255], [0, 100.0, 0, 0,]],
             [[127, 127, 127], [0, 0, 0, 50.2,]],
+            [[0, 0, 255, 0.5], [50.0, 50.0, 0, 0,]],
+            [[0, 0, 0, 0.5], [0, 0, 0, 50.0,]],
         ];
     }
 }
