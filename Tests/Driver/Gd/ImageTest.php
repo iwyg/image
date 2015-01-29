@@ -12,8 +12,8 @@
 namespace Thapp\Image\Tests\Driver\Gd;
 
 use Imagick;
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
 use Thapp\Image\Driver\Gd\Image;
 use Thapp\Image\Driver\Gd\Source;
 use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;

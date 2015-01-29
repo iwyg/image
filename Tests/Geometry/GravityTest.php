@@ -9,10 +9,10 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Tests\Metrics;
+namespace Thapp\Image\Tests\Geometry;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Gravity;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Gravity;
 
 /**
  * @class GravityTest
@@ -26,7 +26,7 @@ class GravityTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldBeInstantiable()
     {
-        $this->assertInstanceof('Thapp\Image\Metrics\GravityInterface', new Gravity(5));
+        $this->assertInstanceof('Thapp\Image\Geometry\GravityInterface', new Gravity(5));
     }
 
     /** @test */
@@ -48,8 +48,8 @@ class GravityTest extends \PHPUnit_Framework_TestCase
      */
     public function itShouldCalculateCropPoints($mode, $ex, $ey)
     {
-        $box = new Box(300, 300);
-        $target = new Box(100, 100);
+        $box = new Size(300, 300);
+        $target = new Size(100, 100);
         $gravity = new Gravity($mode);
 
         $point = $gravity->getPoint($box, $target);

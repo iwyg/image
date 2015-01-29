@@ -9,7 +9,7 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Metrics;
+namespace Thapp\Image\Geometry;
 
 /**
  * @interface PointInterface
@@ -22,6 +22,6 @@ interface PointInterface
 {
     public function getX();
     public function getY();
-    public function isIn(BoxInterface $box);
+    public function isIn(SizeInterface $box);
     public function negate();
 }

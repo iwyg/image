@@ -11,9 +11,9 @@
 
 namespace Thapp\Image\Driver;
 
-use Thapp\Image\Metrics\BoxInterface;
-use Thapp\Image\Metrics\PointInterface;
-use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Geometry\SizeInterface;
+use Thapp\Image\Geometry\PointInterface;
+use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Color\ColorInterface;
 
 /**

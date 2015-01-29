@@ -11,11 +11,11 @@
 
 namespace Thapp\Image\Driver\Gd;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\BoxInterface;
-use Thapp\Image\Metrics\PointInterface;
-use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\SizeInterface;
+use Thapp\Image\Geometry\PointInterface;
+use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Color\Palette\RgbPaletteInterface;
@@ -166,12 +166,12 @@ class Image extends AbstractImage
      * Creates a new truecolorimage
      *
      * @internal
-     * @param BoxInterface $size image size
+     * @param SizeInterface $size image size
      * @param ColorInterface $color image background
      *
      * @return resource A GD image resource
      */
-    public function newGd(BoxInterface $size, ColorInterface $color = null)
+    public function newGd(SizeInterface $size, ColorInterface $color = null)
     {
         return $this->newFromGd($size, $color);
     }
@@ -269,11 +269,11 @@ class Image extends AbstractImage
     /**
      * newFromGd
      *
-     * @param BoxInterface $size
+     * @param SizeInterface $size
      *
      * @return resource
      */
-    private function newFromGd(BoxInterface $size, ColorInterface $color = null)
+    private function newFromGd(SizeInterface $size, ColorInterface $color = null)
     {
         $gd = imagecreatetruecolor($w = $size->getWidth(), $h = $size->getHeight());
         $color = $color ?: $this->palette->getColor([255, 255, 255]);

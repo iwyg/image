@@ -9,24 +9,24 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Tests\Metrics;
+namespace Thapp\Image\Tests\Geometry;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
 
 /**
- * @class BoxTest
+ * @class SizeTest
  *
  * @package Thapp\Image\Tests\Metrics
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class BoxTest extends \PHPUnit_Framework_TestCase
+class SizeTest extends \PHPUnit_Framework_TestCase
 {
     /** @test */
     public function itShouldBeInstantiable()
     {
-        $this->assertInstanceof('Thapp\Image\Metrics\BoxInterface', new Box(100, 100));
+        $this->assertInstanceof('Thapp\Image\Geometry\SizeInterface', new Size(100, 100));
     }
 
     /**
@@ -35,14 +35,14 @@ class BoxTest extends \PHPUnit_Framework_TestCase
      */
     public function itShouldCalcRatio($w, $h, $r)
     {
-        $box = new Box($w, $h);
+        $box = new Size($w, $h);
         $this->assertEquals($r, $box->getRatio());
     }
 
     /** @test */
     public function itShouldGetSize()
     {
-        $box = new Box('50', 100);
+        $box = new Size('50', 100);
 
         $this->assertEquals(50, $box->getWidth());
         $this->assertEquals(100, $box->getHeight());
@@ -54,7 +54,7 @@ class BoxTest extends \PHPUnit_Framework_TestCase
      */
     public function itShouldScale($w, $h, $perc, $sw, $sh)
     {
-        $box = new Box($w, $h);
+        $box = new Size($w, $h);
 
         $b = $box->scale($perc);
         $this->assertEquals($sw, $b->getWidth());
@@ -64,7 +64,7 @@ class BoxTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldSetPixelLimit()
     {
-        $box = new Box(100, 100);
+        $box = new Size(100, 100);
         $b = $box->pixel($px = 100000);
 
         $w = round(sqrt($px));
@@ -73,18 +73,18 @@ class BoxTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function itShouldContainBox()
+    public function itShouldContainSize()
     {
-        $box = new Box(100, 100);
+        $box = new Size(100, 100);
 
-        $this->assertFalse($box->contains(new Box(200, 100)));
+        $this->assertFalse($box->contains(new Size(200, 100)));
         $this->assertTrue($box->contains($box));
     }
 
     /** @test */
     public function itShouldHavePoint()
     {
-        $box = new Box(100, 100);
+        $box = new Size(100, 100);
 
         $this->assertFalse($box->has(new Point(200, 100)));
         $this->assertTrue($box->has(new Point(10, 100)));
@@ -93,7 +93,7 @@ class BoxTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldIncreaseSizeByWidth()
     {
-        $box = new Box(100, 50);
+        $box = new Size(100, 50);
 
         $b = $box->increaseByWidth(200);
 
@@ -104,7 +104,7 @@ class BoxTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldIncreaseSizeByHeight()
     {
-        $box = new Box(100, 50);
+        $box = new Size(100, 50);
 
         $b = $box->increaseByHeight(100);
 
@@ -116,9 +116,9 @@ class BoxTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider fitProvider
      */
-    public function itShouldFinInBox(Box $fit, $w, $h)
+    public function itShouldFinInSize(Size $fit, $w, $h)
     {
-        $box = new Box(100, 100);
+        $box = new Size(100, 100);
 
         $b = $box->fit($fit);
 
@@ -127,10 +127,10 @@ class BoxTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function itShouldFillInBox()
+    public function itShouldFillInSize()
     {
-        $box = new Box(100, 50);
-        $boxB = new Box(400, 400);
+        $box = new Size(100, 50);
+        $boxB = new Size(400, 400);
 
         $b = $box->fill($boxB);
     }
@@ -138,7 +138,7 @@ class BoxTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldRotate()
     {
-        $box = new Box(100, 50);
+        $box = new Size(100, 50);
 
         $b = $box->rotate(-90);
         $this->assertSame(50, $b->getWidth());
@@ -174,10 +174,10 @@ class BoxTest extends \PHPUnit_Framework_TestCase
     public function fitProvider()
     {
         return [
-            [new Box(100, 100), 100, 100],
-            [new Box(100, 200), 100, 100],
-            [new Box(200, 100), 100, 100],
-            [new Box(400, 200), 200, 200],
+            [new Size(100, 100), 100, 100],
+            [new Size(100, 200), 100, 100],
+            [new Size(200, 100), 100, 100],
+            [new Size(400, 200), 200, 200],
         ];
     }
 }

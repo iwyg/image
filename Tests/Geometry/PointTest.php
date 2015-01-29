@@ -9,10 +9,10 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Tests\Metrics;
+namespace Thapp\Image\Tests\Geometry;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
+use Thapp\Image\Geometry\Box;
+use Thapp\Image\Geometry\Point;
 
 /**
  * @class PointTest
@@ -26,7 +26,7 @@ class PointTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldBeInstantiable()
     {
-        $this->assertInstanceof('Thapp\Image\Metrics\PointInterface', new Point(100, 100));
+        $this->assertInstanceof('Thapp\Image\Geometry\PointInterface', new Point(100, 100));
     }
 
     /** @test */

@@ -9,16 +9,16 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Metrics;
+namespace Thapp\Image\Geometry;
 
 /**
- * @class BoxInterface
+ * @class SizeInterface
  *
  * @package Thapp\Image\Metrics
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-interface BoxInterface
+interface SizeInterface
 {
     /**
      * getRatio
@@ -46,7 +46,7 @@ interface BoxInterface
      *
      * @param int $perc
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
     public function scale($perc);
 
@@ -55,7 +55,7 @@ interface BoxInterface
      *
      * @param int $limit
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
     public function pixel($limit);
 
@@ -64,7 +64,7 @@ interface BoxInterface
      *
      * @param mixed $width
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
     public function increaseByWidth($width);
 
@@ -73,19 +73,19 @@ interface BoxInterface
      *
      * @param mixed $height
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
     public function increaseByHeight($height);
 
     /**
      * contains
      *
-     * @param BoxInterface $box
+     * @param SizeInterface $box
      * @param PointInterface $point
      *
      * @return boolean
      */
-    public function contains(BoxInterface $box, PointInterface $point = null);
+    public function contains(SizeInterface $box, PointInterface $point = null);
 
     /**
      * has
@@ -100,27 +100,27 @@ interface BoxInterface
     /**
      * fill
      *
-     * @param BoxInterface $target
+     * @param SizeInterface $target
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
-    public function fill(BoxInterface $target);
+    public function fill(SizeInterface $target);
 
     /**
      * fit
      *
-     * @param BoxInterface $target
+     * @param SizeInterface $target
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
-    public function fit(BoxInterface $target);
+    public function fit(SizeInterface $target);
 
     /**
      * rotate
      *
      * @param float $deg
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
     public function rotate($deg);
 }

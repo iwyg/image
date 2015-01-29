@@ -11,9 +11,9 @@
 
 namespace Thapp\Image\Tests\Driver;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\Gravity;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Driver\ImageInterface;
 
 /**
@@ -39,7 +39,7 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
     public function itShouldCropImage()
     {
         $edit = $this->newEdit([200, 100]);
-        $edit->crop(new Box(50, 50));
+        $edit->crop(new Size(50, 50));
 
         $this->assertSame(50, $this->image->getHeight());
         $this->assertSame(50, $this->image->getWidth());
@@ -78,7 +78,7 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
     public function itShouldResizeImage()
     {
         $edit = $this->newEdit([200, 100]);
-        $new = new Box(400, 400);
+        $new = new Size(400, 400);
         $edit->resize($new);
 
         $size = $this->image->getSize();

@@ -14,8 +14,8 @@ namespace Thapp\Image\Tests\Driver\Gd;
 use Thapp\Image\Driver\Gd\Edit;
 use Thapp\Image\Driver\Gd\Source;
 use Thapp\Image\Driver\ImageInterface;
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
 use Thapp\Image\Tests\Driver\EditTest as AbstractEditTest;
 
 /**
@@ -38,7 +38,7 @@ class EditTest extends AbstractEditTest
         $this->assertTransparent($this->image, true);
 
         $edit = $this->newEdit('transparent4.png');
-        $edit->canvas(new Box(400, 400), new Point(100, 100), $this->image->getPalette()->getColor([0,0,0,0]));
+        $edit->canvas(new Size(400, 400), new Point(100, 100), $this->image->getPalette()->getColor([0,0,0,0]));
         $this->assertTransparent($this->image, true);
     }
 

@@ -9,7 +9,7 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Metrics;
+namespace Thapp\Image\Geometry;
 
 /**
  * @class Gravity
@@ -48,7 +48,7 @@ class Gravity implements GravityInterface
     /**
      * {@inheritdoc}
      */
-    public function getPoint(BoxInterface $source, BoxInterface $target)
+    public function getPoint(SizeInterface $source, SizeInterface $target)
     {
         list($x, $y) = $this->getCropFromGravity($source, $target);
 
@@ -58,7 +58,7 @@ class Gravity implements GravityInterface
     /**
      * {@inheritdoc}
      */
-    protected function getCropFromGravity(BoxInterface $source, BoxInterface $box)
+    protected function getCropFromGravity(SizeInterface $source, SizeInterface $box)
     {
         $x = $y = 0;
 

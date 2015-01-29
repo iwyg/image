@@ -9,7 +9,7 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Metrics;
+namespace Thapp\Image\Geometry;
 
 /**
  * @interface GravityInterface
@@ -40,10 +40,10 @@ interface GravityInterface
     /**
      * getPoint
      *
-     * @param BoxInterface $source
-     * @param BoxInterface $target
+     * @param SizeInterface $source
+     * @param SizeInterface $target
      *
      * @return void
      */
-    public function getPoint(BoxInterface $source, BoxInterface $target);
+    public function getPoint(SizeInterface $source, SizeInterface $target);
 }

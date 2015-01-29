@@ -12,8 +12,8 @@
 namespace Thapp\Image\Driver;
 
 use Thapp\Image\Color\ColorInterface;
-use Thapp\Image\Metrics\BoxInterface;
-use Thapp\Image\Metrics\PointInterface;
+use Thapp\Image\Geometry\SizeInterface;
+use Thapp\Image\Geometry\PointInterface;
 
 /**
  * @interface EditInterface
@@ -31,13 +31,13 @@ interface EditInterface
     /**
      * Resizes the image without affecting the image content size.
      *
-     * @param BoxInterface $size
+     * @param SizeInterface $size
      * @param PointInterface $start
      * @param ColorInterface $color
      *
      * @return void
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null);
+    public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null);
 
     /**
      * scale
@@ -61,33 +61,33 @@ interface EditInterface
     /**
      * resize
      *
-     * @param BoxInterface $size
+     * @param SizeInterface $size
      *
      * @return void
      */
-    public function resize(BoxInterface $size);
+    public function resize(SizeInterface $size);
 
     /**
      * crop
      *
-     * @param BoxInterface $size
+     * @param SizeInterface $size
      * @param PointInterface $crop
      * @param ColorInterface $color
      *
      * @return void
      */
-    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null);
+    public function crop(SizeInterface $size, PointInterface $crop = null, ColorInterface $color = null);
 
     /**
      * Like extent but ignores the images gravity setting.
      *
-     * @param BoxInterface $size
+     * @param SizeInterface $size
      * @param PointInterface $point
      * @param ColorInterface $color
      *
      * @return void
      */
-    public function canvas(BoxInterface $size, PointInterface $point, ColorInterface $color = null);
+    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null);
 
     /**
      * copy

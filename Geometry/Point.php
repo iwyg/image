@@ -9,7 +9,7 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Metrics;
+namespace Thapp\Image\Geometry;
 
 /**
  * @class Point
@@ -54,7 +54,7 @@ class Point implements PointInterface
     /**
      * {@inheritdoc}
      */
-    public function isIn(BoxInterface $box)
+    public function isIn(SizeInterface $box)
     {
         return $this->x <= $box->getWidth() && $this->y <= $box->getHeight();
     }

@@ -15,9 +15,9 @@ use Imagick;
 use Thapp\Image\Driver\Imagick\Edit;
 use Thapp\Image\Driver\Imagick\Source;
 use Thapp\Image\Driver\ImageInterface;
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\Gravity;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Tests\Driver\EditTest as AbstractEditTest;
 
 /**
@@ -40,12 +40,12 @@ class EditTest extends AbstractEditTest
         $this->assertAlphaChannelImagick($this->image, Imagick::ALPHACHANNEL_ACTIVATE);
 
         $edit = $this->newEdit('transparent4.png');
-        $edit->canvas(new Box(400, 400), new Point(100, 100), $this->image->getPalette()->getColor([0,0,0,0.2]));
+        $edit->canvas(new Size(400, 400), new Point(100, 100), $this->image->getPalette()->getColor([0,0,0,0.2]));
         $this->assertAlphaChannelImagick($this->image, Imagick::ALPHACHANNEL_ACTIVATE);
 
         $edit = $this->newEdit('transparent4.png');
         $this->image->setGravity(new Gravity(1));
-        $edit->crop(new Box(100, 100));
+        $edit->crop(new Size(100, 100));
         $this->assertAlphaChannelImagick($this->image, Imagick::ALPHACHANNEL_ACTIVATE);
     }
 

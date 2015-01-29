@@ -73,7 +73,7 @@ class FramesTest extends FTest
             $mock->method('getImagick')->willReturn($imagick);
         }
 
-        $gravity = $this->getMockBuilder('Thapp\Image\Metrics\Gravity')
+        $gravity = $this->getMockBuilder('Thapp\Image\Geometry\Gravity')
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -9,7 +9,7 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Metrics;
+namespace Thapp\Image\Geometry;
 
 /**
  * @class Box
@@ -18,7 +18,7 @@ namespace Thapp\Image\Metrics;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Box implements BoxInterface
+class Size implements SizeInterface
 {
     private $width;
     private $height;
@@ -87,11 +87,11 @@ class Box implements BoxInterface
     /**
      * {@inheritdoc}
      */
-    public function contains(BoxInterface $box, PointInterface $point = null)
+    public function contains(SizeInterface $size, PointInterface $point = null)
     {
         $point = $point ?: new Point(0, 0);
 
-        return $this->width >= $box->getWidth() + $point->getX() && $this->height >= $box->getHeight() + $point->getY();
+        return $this->width >= $size->getWidth() + $point->getX() && $this->height >= $size->getHeight() + $point->getY();
     }
 
     /**
@@ -121,7 +121,7 @@ class Box implements BoxInterface
     /**
      * {@inheritdoc}
      */
-    public function fit(BoxInterface $target)
+    public function fit(SizeInterface $target)
     {
         $width  = $this->getWidth();
         $height = $this->getHeight();
@@ -141,7 +141,7 @@ class Box implements BoxInterface
     /**
      * {@inheritdoc}
      */
-    public function fill(BoxInterface $target)
+    public function fill(SizeInterface $target)
     {
         $width  = $this->getWidth();
         $height  = $this->getHeight();

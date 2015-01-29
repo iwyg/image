@@ -11,9 +11,9 @@
 
 namespace Thapp\Image\Tests\Driver;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\Gravity;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Color\Rgb;
 use Thapp\Image\Color\Palette\Rgb as RgbPalette;
 
@@ -73,7 +73,7 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
         //$image->destroy();
         //$image->setGravity(new Gravity(5));
         //foreach ($image->coalesce() as $frame) {
-            //$frame->edit()->crop(new Box(100, 100));
+            //$frame->edit()->crop(new Size(100, 100));
         //}
 
         //$image->save($this->asset('animated_'.$this->getDriverName().'.gif'));

@@ -11,12 +11,12 @@
 
 namespace Thapp\Image\Driver\Gd;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\Gravity;
-use Thapp\Image\Metrics\BoxInterface;
-use Thapp\Image\Metrics\PointInterface;
-use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\Gravity;
+use Thapp\Image\Geometry\SizeInterface;
+use Thapp\Image\Geometry\PointInterface;
+use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Color\RgbInterface;
 use Thapp\Image\Driver\AbstractEdit;
@@ -47,7 +47,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
+    public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
         $start = $this->getStartPoint($size, $start);
         $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255, 0]);
@@ -58,7 +58,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function resize(BoxInterface $size, $filter = ImageInterface::FILTER_UNDEFINED)
+    public function resize(SizeInterface $size, $filter = ImageInterface::FILTER_UNDEFINED)
     {
         $resized = $this->image->newGd($size);
 
@@ -96,7 +96,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function canvas(BoxInterface $size, PointInterface $point, ColorInterface $color = null)
+    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
     {
         $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255]);
         $extent = $this->image->newGd($size, $color);

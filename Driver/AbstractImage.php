@@ -11,12 +11,12 @@
 
 namespace Thapp\Image\Driver;
 
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\Gravity;
-use Thapp\Image\Metrics\BoxInterface;
-use Thapp\Image\Metrics\PointInterface;
-use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\Gravity;
+use Thapp\Image\Geometry\SizeInterface;
+use Thapp\Image\Geometry\PointInterface;
+use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\DriverAwareFilterInterface;
 use Thapp\Image\Color\ColorInterface;
@@ -84,7 +84,7 @@ abstract class AbstractImage implements ImageInterface
      */
     public function getSize()
     {
-        return new Box($this->getWidth(), $this->getHeight());
+        return new Size($this->getWidth(), $this->getHeight());
     }
 
     /**

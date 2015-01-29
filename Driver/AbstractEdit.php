@@ -12,11 +12,11 @@
 namespace Thapp\Image\Driver;
 
 use Thapp\Image\Color\ColorInterface;
-use Thapp\Image\Metrics\BoxInterface;
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\PointInterface;
-use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Geometry\SizeInterface;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\PointInterface;
+use Thapp\Image\Geometry\GravityInterface;
 
 /**
  * @class AbstractEdit
@@ -42,10 +42,10 @@ abstract class AbstractEdit implements EditInterface
     /**
      * {@inheritdoc}
      */
-    public function crop(BoxInterface $size, PointInterface $crop = null, ColorInterface $color = null)
+    public function crop(SizeInterface $size, PointInterface $crop = null, ColorInterface $color = null)
     {
         if (null !== $crop) {
-            $box = new Box($this->getWidth(), $this->getHeight());
+            $box = new Size($this->getWidth(), $this->getHeight());
             if ($box->contains($size)) {
                 $crop = $crop->negate();
             }
@@ -57,12 +57,12 @@ abstract class AbstractEdit implements EditInterface
     /**
      * getStartPoint
      *
-     * @param BoxInterface $target
+     * @param SizeInterface $target
      * @param PointInterface $start
      *
      * @return PointInterface
      */
-    protected function getStartPoint(BoxInterface $target, PointInterface $start = null)
+    protected function getStartPoint(SizeInterface $target, PointInterface $start = null)
     {
         if (null !== $start) {
             return $start;
@@ -103,7 +103,7 @@ abstract class AbstractEdit implements EditInterface
     /**
      * imagick
      *
-     * @return BoxInterface
+     * @return SizeInterface
      */
     protected function getSize()
     {

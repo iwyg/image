@@ -14,9 +14,9 @@ namespace Thapp\Image\Tests\Driver\Gmagick;
 use Gmagick;
 use Thapp\Image\Driver\Gmagick\Image;
 use Thapp\Image\Driver\Gmagick\Source;
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\Gravity;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
 
 /**

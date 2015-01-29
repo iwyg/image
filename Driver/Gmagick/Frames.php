@@ -14,7 +14,7 @@ namespace Thapp\Image\Driver\Gmagick;
 use Gmagick;
 use Thapp\Image\Driver\ImageInteface;
 use Thapp\Image\Driver\AbstractFrames;
-use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Geometry\GravityInterface;
 
 /**
  * @class Frames

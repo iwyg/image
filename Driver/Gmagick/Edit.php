@@ -13,11 +13,11 @@ namespace Thapp\Image\Driver\Gmagick;
 
 use Gmagick;
 use GmagickPixel;
-use Thapp\Image\Metrics\Box;
-use Thapp\Image\Metrics\Point;
-use Thapp\Image\Metrics\BoxInterface;
-use Thapp\Image\Metrics\PointInterface;
-use Thapp\Image\Metrics\GravityInterface;
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\SizeInterface;
+use Thapp\Image\Geometry\PointInterface;
+use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Driver\MagickHelper;
@@ -51,7 +51,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function extent(BoxInterface $size, PointInterface $start = null, ColorInterface $color = null)
+    public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
         $start = $this->getStartPoint($size, $start);
 
@@ -69,7 +69,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function resize(BoxInterface $size, $filter = ImageInterface::FILTER_UNDEFINED)
+    public function resize(SizeInterface $size, $filter = ImageInterface::FILTER_UNDEFINED)
     {
         $this->gmagick()->resizeImage($size->getWidth(), $size->getHeight(), $this->mapFilter($filter), 1);
     }
@@ -88,7 +88,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function canvas(BoxInterface $size, PointInterface $point, ColorInterface $color = null)
+    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
     {
         $canvas = new gmagick();
         $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
@@ -112,7 +112,7 @@ class Edit extends AbstractEdit
      * doCopy
      *
      * @param Gmagick $canvas
-     * @param BoxInterface $size
+     * @param SizeInterface $size
      * @param PointInterface $point
      * @param mixed $mode
      *
