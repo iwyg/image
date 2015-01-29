@@ -36,13 +36,13 @@ or add this to your `composer.json`
 ```php
 <?php
 
-use Thapp\Image\Metrics\Box;
+use Thapp\Image\Geometry\Size;
 use Thapp\Image\Driver\Imagick\Source;
 
 $source = new Source;
 $image = $source->load('image.jpg');
 
-$image->edit()->crop(new Box(100, 100));
+$image->edit()->crop(new Size(100, 100));
 
 $image->save('newimage.jpg');
 
