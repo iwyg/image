@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Filter;
 
+use Thapp\Image\Driver\ImageInterface;
+
 /**
  * @trait AbstractGreyscale
  *
@@ -20,12 +22,42 @@ namespace Thapp\Image\Filter;
  */
 trait AbstractModulate
 {
-    public function __construct($brightnes = 100, $saturation = 0, $hue = 100, $contrast = true)
+    /**
+     * brightness
+     *
+     * @var int
+     */
+    protected $brightness;
+
+    /**
+     * bue
+     *
+     * @var int
+     */
+    protected $bue;
+
+    /**
+     * saturation
+     *
+     * @var int
+     */
+    protected $saturation;
+
+    /**
+     * Constructor.
+     *
+     * @param int $brightnes
+     * @param int $saturation
+     * @param int $hue
+     * @param boolean $contrast
+     *
+     * @return void
+     */
+    public function __construct($brightnes = 100, $saturation = 100, $hue = 100)
     {
         $this->brightnes = $brightnes;
         $this->hue = $hue;
         $this->saturation = $saturation;
-        $this->contrast = (bool)$contrast;
     }
 
     /**
@@ -35,10 +67,10 @@ trait AbstractModulate
     {
         if ($image->hasFrames()) {
             foreach ($image->frames()->coalesce() as $frame) {
-                $this->applyModulate($frame, $this->brightnes, $this->saturation, $this->hue, $this->contrast);
+                $this->applyModulate($frame, $this->brightnes, $this->saturation, $this->hue);
             }
         } else {
-            $this->applyModulate($image, $this->brightnes, $this->saturation, $this->hue, $this->contrast);
+            $this->applyModulate($image, $this->brightnes, $this->saturation, $this->hue);
         }
     }
 
@@ -53,5 +85,5 @@ trait AbstractModulate
      *
      * @return void
      */
-    abstract protected function applyModulate(ImageInterface $image, $brightnes, $saturation, $hue, $contrast);
+    abstract protected function applyModulate(ImageInterface $image, $brightnes, $saturation, $hue);
 }
