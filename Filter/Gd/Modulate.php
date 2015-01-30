@@ -91,13 +91,7 @@ class Modulate extends GdFilter
                 $index = imagecolorat($gd, $x, $y);
                 list ($h, $s, $l) = $this->rgbToHsl(($index >> 16) & 0xFF, ($index >> 8) & 0xFF, $index & 0xFF);
 
-                //$h = $this->setHue($h, $angle, $noHue);
-                //
-                $h += $angle;
-
-                if (360 < $h) {
-                    $h -= 360;
-                }
+                $this->setHue($h, $angle, $noHue);
 
                 list($r, $g, $b) = $this->hslToRgb($h, max(0, min(1, $s * $saturation)), max(0, min(1, $brightness * $l)));
 
@@ -115,21 +109,27 @@ class Modulate extends GdFilter
      *
      * @return void
      */
-    private function setHue($h, $angle, $noChange) {
+    private function setHue(&$h, $angle, $noChange)
+    {
 
-        //if ($noChange) {
-        //    return $h;
-        //}
-
-        $h += $angle / 360;
-
-        if ($h > 1) {
-          $h--;
+        if ($noChange) {
+            return;
         }
 
-        return $h;
+        $h += $angle;
+
+        if (360 < $h) {
+            $h -= 360;
+        }
     }
 
+    /**
+     * setSaturation
+     *
+     * @param float $val
+     *
+     * @return void
+     */
     private function setSaturation($val)
     {
         $this->getVal($val);
@@ -137,6 +137,13 @@ class Modulate extends GdFilter
 
     }
 
+    /**
+     * setBrightness
+     *
+     * @param float $val
+     *
+     * @return void
+     */
     private function setBrightness($val)
     {
         $this->getVal($val);
@@ -144,11 +151,25 @@ class Modulate extends GdFilter
         //$this->brightness = (-1 + ($val / 100)) * 255;
     }
 
+    /**
+     * getVal
+     *
+     * @param float $val
+     *
+     * @return void
+     */
     private function getVal(&$val)
     {
         $val = (float)min(200, max(0, $val));
     }
 
+    /**
+     * setDegree
+     *
+     * @param float $val
+     *
+     * @return void
+     */
     private function setDegree($val)
     {
         $this->getVal($val);

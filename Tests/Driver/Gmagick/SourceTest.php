@@ -55,7 +55,7 @@ class SourceTest extends Source
     protected function setUp()
     {
         if (!class_exists('Gmagick') || (isset($_ENV['IMAGE_DRIVER']) && 'gmagick' !== $_ENV['IMAGE_DRIVER'])) {
-            $this->markTestIncomplete();
+            $this->markTestSkipped('Gmagick extension not installed');
         }
 
         foreach ($this->images as $image) {

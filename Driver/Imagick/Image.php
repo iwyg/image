@@ -183,7 +183,8 @@ class Image extends AbstractImage
     public function newImage($format = null, ColorInterface $color = null)
     {
         $imagick = new Imagick;
-        $imagick->newImage($this->getWidth(), $this->getHeight(), $this->imagick->getImageBackgroundColor());
+        $color = $color ? $color->getColorAsString() : $this->imagick->getImageBackgroundColor();
+        $imagick->newImage($this->getWidth(), $this->getHeight(), $color);
 
         if (null === $format && $fmt = $this->getFormat()) {
             $format = $fmt;

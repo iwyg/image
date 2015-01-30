@@ -86,7 +86,7 @@ class FramesTest extends FTest
     protected function setUp()
     {
         if (!class_exists('Imagick') || (isset($_ENV['IMAGE_DRIVER']) && 'imagick' !== $_ENV['IMAGE_DRIVER'])) {
-            $this->markTestIncomplete();
+            $this->markTestSkipped('Imagick extension not installed');
         }
     }
 }

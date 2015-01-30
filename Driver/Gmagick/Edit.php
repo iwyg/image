@@ -63,7 +63,7 @@ class Edit extends AbstractEdit
      */
     public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
     {
-        $this->createCanvas($size, $start, $color, Gmagick::COMPOSITE_OVER);
+        $this->createCanvas($size, $point, $color, Gmagick::COMPOSITE_OVER);
     }
 
     /**
@@ -94,7 +94,18 @@ class Edit extends AbstractEdit
             throw new \LogicException('Can\'t copy image from different driver.');
         }
 
-        $this->doCopy($image->getGmagick(), $start ?: new Point(0, 0), Gmagick::COMPOSITE_DEFAULT);
+        // use gravity to get the start point if no point is given:
+        $start = $this->getStartPoint($image->getSize(), $start)->negate();
+
+        // use the first image in the set:
+        $gmagick = $image->getGmagick();
+        $index = $gmagick->getImageIndex();
+        $gmagick->setFirstIterator();
+
+        $this->doCopy($this->gmagick(), $gmagick, $start, Gmagick::COMPOSITE_COPY);
+
+        // reset the iterator index to the previous index:
+        $imagick->setImageIndex($index);
     }
 
     /**
@@ -107,12 +118,15 @@ class Edit extends AbstractEdit
      *
      * @return void
      */
-    protected function doCopy(Gmagick $canvas, PointInterface $point, $mode = Gmagick::COMPOSITE_OVER)
+    protected function doCopy(Gmagick $canvas, Gmagick $dest, PointInterface $point, $mode = Gmagick::COMPOSITE_OVER)
     {
-        $canvas->compositeImage($this->gmagick(), $mode, $point->getX(), $point->getY());
-        $canvas->setImageFormat($this->gmagick()->getImageFormat());
+        $canvas->compositeImage($dest, $mode, $point->getX(), $point->getY());
+        $canvas->setImageFormat($dest->getImageFormat());
 
-        $this->image->swapGmagick($canvas);
+        if ($canvas !== $this->gmagick() && $dest === $this->gmagick()) {
+            $canvas->setImageFormat($dest->getImageFormat());
+            $this->image->swapGmagick($canvas);
+        }
     }
 
     /**

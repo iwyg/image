@@ -44,6 +44,12 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(50, $this->image->getHeight());
         $this->assertSame(50, $this->image->getWidth());
+
+        $edit = $this->newEdit([200, 100]);
+        $edit->crop(new Size(50, 50), new Point(20, 20));
+
+        $this->assertSame(50, $this->image->getHeight());
+        $this->assertSame(50, $this->image->getWidth());
     }
 
     /** @test */
