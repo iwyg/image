@@ -1,8 +1,8 @@
 ## Image processing
 
-[![Build Status](https://api.travis-ci.org/iwyg/image.png?branch=master)](https://travis-ci.org/iwyg/image)
+[![Build Status](https://api.travis-ci.org/iwyg/image.png?branch=develop)](https://travis-ci.org/iwyg/image)
 [![Code Climate](https://codeclimate.com/github/iwyg/image/badges/gpa.svg)](https://codeclimate.com/github/iwyg/image)
-[![Coverage Status](https://coveralls.io/repos/iwyg/image/badge.svg?branch=master)](https://coveralls.io/r/iwyg/image?branch=master)
+[![Coverage Status](https://coveralls.io/repos/iwyg/image/badge.svg?branch=develop)](https://coveralls.io/r/iwyg/image?branch=develop)
 [![HHVM Status](http://hhvm.h4cc.de/badge/thapp/image.png)](http://hhvm.h4cc.de/package/thapp/image)
 [![Latest Stable Version](https://poser.pugx.org/thapp/image/v/stable.png)](https://packagist.org/packages/thapp/image) 
 [![Latest Unstable Version](https://poser.pugx.org/thapp/image/v/unstable.png)](https://packagist.org/packages/thapp/image) 
