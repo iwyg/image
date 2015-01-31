@@ -8,6 +8,8 @@
 [![Latest Unstable Version](https://poser.pugx.org/thapp/image/v/unstable.png)](https://packagist.org/packages/thapp/image) 
 [![License](https://poser.pugx.org/thapp/image/license.png)](https://packagist.org/packages/thapp/image)
 
+
+
 This module was created for the usage in Thapp\JitImage, but can be used as
 a standalone library for manipulating images. It's highly inspired by the Imagine
 library, but resolves a views flaws, but also way more limited. 
@@ -24,7 +26,7 @@ or add this to your `composer.json`
 ```json
 {
 	"require": {
-		"thapp/image": "dev-master"
+		"thapp/image": "1.0.*"
 	}
 }
 ```
@@ -93,5 +95,218 @@ $source = new Source(new ExifReader);
 // ...
 
 $image = $source->load('image.jpg');
+
+```
+
+### Editing images
+
+```php
+<?php
+
+use Thapp\Image\Driver\Imagick\Edit;
+
+$mod = $image->edit(); // Thapp\Image\Driver\EditInterface
+
+// or
+
+$mod = new Edit($image);
+
+
+```
+
+#### Resize and scaling
+
+```php
+<?php
+
+use Thapp\Image\Geometry\Size;
+
+// Resize the image unporoportionaly to fit in the given size object.
+
+$size = new Size(200, 200);
+
+$image->edit()->resize($size);
+
+```
+
+```php
+<?php
+
+// increase image size by 100%
+
+$size = $image->getSize()->scale(200);
+
+$image->edit()->resize($size);
+
+```
+
+```php
+<?php
+
+// Caclulates the image new size while not exceeding the given pixel count
+
+$size = $image->getSize()->pixel(500000);
+
+$image->edit()->resize($size);
+
+```
+
+```php
+<?php
+
+// increase image width by 100px and calculate its height
+
+$size = $image->getSize()->increaseByWidth(100);
+
+$image->edit()->resize($size);
+
+```
+
+```php
+<?php
+
+// increase image height by 100px and calculate its width
+
+$size = $image->getSize()->increaseByHeight(100);
+
+$image->edit()->resize($size);
+
+```
+
+```php
+<?php
+
+use Thapp\Image\Geometry\Size;
+
+// fits the image into a 400 x 400 box. 
+
+$size = new Size(400, 400);
+
+$image->edit()->fit($size);
+
+```
+
+```php
+<?php
+
+use Thapp\Image\Geometry\Size;
+
+// fill a given box of 400 x 400.
+
+$size = new Size(400, 400);
+
+$image->edit()->fill($size);
+
+```
+
+```php
+<?php
+
+use Thapp\Image\Geometry\Size;
+use Thapp\Image\Geometry\Point;
+
+// Extent the image with a canvas size of 800 by 800.
+
+$image->edit()->extent(new Size(800, 800), new Point(200, 200));
+
+```
+
+```php
+<?php
+
+use Thapp\Image\Geometry\Point;
+use Thapp\Image\Geometry\Gravity;
+
+// Extent the image with a canvas size of 800 by 800.
+
+$image->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
+$image->edit()->extent(new Size(800, 800));
+
+```
+
+#### Croping
+
+```php
+<?php
+
+use Thapp\Image\Geometry\Size;
+
+$crop = new Size(200, 200);
+$start = new Point(50, 50);
+
+$image->edit()->crop($crop, $point);
+
+```
+
+Using gravity you can place your crop according to the images gravity setting. There're 9 gravity positions: 
+
+1. `GRAVITY_NORTHWEST`  left top      
+2. `GRAVITY_NORTH`      center top    
+3. `GRAVITY_NORTHEAST`  right top     
+4. `GRAVITY_WEST`       left center   
+5. `GRAVITY_CENTER`     center center 
+6. `GRAVITY_EAST`       right center  
+7. `GRAVITY_SOUTHWEST`  left bottom   
+8. `GRAVITY_SOUTH`      center bottom 
+9. `GRAVITY_SOUTHEAST`  right bottom  
+
+```php
+<?php
+
+use Thapp\Image\Geometry\Gravity;
+
+$crop = new Size(200, 200);
+
+$image->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
+$image->edit()->crop($crop);
+
+```
+
+#### Rotating
+
+To rotate an image, you'll have to pass the rotation angel in degrees (not radians). The `rotate` method takes a second argument `$color` which defaults to a white color. The color is needed to fill the canvas for rotation angles that are not devidable by 90. `$color` must be an instance of `Thapp\Image\Color\ColorInterface`.
+
+```php
+<?php
+
+use Thapp\Image\Filter\Autorotate;
+
+$color = $image->palette()->getColor('#ff000'); // red background
+$image->edit()->rotate(45, $color);
+
+```
+
+#### Auto rotating according to its orientation
+
+If you image contains EXIF data and you've loaded the image with the `ExifReader`, you can use a filter to autororate the image according to its orientation. Using the imagick image driver, the ExifReader is not necessary. 
+
+```php
+<?php
+
+use Thapp\Image\Filter\Autorotate;
+
+$image->filter(new AutoRotate));
+
+```
+
+
+#### Manual rotating according to its orientation
+
+This is basically the same what filter `AutoRotate` does. 
+
+```php
+<?php
+
+use Thapp\Image\Driver\ImageInterface;
+
+$orientation = $image->getOrientation();
+
+if (ImageInterface::ORIENT_BOTTOMRIGHT === $orientation) {
+    $image->rotate(180);
+} elseif (ImageInterface::ORIENT_RIGHTTOP === $orientation) {
+    $image->rotate(90);
+} elseif (ImageInterface::ORIENT_LEFTBOTTOM === $orientation) {
+    $image->rotate(-90);
+}
 
 ```
