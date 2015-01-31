@@ -26,6 +26,41 @@ class ModulateTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldPrepareImageGd()
     {
-        $this->assertTrue(true);
+        $filter = new Modulate(100, 100, 120);
+        $gd = imagecreatetruecolor(1, 1);
+        $image = $this->mockImage();
+
+        $image->method('getGd')->willReturn($gd);
+
+        $image->expects($this->once())->method('getWidth')->willReturn(1);
+        $image->expects($this->once())->method('getHeight')->willReturn(1);
+
+        $filter->apply($image);
+
+        imagedestroy($gd);
+    }
+
+    /** @test */
+    public function itShouldDoNothingIfValuesAreDefault()
+    {
+        $filter = new Modulate(100, 100, 100);
+        $gd = imagecreatetruecolor(1, 1);
+        $image = $this->mockImage();
+
+        $image->method('getGd')->willReturn($gd);
+
+        $image->expects($this->once())->method('getWidth')->willReturn(1);
+        $image->expects($this->once())->method('getHeight')->willReturn(1);
+
+        $filter->apply($image);
+
+        imagedestroy($gd);
+    }
+
+    protected function mockImage()
+    {
+        return $this->getMockBuilder('Thapp\Image\Driver\Gd\Image')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

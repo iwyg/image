@@ -373,7 +373,7 @@ class Image extends AbstractImage
      */
     private function getJpegSaveArgs(array $options)
     {
-        return ['imagejpeg', [null, min(100, max(0, $this->getOption($options, 'jpg_compression_quality', 80)))]];
+        return ['imagejpeg', [null, min(100, max(0, $this->getOption($options, 'compression_quality_jpeg', 80)))]];
     }
 
     /**
@@ -385,7 +385,7 @@ class Image extends AbstractImage
      */
     private function getPngSaveArgs(array $options)
     {
-        $compression = (9 - (int)round(9 * (min(100, max(0, $this->getOption($options, 'png_compression_quality', 50))) / 100)));
+        $compression = (9 - (int)round(9 * (min(100, max(0, $this->getOption($options, 'compression_quality_png', 50))) / 100)));
         return ['imagepng', [null, $compression]];
     }
 

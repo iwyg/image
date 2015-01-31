@@ -210,7 +210,6 @@ class Image extends AbstractImage
     public function swapImagick(Imagick $imagick)
     {
         if (null !== $this->imagick) {
-
             $map = array_flip(static::$orientMap);
             $orient = $map[$this->getOrientation()];
 
@@ -233,7 +232,7 @@ class Image extends AbstractImage
     {
         $format = $this->getOutputFormat($format, $options);
 
-        if (!in_array($format, ['png', 'gif', 'tiff']) ) {
+        if (!in_array($format, ['png', 'gif', 'tiff'])) {
             // preserve color apearance when flatten images
             if (Imagick::ALPHACHANNEL_ACTIVATE === $this->imagick->getImageAlphaChannel()) {
                 $this->edit()->canvas($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
@@ -339,35 +338,28 @@ class Image extends AbstractImage
         }
 
         $this->imagick->setImageFormat($options['format']);
-        $this->imagick->setImageCompression($this->getImageCompressionType($options['format']));
-        $this->imagick->setImageCompressionQuality(min(100, max(0, $this->getOption($options, 'quality', 80))));
-    }
 
-    private function getImageCompressionQuality($format)
-    {
-    }
-
-    /**
-     * getImageCompression
-     *
-     * @param mixed $format
-     *
-     * @return int
-     */
-    private function getImageCompressionType($format)
-    {
-        if (self::FORMAT_JPEG === $format) {
-            return Imagick::COMPRESSION_JPEG;
+        // set compression
+        if (self::FORMAT_PNG === $options['format']) {
+            $this->imagick->setImageCompression(Imagick::COMPRESSION_NO);
+            $this->imagick->setImageCompressionQuality(
+                min(100, max(0, $this->getOption($options, 'compression_quality_png', 50)))
+            );
+        } elseif (self::FORMAT_PNG === $options['format']) {
+            $this->imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
+            $this->imagick->setImageCompressionQuality(
+                min(100, max(0, $this->getOption($options, 'compression_quality_jpeg', 80)))
+            );
+        } elseif (self::FORMAT_GIF === $options['format'] && defined('Imagick::COMPRESSION_GIF')) {
+            $this->imagick->setImageCompression(Imagick::COMPRESSION_GIF);
+            $this->imagick->setImageCompressionQuality(
+                min(100, max(0, $this->getOption($options, 'compression_quality_gif', 80)))
+            );
+        } elseif (self::FORMAT_TIFF === $options['format']) {
+            $this->imagick->setImageCompression(Imagick::COMPRESSION_LZW);
+            $this->imagick->setImageCompressionQuality(
+                min(100, max(0, $this->getOption($options, 'compression_quality_tiff', 80)))
+            );
         }
-
-        if (self::FORMAT_TIFF === $format) {
-            return Imagick::COMPRESSION_LZW;
-        }
-
-        if (method_exists($this->imagick, 'getImageCompression')) {
-            return $this->imagick->getImageCompression();
-        }
-
-        return $this->imagick->getCompression();
     }
 }

@@ -50,16 +50,8 @@ class Modulate extends GdFilter
     {
         $gd = $image->getGd();
 
-        //if (null !== $this->brightness) {
-        //    imagefilter($gd, IMG_FILTER_BRIGHTNESS, $this->brightness);
-        //}
-
         if (0 !== $this->saturation && 0 !== $this->degree) {
-            $img = $this->applyHue($gd, $image->getWidth(), $image->getHeight(), $this->degree, $this->saturation, $this->brightness);
-
-            if (null !== $img && $img !== $gd) {
-                $image->swapGd($img);
-            }
+            $this->applyHue($gd, $image->getWidth(), $image->getHeight(), $this->degree, $this->saturation, $this->brightness);
         }
 
     }
@@ -79,12 +71,9 @@ class Modulate extends GdFilter
     {
         $noHue = 0 === $angle % 360;
 
-        if ($noHue && 1.0 === $saturation) {
+        if ($noHue && 1.0 === $saturation && 1.0 === $brightness) {
             return;
         }
-
-        //var_dump($angle);
-        //die;
 
         for ($x = 0; $x < $width; $x++) {
             for ($y = 0; $y < $height; $y++) {
