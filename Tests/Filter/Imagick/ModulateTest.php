@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Tests\Filter\Imagick;
 
+use Thapp\Image\Tests\TestHelperTrait;
 use Thapp\Image\Driver\Imagick\Source;
 use Thapp\Image\Filter\Imagick\Modulate;
 use Thapp\Image\Tests\Filter\AbstractMagickModulateTest;
@@ -24,6 +25,8 @@ use Thapp\Image\Tests\Filter\AbstractMagickModulateTest;
  */
 class ModulateTest extends AbstractMagickModulateTest
 {
+    use TestHelperTrait;
+
     protected function newModulate($b, $s, $h)
     {
         return new Modulate($b, $s, $h);
@@ -62,8 +65,6 @@ class ModulateTest extends AbstractMagickModulateTest
 
     protected function setUp()
     {
-        if (!class_exists('Imagick')) {
-            $this->markTestIncomplete();
-        }
+        $this->skipIfImagick();
     }
 }

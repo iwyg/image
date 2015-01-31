@@ -29,6 +29,7 @@ use Thapp\Image\Color\Palette\CmykPaletteInterface;
 use Thapp\Image\Color\Palette\GrayscalePaletteInterface;
 use Thapp\Image\Info\MetaData;
 use Thapp\Image\Info\MetaDataInterface;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Image
@@ -89,14 +90,6 @@ class Image extends AbstractImage
         $this->imagick  = $this->cloneImagick();
         $this->frames   = new Frames($this);
         $this->meta     = clone $this->meta;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function copy()
-    {
-        return clone $this;
     }
 
     /**
@@ -238,18 +231,13 @@ class Image extends AbstractImage
      */
     public function getBlob($format = null, array $options = [])
     {
-        if (null === $format) {
-            $format = isset($options['format']) ? $options['format'] : $this->getFormat();
-        }
-
-        $background = $this->imagick->getImageBackGroundColor()->getColor();
+        $format = $this->getOutputFormat($format, $options);
 
         if (!in_array($format, ['png', 'gif', 'tiff']) ) {
             // preserve color apearance when flatten images
             if (Imagick::ALPHACHANNEL_ACTIVATE === $this->imagick->getImageAlphaChannel()) {
                 $this->edit()->canvas($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
             }
-            //$this->imagick->flattenImages();
         }
 
         if ($this->hasFrames()) {
@@ -260,12 +248,11 @@ class Image extends AbstractImage
             }
         }
 
-        $this->imagick->setImageFormat($format);
-
-        if ($interlace = $this->getOption($options, 'interlace', false)) {
+        try {
+            $this->applyOptions($options);
+        } catch (\Exception $e) {
+            throw ImageException::output($e);
         }
-
-        $this->imagick->setImageCompressionQuality($this->getOption($options, 'quality', 80));
 
         return $this->imagick->getImagesBlob();
     }
@@ -276,6 +263,26 @@ class Image extends AbstractImage
     protected function newEdit()
     {
         return new Edit($this);
+    }
+
+    /**
+     * getInterlaceScheme
+     *
+     * @param string $format
+     *
+     * @return void
+     */
+    private function getInterlaceScheme($format)
+    {
+        if ('jpeg' === $format) {
+            return Imagick::INTERLACE_JPEG;
+        } elseif ('png' === $format) {
+            return Imagick::INTERLACE_PNG;
+        } elseif ('gif' === $format && defined('Imagick::INTERLACE_GIF')) {
+            return Imagick::INTERLACE_GIF;
+        }
+
+        return Imagick::INTERLACE_PLANE;
     }
 
     /**
@@ -316,5 +323,51 @@ class Image extends AbstractImage
         }, $keys = $this->palette->getDefinition());
 
         return $this->palette->getColor(array_combine($keys, $colors));
+    }
+
+    /**
+     * applyOptions
+     *
+     * @param array $options
+     *
+     * @return void
+     */
+    private function applyOptions(array $options)
+    {
+        if (false !== $this->getOption($options, 'interlace', false)) {
+            $this->imagick->setInterlaceScheme($this->getInterlaceScheme($options['format']));
+        }
+
+        $this->imagick->setImageFormat($options['format']);
+        $this->imagick->setImageCompression($this->getImageCompressionType($options['format']));
+        $this->imagick->setImageCompressionQuality(min(100, max(0, $this->getOption($options, 'quality', 80))));
+    }
+
+    private function getImageCompressionQuality($format)
+    {
+    }
+
+    /**
+     * getImageCompression
+     *
+     * @param mixed $format
+     *
+     * @return int
+     */
+    private function getImageCompressionType($format)
+    {
+        if (self::FORMAT_JPEG === $format) {
+            return Imagick::COMPRESSION_JPEG;
+        }
+
+        if (self::FORMAT_TIFF === $format) {
+            return Imagick::COMPRESSION_LZW;
+        }
+
+        if (method_exists($this->imagick, 'getImageCompression')) {
+            return $this->imagick->getImageCompression();
+        }
+
+        return $this->imagick->getCompression();
     }
 }

@@ -53,15 +53,23 @@ trait ImageTestHelper
         return $transparent ? $alpha > 0 : 0 === $alpha;
     }
 
-    protected function assertAlphaChannelGmagick(ImageInterface $image, $alpha)
+    protected function assertTransparentGmagick(ImageInterface $image, $transparent = true, $alpha, $x = 0, $y = 0)
     {
-        $gmagick = new Gmagick;
-        $gmagick->readImageBlob($image->getBlob());
-        $channel = $gmagick->getImageAlphaChannel();
-        $gmagick->clear();
-        $gmagick->destroy();
+        $gd = imagecreatefromstring($image->getBlob());
 
-        $this->assertSame($alpha, $channel);
+        $alpha = (imagecolorat($gd, $x, $y) & 0x7F000000) >> 24;
+
+        imagedestroy($gd);
+
+        return $transparent ? $alpha > 0 : 0 === $alpha;
+
+        //$gmagick = new Gmagick;
+        //$gmagick->readImageBlob($image->getBlob());
+        //$channel = $gmagick->getImageAlphaChannel();
+        //$gmagick->clear();
+        //$gmagick->destroy();
+
+        //$this->assertSame($alpha, $channel);
     }
 
     protected function assertAlphaChannelImagick(ImageInterface $image, $alpha)

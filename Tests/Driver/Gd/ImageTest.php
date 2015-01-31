@@ -29,6 +29,13 @@ class ImageTest extends AbstractImageTest
 {
 
     /** @test */
+    public function itShouldNotHaveFrames()
+    {
+        $image = $this->newImage(100, 100);
+        $this->assertFalse($image->hasFrames());
+    }
+
+    /** @test */
     public function itShouldErrorWhenInjectingPaletteImages()
     {
         $gd = imagecreate(200, 200);

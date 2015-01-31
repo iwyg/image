@@ -67,4 +67,16 @@ class ImageException extends \Exception
     {
         return new static('Supplied resource is invalid.', $previous ? $previous->getCode() : null, $previous);
     }
+
+    /**
+     * resource
+     *
+     * @param \Exception $previous
+     *
+     * @return ImageException
+     */
+    public static function output(\Exception $previous = null)
+    {
+        return new static('Can\'t generate image contents.', $previous ? $previous->getCode() : null, $previous);
+    }
 }

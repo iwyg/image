@@ -13,6 +13,7 @@ namespace Thapp\Image\Tests\Driver;
 
 use Thapp\Image\Exception\ImageException;
 use Thapp\Image\Info\MetaDataReaderInterface;
+use Thapp\Image\Tests\TestHelperTrait;
 
 /**
  * @class ImageTest
@@ -23,7 +24,8 @@ use Thapp\Image\Info\MetaDataReaderInterface;
  */
 abstract class SourceTest extends \PHPUnit_Framework_TestCase
 {
-    use ImageTestHelper;
+    use ImageTestHelper,
+        TestHelperTrait;
 
     protected $images = [];
 

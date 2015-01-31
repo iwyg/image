@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Tests\Driver;
 
+use Thapp\Image\Tests\TestHelperTrait;
+
 /**
  * @class FramesTest
  *
@@ -20,5 +22,5 @@ namespace Thapp\Image\Tests\Driver;
  */
 abstract class FramesTest extends \PHPUnit_Framework_TestCase
 {
-
+    use TestHelperTrait;
 }

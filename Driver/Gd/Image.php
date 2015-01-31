@@ -23,6 +23,7 @@ use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\GdFilter;
 use Thapp\Image\Info\MetaData;
 use Thapp\Image\Info\MetaDataInterface;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Image
@@ -61,14 +62,6 @@ class Image extends AbstractImage
         $this->gd = $this->cloneGd();
         $this->meta = clone $this->meta;
         $this->frames = new Frames($this);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function copy()
-    {
-        return clone $this;
     }
 
     /**
@@ -204,13 +197,20 @@ class Image extends AbstractImage
             imagesavealpha($this->gd, true);
         } elseif (in_array($this->sourceFormat, $fmts)) {
             // copy image to white background:
-            //$canvas = $this->newFromGd($this->getSize());
-            //imagefill($canvas, 0, 0, $this->getColorId($canvas, new Rgb(255, 255, 255)));
-            //imagecopy($canvas, $this->gd, 0, 0, 0, 0, $this->getWidth(), $this->getHeight());
-            //$this->swapGd($canvas);
+            $canvas = $this->newFromGd($this->getSize());
+            imagefill($canvas, 0, 0, $this->getColorId($canvas, new Rgb(255, 255, 255)));
+            imagecopy($canvas, $this->gd, 0, 0, 0, 0, $this->getWidth(), $this->getHeight());
+            $this->swapGd($canvas);
         }
 
-        return $this->generateOutPut($format);
+        // interlace image:
+        if (false !== $this->getOption($options, 'interlace', true)) {
+            imageinterlace($this->gd, 1);
+        } else {
+            imageinterlace($this->gd, 0);
+        }
+
+        return $this->generateOutPut(array_merge(['format' => $format], $options));
     }
 
     protected function newEdit()
@@ -242,23 +242,31 @@ class Image extends AbstractImage
      *
      * @return string
      */
-    private function generateOutPut($format)
+    private function generateOutPut(array $options)
     {
-        if (!is_callable($fn = $this->mapOutputFormat($format))) {
+        if (false === $map = $this->mapOutputFormat($options)) {
             throw new ImageException(sprintf('Unsupported format "%s".', (string)$format));
         }
 
-        $path = null;
-
-        if (in_array($fn, ['imagewebp', 'imagexbm'])) {
-            $path = tempnam(sys_get_temp_dir(), time());
-        }
+        list ($fn, $args) = $map;
+        list ($path, ) = array_pad($args, 1, null);
 
         ob_start();
-        call_user_func($fn, $this->gd, $path);
+        try {
+            $error = null;
+            array_unshift($args, $this->gd);
+            call_user_func_array($fn, $args);
+        } catch (\Exception $e) {
+            $error = new ImageException('Couldn\'t create image.', $e->getCode(), $e);
+            ob_end_clean();
+        }
 
         if (null !== $path) {
             unlink($path);
+        }
+
+        if ($error instanceof \Exception) {
+            throw $error;
         }
 
         return ob_get_clean();
@@ -324,26 +332,61 @@ class Image extends AbstractImage
      *
      * @return string
      */
-    private function mapOutputFormat($fmt)
+    private function mapOutputFormat(array $options)
     {
-        switch ($fmt) {
+        switch ($options['format']) {
             case 'jpg':
             case self::FORMAT_JPEG:
-                return 'imagejpeg';
+                return $this->getJpegSaveArgs($options);
             case self::FORMAT_PNG:
-                return 'imagepng';
+                return $this->getPngSaveArgs($options);
             case self::FORMAT_GIF:
-                return 'imagegif';
+                return ['imagegif', []];
             case self::FORMAT_WBMP:
-                return 'imagewbmp';
-            // webp and xbm need save paths
+                return function_exists('imagewbmp') ? ['imagewbmp', []] : false;
             case self::FORMAT_WEBP:
-                return 'imagewebp';
+                // webp and xbm need save paths
+                return function_exists('imagewebp') ? ['imagewebp', [$this->getSaveTmpPath()]] : false;
             case self::FORMAT_XBM:
-                return 'imagexbm';
+                return function_exists('imagexbm') ? ['imagexbm', [$this->getSaveTmpPath()]] : false;
             default:
                 return false;
         }
+    }
+
+    /**
+     * getSaveTmpPath
+     *
+     * @return string
+     */
+    private function getSaveTmpPath()
+    {
+        return tempnam(sys_get_temp_dir(), 'gd_'.time());
+    }
+
+    /**
+     * getJpegSaveArgs
+     *
+     * @param array $options
+     *
+     * @return void
+     */
+    private function getJpegSaveArgs(array $options)
+    {
+        return ['imagejpeg', [null, min(100, max(0, $this->getOption($options, 'jpg_compression_quality', 80)))]];
+    }
+
+    /**
+     * getPngSaveArgs
+     *
+     * @param array $options
+     *
+     * @return void
+     */
+    private function getPngSaveArgs(array $options)
+    {
+        $compression = (9 - (int)round(9 * (min(100, max(0, $this->getOption($options, 'png_compression_quality', 50))) / 100)));
+        return ['imagepng', [null, $compression]];
     }
 
     /**

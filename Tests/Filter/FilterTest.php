@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Tests\Filter;
 
+use Thapp\Image\Tests\TestHelperTrait;
 use Thapp\Image\Tests\Stubs\Filter\GdFilter;
 use Thapp\Image\Tests\Stubs\Filter\ImagickFilter;
 use Thapp\Image\Tests\Stubs\Filter\GmagickFilter;
@@ -24,13 +25,12 @@ use Thapp\Image\Tests\Stubs\Filter\GmagickFilter;
  */
 class FilterTest extends \PHPUnit_Framework_TestCase
 {
+    use TestHelperTrait;
+
     /** @test */
     public function itShouldSupportDriverTypesForImagick()
     {
-        if (!class_exists('Imagick')) {
-            $this->markTestIncomplete();
-        }
-
+        $this->skipIfImagick();
 
         $filterIm = new ImagickFilter();
         $filterGd = new GdFilter();
@@ -55,9 +55,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldSupportDriverTypesForGmagick()
     {
-        if (!class_exists('Gmagick')) {
-            $this->markTestIncomplete();
-        }
+        $this->skipIfGmagick();
 
         $filterIm = new GmagickFilter();
         $filterGd = new GdFilter();

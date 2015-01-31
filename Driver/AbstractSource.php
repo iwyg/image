@@ -33,7 +33,7 @@ abstract class AbstractSource implements SourceInterface
      */
     public function __construct(MetaDataReaderInterface $reader = null)
     {
-        $this->reader = $reader ?: new ImageReader;
+        $reader ?: $this->getReader();
     }
 
     /**

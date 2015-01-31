@@ -128,35 +128,29 @@ abstract class AbstractImage implements ImageInterface
      */
     public function save($path, $format = null, array $options = [])
     {
-        if (false !== @file_put_contents($path, $this->get($format, $options))) {
+        if (false !== @file_put_contents($path, $this->getBlob($format, $options))) {
             return true;
         }
 
-        throw new ImageException(sprintf('Couldn\'t write image to given file %s.', $path));
+        throw new ImageException(sprintf('Couldn\'t save image to "%s".', $path));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function write($resrouce, $format = null, array $options = [])
+    public function write($stream, $format = null, array $options = [])
     {
-        if (!is_resource($resrouce) || 'stream' !== get_resource_type($resource)) {
-            throw new \RuntimeException('Couldn\'t write image data to stream. Stream is invalid.');
+        if (!is_resource($stream) || 'stream' !== get_resource_type($stream)) {
+            throw new ImageException('Couldn\'t write image data to stream. Stream is invalid.');
         }
 
-        if (true !== @fwrite($resource, $this->get($format, $options))) {
-            throw new \RuntimeException('Couldn\'t write image data to stream. Stream is not writable.');
+        // fwrite doesn't return false if stream is read only. Instead it just
+        // writes 0 bytes.
+        if (0 !== fwrite($stream, $this->getBlob($format, $options))) {
+            return true;
         }
 
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function destroy()
-    {
-        return false;
+        throw new ImageException('Couldn\'t write image data to stream. Stream is not writable.');
     }
 
     /**
@@ -211,6 +205,23 @@ abstract class AbstractImage implements ImageInterface
     abstract protected function newEdit();
 
     /**
+     * getOutputFormat
+     *
+     * @param mixed $format
+     * @param array $options
+     *
+     * @return void
+     */
+    protected function getOutputFormat($format = null, array &$options)
+    {
+        if (null === $format) {
+            $format = isset($options['format']) ? $this->mapFormat($options['format']) : $this->getFormat();
+        }
+
+        return $options['format'] = $format;
+    }
+
+    /**
      * mapFormat
      *
      * @param string $format
@@ -251,27 +262,27 @@ abstract class AbstractImage implements ImageInterface
         return $default;
     }
 
-    /**
-     * formatToInterlace
-     *
-     * @param string $format
-     *
-     * @return void
-     */
-    protected function formatToInterlace($format)
-    {
-        $map = [
-            'gif'  => self::INTERLACE_GIF,
-            'jpeg' => self::INTERLACE_JPEG,
-            'png'  => self::INTERLACE_PNG
-        ];
+    ///**
+    // * formatToInterlace
+    // *
+    // * @param string $format
+    // *
+    // * @return void
+    // */
+    //protected function formatToInterlace($format)
+    //{
+    //    $map = [
+    //        'gif'  => self::INTERLACE_GIF,
+    //        'jpeg' => self::INTERLACE_JPEG,
+    //        'png'  => self::INTERLACE_PNG
+    //    ];
 
-        if (isset($map[$format])) {
-            return $map[$format];
-        }
+    //    if (isset($map[$format])) {
+    //        return $map[$format];
+    //    }
 
-        return self::INTERLACE_UNDEFINED;
-    }
+    //    return self::INTERLACE_UNDEFINED;
+    //}
 
     /**
      * mapOrientation

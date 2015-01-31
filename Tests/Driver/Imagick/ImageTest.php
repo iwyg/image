@@ -74,9 +74,7 @@ class ImageTest extends AbstractImageTest
 
     protected function setUp()
     {
-        if (!class_exists('Imagick') || (isset($_ENV['IMAGE_DRIVER']) && 'imagick' !== $_ENV['IMAGE_DRIVER'])) {
-            $this->markTestSkipped('Imagick extension not installed');
-        }
+        $this->skipIfImagick();
 
         parent::setUp();
     }

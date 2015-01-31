@@ -70,4 +70,14 @@ class EditTest extends AbstractEditTest
         }
     }
 
+    protected function trearDown()
+    {
+        foreach ($this->images as $image) {
+            $image->destroy();
+        }
+
+        if (null !== $this->image) {
+            $image->destroy();
+        }
+    }
 }

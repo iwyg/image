@@ -16,6 +16,7 @@ use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Driver\Imagick\Image;
 use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Tests\TestHelperTrait;
 
 /**
  * @class EditTest
@@ -26,9 +27,12 @@ use Thapp\Image\Driver\ImageInterface;
  */
 abstract class EditTest extends \PHPUnit_Framework_TestCase
 {
-    use ImageTestHelper;
+    use ImageTestHelper,
+        TestHelperTrait;
+
 
     protected $image;
+    protected $images;
 
     /** @test */
     public function itShouldBeInstantiable()
@@ -146,7 +150,7 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
             return $source->read($this->getTestImage($w, $h, $format));
         }
 
-        return $source->load($this->asset($file));
+        return $this->images[] = $source->load($this->asset($file));
     }
 
     protected function mergeFileArgs(array $file)

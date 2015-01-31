@@ -16,6 +16,8 @@ use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Color\Rgb;
 use Thapp\Image\Color\Palette\Rgb as RgbPalette;
+use Thapp\Image\Tests\TestHelperTrait;
+use Thapp\Image\Driver\ImageInterface;
 
 /**
  * @class ImageTest
@@ -26,7 +28,14 @@ use Thapp\Image\Color\Palette\Rgb as RgbPalette;
  */
 abstract class ImageTest extends \PHPUnit_Framework_TestCase
 {
-    use ImageTestHelper;
+    use ImageTestHelper,
+        TestHelperTrait;
+
+    /** @test */
+    public function itShouldBeInstantiable()
+    {
+        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->newImage(100, 100));
+    }
 
     /** @test */
     public function itShouldGetImageFormat()
@@ -49,11 +58,18 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceof('Thapp\Image\Driver\EditInterface', $image->edit());
     }
 
+    /** @test */
+    public function coalesceShouldReturnFrames()
+    {
+        $image = $this->newImage(200, 100);
+        $this->assertInstanceof('Thapp\Image\Driver\FramesInterface', $image->coalesce());
+    }
 
     /** @test */
-    public function itShouldBeInstantiable()
+    public function itShouldGetOrientation()
     {
-        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->newImage(100, 100));
+        $image = $this->newImage(200, 100);
+        $this->assertSame(ImageInterface::ORIENT_UNDEFINED, $image->getOrientation());
     }
 
     /** @test */
@@ -96,7 +112,7 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
         $image->setFormat($format);
 
         try {
-            file_put_contents($path, $image->getBlob());
+            $image->save($path, $format);
         } catch(\Exception $e) {
             unlink($path);
             throw $e;
@@ -104,6 +120,75 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
 
         $info = getimagesize($path);
         unlink($path);
+
+        $this->assertSame($mime, $info['mime']);
+    }
+
+    /**
+     * @test
+     * @expectedException \Thapp\Image\Exception\ImageException
+     */
+    public function itShouldThrowOnSaveIfPathIsInvalid()
+    {
+        $image = $this->newImage(100, 100);
+        $image->save('/idontexists');
+    }
+
+    /**
+     * @test
+     * @expectedException \Thapp\Image\Exception\ImageException
+     */
+    public function itShouldThrowOnWriteIfStreamIsInvalid()
+    {
+        $image = $this->newImage(100, 100);
+        $image->write(null);
+    }
+
+    /**
+     * @test
+     * @expectedException \Thapp\Image\Exception\ImageException
+     */
+    public function itShouldThrowOnWriteIfStreamIsReadOnly()
+    {
+        $path = tempnam(sys_get_temp_dir(), 'image');
+        $stream = fopen($path, 'rb');
+        $image = $this->newImage(100, 100);
+        $error = null;
+        try {
+            $image->write($stream);
+        } catch (\Exception $e) {
+            $error = $e;
+        }
+
+        fclose($stream);
+        unlink($path);
+
+        if (null !== $error) {
+            throw $e;
+        }
+    }
+
+    /**
+     * @test
+     * @dataProvider formatMimeProvider
+     */
+    public function itShouldWriteToStream($format, $mime)
+    {
+        $stream = tmpfile();
+        $image = $this->newImage(100, 100);
+        $meta = stream_get_meta_data($stream);
+
+        try {
+            $image->write($stream, $format);
+        } catch(\Exception $e) {
+            fclose($stream);
+            throw $e;
+        }
+
+        rewind($stream);
+        $info = getimagesizefromstring(stream_get_contents($stream));
+
+        fclose($stream);
 
         $this->assertSame($mime, $info['mime']);
     }

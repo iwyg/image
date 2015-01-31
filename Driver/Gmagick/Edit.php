@@ -80,9 +80,6 @@ class Edit extends AbstractEdit
     public function rotate($deg, ColorInterface $color = null)
     {
         $this->gmagick()->rotateImage($px = $this->newPixel($color), (float)$deg);
-
-        $px->clear();
-        $px->destroy();
     }
 
     /**
@@ -100,12 +97,12 @@ class Edit extends AbstractEdit
         // use the first image in the set:
         $gmagick = $image->getGmagick();
         $index = $gmagick->getImageIndex();
-        $gmagick->setFirstIterator();
+        $gmagick->setImageIndex(0);
 
         $this->doCopy($this->gmagick(), $gmagick, $start, Gmagick::COMPOSITE_COPY);
 
         // reset the iterator index to the previous index:
-        $imagick->setImageIndex($index);
+        $gmagick->setImageIndex($index);
     }
 
     /**
@@ -203,9 +200,9 @@ class Edit extends AbstractEdit
      *
      * @return GmagickPixel
      */
-    private function newPixel(ColorInterface $color)
+    private function newPixel(ColorInterface $color = null)
     {
-        return new GmagickPixel($color ? $color->getColor() : self::COLOR_NONE);
+        return new GmagickPixel($color ? $color->getColorAsString() : self::COLOR_NONE);
     }
 
     /**
