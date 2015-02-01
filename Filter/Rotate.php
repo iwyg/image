@@ -21,7 +21,7 @@ use Thapp\Image\Driver\ImageInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Rotate Implements FilterInterface
+class Rotate implements FilterInterface
 {
     private $deg;
     private $color;
@@ -45,10 +45,10 @@ class Rotate Implements FilterInterface
     {
         if ($image->hasFrames()) {
             foreach ($image->frames()->coalesce() as $frame) {
-                $frame->rotate($this->deg, $this->color);
+                $frame->edit()->rotate($this->deg, $this->color);
             }
         } else {
-            $image->rotate($this->deg, $this->color);
+            $image->edit()->rotate($this->deg, $this->color);
         }
     }
 }

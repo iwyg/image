@@ -10,7 +10,7 @@
 
 
 
-This module was created for the usage in Thapp\JitImage, but can be used as
+This module was created for the usage in [Thapp/JitImage](https://github.com/iwyg/jitimage/tree/develop), but can be used as
 a standalone library for manipulating images. It's highly inspired by the Imagine
 library, but resolves a views flaws, but also way more limited. 
 
