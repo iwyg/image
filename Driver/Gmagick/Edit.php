@@ -61,9 +61,9 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
+    public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
-        $this->createCanvas($size, $point, $color, Gmagick::COMPOSITE_OVER);
+        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Gmagick::COMPOSITE_OVER);
     }
 
     /**

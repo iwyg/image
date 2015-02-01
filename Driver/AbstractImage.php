@@ -327,4 +327,23 @@ abstract class AbstractImage implements ImageInterface
 
         return static::$orients;
     }
+
+    /**
+     * getInterlaceScheme
+     *
+     * @param string $format
+     *
+     * @return void
+     */
+    protected function getInterlaceScheme($scheme)
+    {
+        $map = $this->getInterlaceMap();
+        if (isset($map[$scheme])) {
+            return $map[$scheme];
+        }
+
+        throw new \InvalidArgumentException(sprintf('Unknown interlace scheme "%s"', (string)$scheme));
+    }
+
+    abstract protected function &getInterlaceMap();
 }

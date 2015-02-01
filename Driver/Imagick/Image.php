@@ -65,6 +65,13 @@ class Image extends AbstractImage
         ColorInterface::CHANNEL_GRAY    => Imagick::COLOR_RED
     ];
 
+    private static $interlaceMap = [
+        self::INTERLACE_NO => Imagick::INTERLACE_NO,
+        self::INTERLACE_LINE => Imagick::INTERLACE_LINE,
+        self::INTERLACE_PLANE => Imagick::INTERLACE_PLANE,
+        self::INTERLACE_PARTITION => Imagick::INTERLACE_PARTITION
+    ];
+
     /**
      * Constructor.
      *
@@ -264,24 +271,9 @@ class Image extends AbstractImage
         return new Edit($this);
     }
 
-    /**
-     * getInterlaceScheme
-     *
-     * @param string $format
-     *
-     * @return void
-     */
-    private function getInterlaceScheme($format)
+    protected function &getInterlaceMap()
     {
-        if ('jpeg' === $format) {
-            return Imagick::INTERLACE_JPEG;
-        } elseif ('png' === $format) {
-            return Imagick::INTERLACE_PNG;
-        } elseif ('gif' === $format && defined('Imagick::INTERLACE_GIF')) {
-            return Imagick::INTERLACE_GIF;
-        }
-
-        return Imagick::INTERLACE_PLANE;
+        return static::$interlaceMap;
     }
 
     /**
@@ -333,8 +325,8 @@ class Image extends AbstractImage
      */
     private function applyOptions(array $options)
     {
-        if (false !== $this->getOption($options, 'interlace', false)) {
-            $this->imagick->setInterlaceScheme($this->getInterlaceScheme($options['format']));
+        if (false !== $scheme = $this->getOption($options, 'interlace', false)) {
+            $this->imagick->setInterlaceScheme($this->getInterlaceScheme($scheme));
         }
 
         $this->imagick->setImageFormat($options['format']);

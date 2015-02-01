@@ -37,15 +37,19 @@ class SourceTest extends Source
         $this->fail('Sorry');
     }
 
-    public function paletteTestProvider()
+    /**
+     * @test
+     * @dataProvider paletteTestProvider
+     */
+    public function itShouldSetCorrectPalette($file, $palette)
     {
-        // Gmagick doesn't reckognize grayscale color spaces.
-        return [
-            //['grayscale.jpg', 'Thapp\Image\Color\Palette\GrayscalePaletteInterface'],
-            ['pattern.png', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
-            ['pattern4c.jpg', 'Thapp\Image\Color\Palette\CmykPaletteInterface'],
-        ];
+        if (0 === strpos($file, 'grayscale')) {
+            $this->markTestSkipped('Gmagick does not upport grayscale colorspace.');
+        }
+
+        parent::itShouldSetCorrectPalette($file, $palette);
     }
+
 
     protected function getSourceClass()
     {

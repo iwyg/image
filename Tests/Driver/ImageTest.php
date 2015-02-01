@@ -113,7 +113,7 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
 
         try {
             $image->save($path, $format);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             unlink($path);
             throw $e;
         }
@@ -180,7 +180,7 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
 
         try {
             $image->write($stream, $format);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             fclose($stream);
             throw $e;
         }
@@ -250,6 +250,7 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
         $colorB = $image->getColorAt(new Point(150, 0));
 
         $this->assertInstanceof('Thapp\Image\Color\RgbInterface', $colorA);
+        $this->assertTrue(1 > $colorA->getAlpha());
     }
 
     abstract protected function newImage($w, $h, $format = 'jpeg');

@@ -55,6 +55,14 @@ abstract class AbstractEdit implements EditInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
      * getStartPoint
      *
      * @param SizeInterface $target
@@ -108,16 +116,6 @@ abstract class AbstractEdit implements EditInterface
     protected function getSize()
     {
         return $this->getImage()->getSize();
-    }
-
-    /**
-     * getImage
-     *
-     * @return void
-     */
-    protected function getImage()
-    {
-        return $this->image;
     }
 
     /**

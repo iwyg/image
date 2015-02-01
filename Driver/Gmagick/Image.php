@@ -68,6 +68,13 @@ class Image extends AbstractImage
         ColorInterface::CHANNEL_GRAY    => Gmagick::COLOR_RED
     ];
 
+    private static $interlaceMap = [
+        self::INTERLACE_NO        => Gmagick::INTERLACE_NO,
+        self::INTERLACE_LINE      => Gmagick::INTERLACE_LINE,
+        self::INTERLACE_PLANE     => Gmagick::INTERLACE_PLANE,
+        self::INTERLACE_PARTITION => Gmagick::INTERLACE_PARTITION
+    ];
+
     /**
      * Constructor.
      *
@@ -246,6 +253,14 @@ class Image extends AbstractImage
     protected function newEdit()
     {
         return new Edit($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function &getInterlaceMap()
+    {
+        return static::$interlaceMap;
     }
 
     /**

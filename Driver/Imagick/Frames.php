@@ -64,7 +64,7 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
      */
     public function coalesce()
     {
-        if (0 < $this->count()) {
+        if (1 < $this->count()) {
             // merge previous frames
             $this->merge();
 

@@ -28,21 +28,6 @@ use Thapp\Image\Tests\Driver\EditTest as AbstractEditTest;
 class EditTest extends AbstractEditTest
 {
     /** @test */
-    public function itShouldPreserveAlphaOnEdit()
-    {
-        $edit = $this->newEdit('transparent4.png');
-        $this->assertTransparent($this->image, true);
-
-        $edit = $this->newEdit('transparent4.png');
-        $edit->rotate(45, $c = $this->image->getPalette()->getColor([255,255,255,0]));
-        $this->assertTransparent($this->image, true);
-
-        $edit = $this->newEdit('transparent4.png');
-        $edit->canvas(new Size(400, 400), new Point(100, 100), $this->image->getPalette()->getColor([0,0,0,0]));
-        $this->assertTransparent($this->image, true);
-    }
-
-    /** @test */
     public function itShouldThrowIfPasteImageIsInvalid()
     {
         $edit = $this->newEdit([200, 200]);

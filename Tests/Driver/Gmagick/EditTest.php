@@ -29,12 +29,6 @@ use Thapp\Image\Tests\Driver\EditTest as AbstractEditTest;
  */
 class EditTest extends AbstractEditTest
 {
-    /** @test */
-    public function itShouldPreserveAlphaOnEdit()
-    {
-        $this->markTestIncomplete();
-    }
-
     protected function newEdit($file, ImageInterface $image = null)
     {
         if (null !== $this->image) {

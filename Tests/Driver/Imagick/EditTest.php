@@ -29,26 +29,6 @@ use Thapp\Image\Tests\Driver\EditTest as AbstractEditTest;
  */
 class EditTest extends AbstractEditTest
 {
-    /** @test */
-    public function itShouldPreserveAlpha()
-    {
-        $edit = $this->newEdit('transparent4.png');
-        $this->assertAlphaChannelImagick($this->image, Imagick::ALPHACHANNEL_ACTIVATE);
-
-        $edit = $this->newEdit('transparent4.png');
-        $edit->rotate(45, $c = $this->image->getPalette()->getColor([255,255,255,0]));
-        $this->assertAlphaChannelImagick($this->image, Imagick::ALPHACHANNEL_ACTIVATE);
-
-        $edit = $this->newEdit('transparent4.png');
-        $edit->canvas(new Size(400, 400), new Point(100, 100), $this->image->getPalette()->getColor([0,0,0,0.2]));
-        $this->assertAlphaChannelImagick($this->image, Imagick::ALPHACHANNEL_ACTIVATE);
-
-        $edit = $this->newEdit('transparent4.png');
-        $this->image->setGravity(new Gravity(1));
-        $edit->crop(new Size(100, 100));
-        $this->assertAlphaChannelImagick($this->image, Imagick::ALPHACHANNEL_ACTIVATE);
-    }
-
     protected function newEdit($file, ImageInterface $image = null)
     {
         return new Edit($this->image = $image ?: $this->newImage($file));

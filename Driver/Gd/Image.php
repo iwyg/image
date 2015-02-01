@@ -39,6 +39,13 @@ class Image extends AbstractImage
     private $gd;
     private $sourceFormat;
 
+    private static $interlaceMap = [
+        self::INTERLACE_NO        => 0,
+        self::INTERLACE_LINE      => 1,
+        self::INTERLACE_PLANE     => 1,
+        self::INTERLACE_PARTITION => 1,
+    ];
+
     /**
      * Constructor.
      *
@@ -204,10 +211,8 @@ class Image extends AbstractImage
         }
 
         // interlace image:
-        if (false !== $this->getOption($options, 'interlace', true)) {
-            imageinterlace($this->gd, 1);
-        } else {
-            imageinterlace($this->gd, 0);
+        if (false !== ($scheme = $this->getOption($options, 'interlace', false))) {
+            imageinterlace($this->gd, $this->getInterlaceScheme($scheme));
         }
 
         return $this->generateOutPut(array_merge(['format' => $format], $options));
@@ -216,6 +221,14 @@ class Image extends AbstractImage
     protected function newEdit()
     {
         return new Edit($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function &getInterlaceMap()
+    {
+        return static::$interlaceMap;
     }
 
     /**

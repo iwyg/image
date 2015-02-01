@@ -72,7 +72,7 @@ class Frames extends AbstractFrames
      */
     public function coalesce()
     {
-        if (0 < $this->count()) {
+        if (1 < $this->count()) {
             // merge previous frames
             $this->merge();
 

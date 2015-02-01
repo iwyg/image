@@ -82,7 +82,7 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         $edit = $this->newEdit([200, 100]);
         $img = $this->newImage([100, 50]);
 
-        //$edit->paste($img, new Point(0, 0));
+        $edit->paste($img, new Point(0, 0));
     }
 
     /** @test */
@@ -109,19 +109,6 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function itPastesImages()
-    {
-        $this->manageCi();
-        $edit = $this->newEdit([600, 600]);
-
-        $image = $this->newImage('animated.gif');
-        $prefix = strtr(get_class($edit), ['\\' => '_']);
-
-        $this->image->setGravity(new Gravity(5));
-        $edit->paste($image);
-    }
-
-    /** @test */
     public function itShouldThrowIfPasteImageIsInvalid()
     {
         $edit = $this->newEdit([200, 200]);
@@ -133,6 +120,60 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->fail();
+    }
+
+    /** @test */
+    public function itShouldPreserveAlphaAfterExtent()
+    {
+        $edit = $this->newEdit('transparent4.png');
+        $ref = $edit->getImage()->getColorAt(new Point(100, 100));
+        $edit->getImage()->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
+        $edit->extent(new Size(600, 600));
+
+        $color = $edit->getImage()->getColorAt(new Point(300, 300));
+        $this->assertTrue(1 > $color->getAlpha());
+        $this->assertSame($ref, $color);
+    }
+
+    /** @test */
+    public function itShouldNotPreserveAlphaAfterCanvasIfColorIsOpaque()
+    {
+        $edit = $this->newEdit('transparent4.png');
+        $edit->getImage()->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
+
+        $edit->canvas(new Size(600, 600), null, $edit->getImage()->getPalette()->getColor([255, 255, 255]));
+
+        $color = $edit->getImage()->getColorAt(new Point(300, 300));
+        $this->assertTrue(1.0 === $color->getAlpha());
+    }
+
+    /** @test */
+    public function itShouldNotPreserveAlphaAfterCanvasIfColorIsTransparent()
+    {
+        $edit = $this->newEdit('transparent4.png');
+        $edit->getImage()->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
+
+        $edit->canvas(new Size(600, 600));
+
+        $color = $edit->getImage()->getColorAt(new Point(300, 300));
+
+        $this->assertTrue(1 > $color->getAlpha());
+    }
+
+    /** @test */
+    public function itShouldPreserveAlphaAfterEdit()
+    {
+        $edit = $this->newEdit('transparent4.png');
+        $edit->crop(new Size(20, 20));
+
+        $color = $edit->getImage()->getColorAt(new Point(10, 10));
+        $this->assertTrue(1 > $color->getAlpha());
+
+        $edit = $this->newEdit('transparent4.png');
+        $edit->rotate(45);
+
+        $color = $edit->getImage()->getColorAt(new Point(142, 142));
+        $this->assertTrue(1 > $color->getAlpha());
     }
 
     protected function getImageClass()

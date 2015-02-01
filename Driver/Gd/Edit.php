@@ -96,14 +96,14 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null)
+    public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
-        $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255]);
+        $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255, 0]);
         $extent = $this->image->newGd($size, $color);
 
         imagealphablending($extent, true);
 
-        $this->doCopy($extent, $this->gd(), $point, 'canvas');
+        $this->doCopy($extent, $this->gd(), $this->getStartPoint($size, $start), 'canvas');
 
         imagealphablending($this->gd(), false);
     }

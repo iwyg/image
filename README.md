@@ -46,7 +46,14 @@ $image = $source->load('image.jpg');
 
 $image->edit()->crop(new Size(100, 100));
 
+// Save the image to a new file:
 $image->save('newimage.jpg');
+
+// Write the image contents to a stream.
+$image->write($stream);
+
+// Write the image contents to a file.
+file_put_contents($path, $image->getBlob());
 
 ```
 
@@ -116,6 +123,17 @@ $mod = new Edit($image);
 
 #### Resize and scaling
 
+Calling the `size()` method on an `$image`object returns a `$size` object of
+type `Thapp\Image\Geometry\SizeInterface`. This object can be helpful to
+compute the desired new size of an image.
+
+All methods used for manipulating the geometry of the image are taking a size
+object as their first argument. 
+
+The `resize()` method of the `$image` object can be used to modify the geometry
+of the image including its content. 
+
+**Resize an image ignoring its aspect ratio**
 ```php
 <?php
 
@@ -129,10 +147,11 @@ $image->edit()->resize($size);
 
 ```
 
+**Scale an image proportionally**
 ```php
 <?php
 
-// increase image size by 100%
+// Doubles with and height of the image. 
 
 $size = $image->getSize()->scale(200);
 
@@ -140,6 +159,7 @@ $image->edit()->resize($size);
 
 ```
 
+**Scale by pixel count**
 ```php
 <?php
 
@@ -151,6 +171,7 @@ $image->edit()->resize($size);
 
 ```
 
+**Scale by increasing the width of the image**
 ```php
 <?php
 
@@ -162,6 +183,7 @@ $image->edit()->resize($size);
 
 ```
 
+**Scale by increasing the height of the image**
 ```php
 <?php
 
@@ -173,6 +195,7 @@ $image->edit()->resize($size);
 
 ```
 
+**Fit an image into to a given size**
 ```php
 <?php
 
@@ -186,6 +209,8 @@ $image->edit()->fit($size);
 
 ```
 
+**Fill a given size with the image size**
+The image will be at least as hight and wide as the `$size` object.
 ```php
 <?php
 
@@ -198,6 +223,10 @@ $size = new Size(400, 400);
 $image->edit()->fill($size);
 
 ```
+
+**Modifying the geometry of the image with out resizing its content**
+
+`extent()` will increase or decrease the "canvas" of the image.
 
 ```php
 <?php
@@ -286,27 +315,5 @@ If you image contains EXIF data and you've loaded the image with the `ExifReader
 use Thapp\Image\Filter\Autorotate;
 
 $image->filter(new AutoRotate));
-
-```
-
-
-#### Manual rotating according to its orientation
-
-This is basically the same what filter `AutoRotate` does. 
-
-```php
-<?php
-
-use Thapp\Image\Driver\ImageInterface;
-
-$orientation = $image->getOrientation();
-
-if (ImageInterface::ORIENT_BOTTOMRIGHT === $orientation) {
-    $image->rotate(180);
-} elseif (ImageInterface::ORIENT_RIGHTTOP === $orientation) {
-    $image->rotate(90);
-} elseif (ImageInterface::ORIENT_LEFTBOTTOM === $orientation) {
-    $image->rotate(-90);
-}
 
 ```

@@ -60,14 +60,10 @@ interface ImageInterface
     const ORIENT_RIGHTBOTTOM = 7;
     const ORIENT_LEFTBOTTOM = 8;
 
-    const INTERLACE_UNDEFINED = 0;
-    const INTERLACE_NO = 1;
-    const INTERLACE_LINE = 2;
-    const INTERLACE_PLANE = 3;
-    const INTERLACE_PARTITION = 4;
-    const INTERLACE_GIF = 5;
-    const INTERLACE_JPEG = 6;
-    const INTERLACE_PNG = 7;
+    const INTERLACE_NO = 0;
+    const INTERLACE_LINE = 1;
+    const INTERLACE_PLANE = 2;
+    const INTERLACE_PARTITION = 2;
 
     /**
      * desctroy

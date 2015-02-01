@@ -52,7 +52,7 @@ interface EditInterface
      *
      * @return void
      */
-    public function canvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null);
+    public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null);
 
     /**
      * scale
@@ -102,4 +102,11 @@ interface EditInterface
      * @return void
      */
     public function paste(ImageInterface $image, PointInterface $start = null);
+
+    /**
+     * getImage
+     *
+     * @return Thapp\Image\Driver\ImageInterface
+     */
+    public function getImage();
 }
