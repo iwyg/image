@@ -56,7 +56,7 @@ class AutoRotateTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldNotRoate()
     {
-        $filter = new Autorotate;
+        $filter = new AutoRotate;
         $image = $this->mockImage(ImageInterface::ORIENT_UNDEFINED);
         $image->edit()->expects($this->exactly(0))->method('rotate');
 
