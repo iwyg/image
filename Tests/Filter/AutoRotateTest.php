@@ -11,7 +11,7 @@
 
 namespace Thapp\Image\Tests\Filter;
 
-use Thapp\Image\Filter\Autorotate;
+use Thapp\Image\Filter\AutoRotate;
 use Thapp\Image\Driver\ImageInterface;
 
 /**
@@ -21,12 +21,12 @@ use Thapp\Image\Driver\ImageInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class AutorotateTest extends \PHPUnit_Framework_TestCase
+class AutoRotateTest extends \PHPUnit_Framework_TestCase
 {
     /** @test */
     public function itShouldRotate180Degree()
     {
-        $filter = new Autorotate;
+        $filter = new AutoRotate;
         $image = $this->mockImage(ImageInterface::ORIENT_BOTTOMRIGHT);
         $image->edit()->expects($this->once())->method('rotate')->with(180);
 
@@ -36,7 +36,7 @@ class AutorotateTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldRotate900Degree()
     {
-        $filter = new Autorotate;
+        $filter = new AutoRotate;
         $image = $this->mockImage(ImageInterface::ORIENT_RIGHTTOP);
         $image->edit()->expects($this->once())->method('rotate')->with(90);
 
@@ -46,7 +46,7 @@ class AutorotateTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldRotateNegative900Degree()
     {
-        $filter = new Autorotate;
+        $filter = new AutoRotate;
         $image = $this->mockImage(ImageInterface::ORIENT_LEFTBOTTOM);
         $image->edit()->expects($this->once())->method('rotate')->with(-90);
 
