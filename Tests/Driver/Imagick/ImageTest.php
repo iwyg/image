@@ -18,6 +18,7 @@ use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
+use Thapp\Image\Info\ImageReader as FileReader;
 
 /**
  * @class ImageTest
@@ -29,6 +30,51 @@ use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
 class ImageTest extends AbstractImageTest
 {
     protected $handle;
+
+    /** @test */
+    public function itShouldSaveImageInterlaced()
+    {
+        $stream = tmpfile();
+        $image = $this->newImage(100, 100);
+
+        $image->write($stream, 'jpeg', ['interlace' => 1]);
+        fclose($stream);
+    }
+
+    /** @test */
+    public function itShouldApplyPngCompression()
+    {
+        $stream = tmpfile();
+        $image = $this->newImage(100, 100);
+
+        $image->write($stream, 'png', ['compression_quality_png' => 99]);
+        $this->assertSame(99, $image->getImagick()->getImageCompressionQuality());
+        fclose($stream);
+    }
+
+    /** @test */
+    public function itShouldApplyGifCompression()
+    {
+        $stream = tmpfile();
+        $image = $this->newImage(100, 100);
+
+        $image->write($stream, 'gif', ['compression_quality_gif' => 20]);
+        $this->assertSame(20, $image->getImagick()->getImageCompressionQuality());
+        fclose($stream);
+    }
+
+    /** @test */
+    public function itShouldApplyTiffCompression()
+    {
+        $stream = tmpfile();
+        $image = $this->newImage(100, 100);
+
+        $image->write($stream, 'tiff', ['compression_quality_tiff' => 20]);
+        $this->assertSame(20, $image->getImagick()->getImageCompressionQuality());
+
+        fclose($stream);
+    }
+
     /** @test */
     public function itShouldGetImagick()
     {
@@ -52,9 +98,9 @@ class ImageTest extends AbstractImageTest
         $this->assertFalse($image->hasFrames());
     }
 
-    protected function loadImage($file)
+    protected function loadImage($file, $reader = null)
     {
-        $image = (new Source())->load($file);
+        $image = (new Source($reader ?: new FileReader))->load($file);
 
         return $image;
     }
@@ -64,10 +110,10 @@ class ImageTest extends AbstractImageTest
         return 'imagick';
     }
 
-    protected function newImage($w, $h, $format = 'jpeg')
+    protected function newImage($w, $h, $format = 'jpeg', $reader = null)
     {
         $resource = $this->getTestImage($w, $h, $format);
-        $source = new Source();
+        $source = new Source($reader ?: new FileReader);
 
         return $source->read($resource);
     }

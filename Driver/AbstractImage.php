@@ -194,7 +194,7 @@ abstract class AbstractImage implements ImageInterface
      */
     public function getOrientation()
     {
-        return $this->mapOrientation($this->getMetaData()->get('ifd0.Orentation'));
+        return $this->mapOrientation($this->getMetaData()->get('ifd0.Orientation', 0));
     }
 
     /**
@@ -212,7 +212,7 @@ abstract class AbstractImage implements ImageInterface
      *
      * @return void
      */
-    protected function getOutputFormat($format = null, array &$options)
+    protected function getOutputFormat($format = null, array &$options = [])
     {
         if (null === $format) {
             $format = isset($options['format']) ? $this->mapFormat($options['format']) : $this->getFormat();
@@ -296,7 +296,7 @@ abstract class AbstractImage implements ImageInterface
         $orients = static::getOrientations($orient);
 
         if (isset($orients[$orient])) {
-            $orients[$orient];
+            return $orients[$orient];
         }
 
         return self::ORIENT_UNDEFINED;

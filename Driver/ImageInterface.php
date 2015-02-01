@@ -140,6 +140,13 @@ interface ImageInterface
     public function frames();
 
     /**
+     * Gets an edit object.
+     *
+     * @return Thapp\Image\Driver\EditInterface
+     */
+    public function edit();
+
+    /**
      * Set the image output format.
      *
      * @param string $format

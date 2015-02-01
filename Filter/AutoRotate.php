@@ -33,13 +33,13 @@ class AutoRotate implements FilterInterface
 
         switch ($orient) {
             case ImageInterface::ORIENT_BOTTOMRIGHT:
-                $image->rotate(180);
+                $image->edit()->rotate(180);
                 break;
             case ImageInterface::ORIENT_RIGHTTOP:
-                $image->rotate(90);
+                $image->edit()->rotate(90);
                 break;
             case ImageInterface::ORIENT_LEFTBOTTOM:
-                $image->rotate(-90);
+                $image->edit()->rotate(-90);
                 break;
             default:
                 break;

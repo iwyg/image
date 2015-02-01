@@ -17,6 +17,7 @@ use Thapp\Image\Geometry\Point;
 use Thapp\Image\Driver\Gd\Image;
 use Thapp\Image\Driver\Gd\Source;
 use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
+use Thapp\Image\Info\ImageReader as FileReader;
 
 /**
  * @class ImageTest
@@ -77,15 +78,15 @@ class ImageTest extends AbstractImageTest
         return 'gd';
     }
 
-    protected function loadImage($file)
+    protected function loadImage($file, $reader = null)
     {
-        return (new Source())->load($file);
+        return (new Source($reader ?: new FileReader))->load($file);
     }
 
-    protected function newImage($w, $h, $format = 'jpeg')
+    protected function newImage($w, $h, $format = 'jpeg', $reader = null)
     {
         $resource = $this->getTestImage($w, $h, $format);
-        $source = new Source;
+        $source = new Source($reader ?: new FileReader);
 
         return $source->read($resource);
     }

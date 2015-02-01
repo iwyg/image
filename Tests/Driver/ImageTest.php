@@ -18,6 +18,7 @@ use Thapp\Image\Color\Rgb;
 use Thapp\Image\Color\Palette\Rgb as RgbPalette;
 use Thapp\Image\Tests\TestHelperTrait;
 use Thapp\Image\Driver\ImageInterface;
+use Thapp\Image\Info\ExifReader;
 
 /**
  * @class ImageTest
@@ -253,9 +254,16 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(1 > $colorA->getAlpha());
     }
 
-    abstract protected function newImage($w, $h, $format = 'jpeg');
+    /** @test */
+    public function itShouldGetExifOrientation()
+    {
+        $image = $this->loadImage($this->asset('orientation.jpg'), new ExifReader);
+        $this->assertSame(ImageInterface::ORIENT_BOTTOMRIGHT, $image->getOrientation());
+    }
+
+    abstract protected function newImage($w, $h, $format = 'jpeg', $reader = null);
     abstract protected function getDriverName();
-    abstract protected function loadImage($file);
+    abstract protected function loadImage($file, $reader = null);
 
     protected function getImagePath($resource)
     {

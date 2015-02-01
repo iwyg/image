@@ -337,13 +337,15 @@ class Image extends AbstractImage
             $this->imagick->setImageCompressionQuality(
                 min(100, max(0, $this->getOption($options, 'compression_quality_png', 50)))
             );
-        } elseif (self::FORMAT_PNG === $options['format']) {
+        } elseif (self::FORMAT_JPEG === $options['format']) {
             $this->imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
             $this->imagick->setImageCompressionQuality(
                 min(100, max(0, $this->getOption($options, 'compression_quality_jpeg', 80)))
             );
-        } elseif (self::FORMAT_GIF === $options['format'] && defined('Imagick::COMPRESSION_GIF')) {
-            $this->imagick->setImageCompression(Imagick::COMPRESSION_GIF);
+        } elseif (self::FORMAT_GIF === $options['format']) {
+            $this->imagick->setImageCompression(
+                defined('Imagick::COMPRESSION_GIF') ? Imagick::COMPRESSION_GIF : Imagick::COMPRESSION_NO
+            );
             $this->imagick->setImageCompressionQuality(
                 min(100, max(0, $this->getOption($options, 'compression_quality_gif', 80)))
             );

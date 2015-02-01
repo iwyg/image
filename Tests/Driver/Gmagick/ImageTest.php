@@ -18,6 +18,7 @@ use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
+use Thapp\Image\Info\ImageReader as FileReader;
 
 /**
  * @class ImageTest
@@ -55,9 +56,9 @@ class ImageTest extends AbstractImageTest
         $this->assertFalse($image->hasFrames());
     }
 
-    protected function loadImage($file)
+    protected function loadImage($file, $reader = null)
     {
-        $image = (new Source())->load($file);
+        $image = (new Source($reader ?: new FileReader))->load($file);
 
         return $this->images[] = $image;
     }
@@ -67,10 +68,10 @@ class ImageTest extends AbstractImageTest
         return 'gmagick';
     }
 
-    protected function newImage($w, $h, $format = 'jpeg')
+    protected function newImage($w, $h, $format = 'jpeg', $reader = null)
     {
         $resource = $this->getTestImage($w, $h, $format);
-        $source = new Source;
+        $source = new Source($reader ?: new FileReader);
 
         $meta = stream_get_meta_data($resource);
         $file = $meta['uri'];

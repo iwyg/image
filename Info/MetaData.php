@@ -49,7 +49,7 @@ class MetaData implements MetaDataInterface
      */
     public function has($attr)
     {
-        return isset($this->attributes[$attr]);
+        return array_key_exists($attr, $this->attributes);
     }
 
     /**
