@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Color package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -17,7 +17,7 @@ use Thapp\Image\Color\Palette\RgbPaletteInterface;
 /**
  * @class Rgb
  *
- * @package Thapp\Image\Color
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -123,9 +123,10 @@ class Rgb extends AbstractColor implements RgbInterface
     }
 
     /**
-     * setValues
+     * Sets the initial values.
      *
      * @param array $values
+     * @throws \InvalidArgumentException if input values are invalid.
      *
      * @return void
      */

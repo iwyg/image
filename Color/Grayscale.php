@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Color package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -17,7 +17,7 @@ use Thapp\Image\Color\Palette\GrayscalePaletteInterface;
 /**
  * @class Greyscale
  *
- * @package Thapp\Image\Color
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -34,8 +34,8 @@ class Grayscale extends AbstractColor implements GrayscaleInterface
     /**
      * Constructor.
      *
-     * @param int $grey
-     * @param float $alpha
+     * @param array $values
+     * @param GrayscalePaletteInterface $palette
      */
     public function __construct(array $values, GrayscalePaletteInterface $palette = null)
     {
@@ -91,6 +91,14 @@ class Grayscale extends AbstractColor implements GrayscaleInterface
         return null !== $this->a ? $this->a : 1.0;
     }
 
+    /**
+     * Sets the input values.
+     *
+     * @param array $values
+     * @throws \InvalidArgumentException if input values are invalid.
+     *
+     * @return void
+     */
     protected function setValues(array $values)
     {
         if (empty($values) || 2 < count($values)) {

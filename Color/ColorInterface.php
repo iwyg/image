@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Color package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,7 +14,7 @@ namespace Thapp\Image\Color;
 /**
  * @interface ColorInterface
  *
- * @package Thapp\Image\Color
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -33,37 +33,37 @@ interface ColorInterface
     const CHANNEL_ALPHA    = 'alpha';
 
     /**
-     * getColor
+     * Get the color values as array.
      *
      * @return array
      */
     public function getColor();
 
     /**
-     * valueColor
+     * Get a colro value by attribute
      *
-     * @param mixed $channel
+     * @param int $channel
      *
-     * @return mixed
+     * @return mixed the color attribute value.
      */
     public function getValue($channel);
 
     /**
-     * getColorAsString
+     * Get the color as string.
      *
-     * @return void
+     * @return string
      */
     public function getColorAsString();
 
     /**
-     * getAlpha
+     * Get the alpha value.
      *
      * @return float
      */
     public function getAlpha();
 
     /**
-     * getPalette
+     * Get the color palette.
      *
      * @return Thapp\Image\Color\Palette\PaletteInterface
      */
@@ -71,6 +71,8 @@ interface ColorInterface
 
     /**
      * Get the color as string representation
+     *
+     * @see ColorInterface::getColorAsString()
      *
      * @return string
      */

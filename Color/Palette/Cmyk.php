@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Palette package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -18,12 +18,15 @@ use Thapp\Image\Color\ColorInterface;
 /**
  * @class Cmyk
  *
- * @package Thapp\Image\Palette
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Cmyk extends AbstractPalette implements CmykPaletteInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getDefinition()
     {
         return CmykColor::keys();
@@ -46,18 +49,12 @@ class Cmyk extends AbstractPalette implements CmykPaletteInterface
     }
 
     /**
-     * getIndex
-     *
-     * @param array $colors
-     *
-     * @return void
+     * {@inheritdoc}
      */
     protected function getIndex(array $colors)
     {
         list($c, $m, $y, $k) = $colors;
 
         return sprintf('cmyk(%s,%s,%s,%s)', $c, $m, $y, $k);
-        //var_dump($key);
-        //return $key;
     }
 }

@@ -14,7 +14,7 @@ namespace Thapp\Image\Color\Palette;
 /**
  * @interface PaletteInterface
  *
- * @package Thapp\Image\Palette
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */

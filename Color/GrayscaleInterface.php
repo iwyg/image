@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Color package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,14 +14,14 @@ namespace Thapp\Image\Color;
 /**
  * @interface GrayscaleInterface
  *
- * @package Thapp\Image\Color
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 interface GrayscaleInterface extends ColorInterface
 {
     /**
-     * getGray
+     * Get the gray value
      *
      * @return int
      */

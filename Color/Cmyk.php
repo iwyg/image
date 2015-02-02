@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Color package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -17,7 +17,7 @@ use Thapp\Image\Color\Palette\CmykPaletteInterface;
 /**
  * @class Cmyk
  *
- * @package Thapp\Image\Color
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -35,6 +35,12 @@ class Cmyk extends AbstractColor implements CmykInterface
     private $y;
     private $k;
 
+    /**
+     * Constructor.
+     *
+     * @param array $values
+     * @param CmykPaletteInterface $palette
+     */
     public function __construct(array $values, CmykPaletteInterface $palette = null)
     {
         $this->setValues($values);
@@ -78,6 +84,10 @@ class Cmyk extends AbstractColor implements CmykInterface
         throw new \InvalidArgumentException('Undefined color.');
     }
 
+    /**
+     * {@inheritdoc}
+     * @throws \LogicException everytime it is called.
+     */
     public function getAlpha()
     {
         throw new \LogicException('Alpha is unsuported on Cmyk colors.');
@@ -115,11 +125,14 @@ class Cmyk extends AbstractColor implements CmykInterface
         return $this->k;
     }
 
-    public function __toString()
-    {
-        return $this->getColorAsString();
-    }
-
+    /**
+     * Set the initial values.
+     *
+     * @param array $values
+     * @throws \InvalidArgumentException if input values are invalid.
+     *
+     * @return void
+     */
     protected function setValues(array $values)
     {
         if (4 !== count($values)) {

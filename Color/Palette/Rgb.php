@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Palette package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -18,16 +18,14 @@ use Thapp\Image\Color\ColorInterface;
 /**
  * @class Rgb
  *
- * @package Thapp\Image\Palette
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Rgb extends AbstractPalette implements RgbPaletteInterface
 {
     /**
-     * getDefinition
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getDefinition()
     {

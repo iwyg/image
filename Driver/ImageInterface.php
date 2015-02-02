@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -19,7 +19,7 @@ use Thapp\Image\Color\ColorInterface;
 /**
  * @interface ImageInterface
  *
- * @package Thapp\Image\Driver
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -66,30 +66,30 @@ interface ImageInterface
     const INTERLACE_PARTITION = 2;
 
     /**
-     * desctroy
+     * Destroy the image object.
      *
      * @return void
      */
     public function destroy();
 
     /**
-     * destroy
+     * Copy the image object.
      *
      * @return void
      */
     public function copy();
 
     /**
-     * coalesce
+     * Coalesce image frames.
      *
      * May throw exception.
      *
-     * @return ImageInterface
+     * @return FramesInterface
      */
     public function coalesce();
 
     /**
-     * hasFrames
+     * Tell if the image has frames.
      *
      * @return boolean
      */
@@ -108,6 +108,13 @@ interface ImageInterface
      * @return int
      */
     public function getHeight();
+
+    /**
+     * Get the current image size as a size object.
+     *
+     * @return \Thapp\Image\Geometry\SizeInterface
+     */
+    public function getSize();
 
     /**
      * Get the color for a specified pixel
@@ -192,24 +199,26 @@ interface ImageInterface
      * - $format [string]
      * - $flatten [boolean]
      * - $interlace [int]
-     * - $comperession_quality [int]
-     * - $comperession_quality_png [int]
+     * - $comperession_quality_png  [int] 0 - 100
+     * - $comperession_quality_jpeg [int] 0 - 100
+     * - $comperession_quality_gif  [int] 0 - 100
+     * - $comperession_quality_tiff [int] 0 - 100
      *
      * @return string
      */
     public function getBlob($imageFormat = null, array $options = []);
 
     /**
-     * getMetaData
+     * Get the image metadata.
      *
-     * @return mixed
+     * @return Thapp\Image\Info\MetaDataInterface
      */
     public function getMetaData();
 
     /**
-     * getPalette
+     * Get the color palette associated with the image.
      *
-     * @return PaletteInterface
+     * @return Thapp\Image\Color\Palette\PaletteInterface
      */
     public function getPalette();
 }

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Color package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,16 +14,17 @@ namespace Thapp\Image\Color;
 /**
  * @class Parser
  *
- * @package Thapp\Image\Color
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 final class Parser
 {
     /**
-     * toRgb
+     * Parses a color to Rgb
      *
-     * @param mixed $color
+     * @param mixed $color A string in rgb, or hex notation, an array of color
+     * values.
      *
      * @return array
      */
@@ -39,9 +40,9 @@ final class Parser
     }
 
     /**
-     * toGreyscale
+     * Parses a color to greyscale
      *
-     * @param mixed $color
+     * @see Parser::toRgb()
      *
      * @return array
      */
@@ -74,9 +75,9 @@ final class Parser
     }
 
     /**
-     * toCmyk
+     * Parses a color to Cmyk
      *
-     * @param mixed $color
+     * @see Parser::toRgb()
      *
      * @return void
      */
@@ -105,7 +106,7 @@ final class Parser
     }
 
     /**
-     * hexToRgb
+     * Takes a 16 or 8 bit hex string and parses it to rgb.
      *
      * @param string $hex
      *
@@ -129,7 +130,7 @@ final class Parser
     }
 
     /**
-     * rgbToHex
+     * Takes rgb values and converts them to a hex string.
      *
      * @param int $r
      * @param int $g
@@ -143,7 +144,7 @@ final class Parser
     }
 
     /**
-     * isHex
+     * Checks if the input color is a valid hex color string.
      *
      * @param string $color
      *
@@ -155,7 +156,7 @@ final class Parser
     }
 
     /**
-     * normalize
+     * Converts a 8bit hex string to 16 bit notation.
      *
      * @param string $hex
      *
@@ -173,12 +174,12 @@ final class Parser
     }
 
     /**
-     * cmykToRgb
+     * Converts CMYK values to RGB values.
      *
-     * @param float $c
-     * @param float $m
-     * @param float $y
-     * @param float $k
+     * @param float $c Cyan value from 0 to 100
+     * @param float $m Magenta value from 0 to 100
+     * @param float $y Yellow value from 0 to 100
+     * @param float $k Black value from 0 to 100
      *
      * @return array
      */
@@ -194,11 +195,11 @@ final class Parser
     }
 
     /**
-     * parse
+     * Parses the input color value
      *
      * @param mixed $color
      *
-     * @return void
+     * @return array
      */
     private static function parse($color)
     {

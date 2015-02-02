@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Palette package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -17,16 +17,14 @@ use Thapp\Image\Color\Grayscale as GrayscaleColor;
 /**
  * @class Greyscale
  *
- * @package Thapp\Image\Palette
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Grayscale extends AbstractPalette implements GrayscalePaletteInterface
 {
     /**
-     * getDefinition
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getDefinition()
     {

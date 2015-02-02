@@ -21,20 +21,18 @@ namespace Thapp\Image\Color\Palette;
 interface PaletteInterface
 {
     /**
-     * getColor
+     * Gets a color object.
      *
-     * @param mixed $color
+     * @param mixed $color the color value
      *
-     * @return void
+     * @return Thapp\Image\Color\ColorInterface
      */
     public function getColor($color);
 
     /**
-     * getDefinition
+     * Get the color channel definition as array
      *
-     * @param mixed $color
-     *
-     * @return void
+     * @return array
      */
     public function getDefinition();
 }
