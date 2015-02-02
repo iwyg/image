@@ -68,9 +68,9 @@ trait HslHelperTrait
     /**
      * hslToRgb
      *
-     * @param mixed $h
-     * @param mixed $s
-     * @param mixed $l
+     * @param float $h
+     * @param float $s
+     * @param float $l
      *
      * @return array
      */
@@ -82,11 +82,8 @@ trait HslHelperTrait
             return [$r, $g, $b];
         }
 
-        //C = (1 - |2L - 1|) × S
         $c = (1 - abs(2 * $l - 1)) * $s;
-        // X = C × (1 - |(H / 60º) mod 2 - 1|)
         $x = $c * (1 - abs(fmod(($h / 60), 2) - 1));
-        // m = L - C/2
         $m = $l - $c / 2;
 
         if ($h < 60) {

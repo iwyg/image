@@ -9,9 +9,9 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Filter\Imagick;
+namespace Thapp\Image\Filter\Gmagick;
 
-use Imagick;
+use Gmagick;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Driver\ImageInterface;
 
@@ -22,7 +22,7 @@ use Thapp\Image\Driver\ImageInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Colorize extends ImagickFilter
+class Colorize extends GmagickFilter
 {
     private $color;
 
@@ -41,7 +41,7 @@ class Colorize extends ImagickFilter
      */
     public function apply(ImageInterface $image)
     {
-        $overlay = new Imagick();
+        $overlay = new Gmagick();
         $overlay->newImage($image->getWidth(), $image->getHeight(), (string)$this->color);
 
         if ($image->hasFrames()) {
@@ -54,11 +54,11 @@ class Colorize extends ImagickFilter
 
     }
 
-    private function applyComposite(ImageInterface $image, Imagick $overlay)
+    private function applyComposite(ImageInterface $image, Gmagick $overlay)
     {
-        $imagick = $image->getImagick();
-        $imagick->modulateImage(102, 0, 100);
-        $imagick->compositeImage($overlay, Imagick::COMPOSITE_MULTIPLY, 0, 0);
-        $imagick->gammaImage(1.2);
+        $gmagick = $image->getGmagick();
+        $gmagick->modulateImage(102, 0, 100);
+        $gmagick->compositeImage($overlay, Gmagick::COMPOSITE_MULTIPLY, 0, 0);
+        $gmagick->gammaimage(1.2);
     }
 }

@@ -43,6 +43,7 @@ class SourceTest extends Source
             ['pattern.png', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
             ['grayscale.jpg', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
             ['pattern4c.jpg', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
+            ['animated.gif', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
         ];
     }
 

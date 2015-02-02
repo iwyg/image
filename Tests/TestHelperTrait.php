@@ -33,4 +33,15 @@ trait TestHelperTrait
             $this->markTestSkipped($message);
         }
     }
+
+    protected function fixure($path = null)
+    {
+        $fixure = __DIR__ . '/Fixures';
+
+        if (null === $path) {
+            return $fixure;
+        }
+
+        return $fixure . '/' . trim($path, '/');
+    }
 }

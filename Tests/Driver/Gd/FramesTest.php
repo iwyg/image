@@ -57,6 +57,14 @@ class FramesTest extends FTest
         }
     }
 
+    /** @test */
+    public function itShouldHaveArrayAccess()
+    {
+        $frames = new Frames($image = $this->mockImage());
+
+        $this->assertFalse(isset($frames[0]));
+    }
+
     /**
      * @test
      * @expectedException \LogicException

@@ -18,7 +18,10 @@
   "autoload": {
     "psr-4": {
       "Thapp\\Image\\":""
-    }
+    },
+    "files": [
+      "Polyfill/functions.php"
+    ]
   },
   "minimum-stability": "dev"
 }

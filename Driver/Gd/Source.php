@@ -79,6 +79,22 @@ class Source extends AbstractSource
     }
 
     /**
+     * ensureTrueColor
+     *
+     * @param mixed $gd
+     *
+     * @return void
+     */
+    protected function ensureTrueColor(&$gd)
+    {
+        if (imageistruecolor($gd)) {
+            return true;
+        }
+
+        return imagepalettetotruecolor($gd);
+    }
+
+    /**
      * getMimeFromFile
      *
      * @param string $file
