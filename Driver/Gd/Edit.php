@@ -52,7 +52,11 @@ class Edit extends AbstractEdit
         $start = $this->getStartPoint($size, $start);
         $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255, 0]);
 
-        $this->canvas($size, $start, $color);
+        try {
+            $this->canvas($size, $start, $color);
+        } catch (ImageException $e) {
+            throw new ImageException('Cannot extent image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -68,7 +72,7 @@ class Edit extends AbstractEdit
         $h  = $this->getHeight();
 
         if (true !== imagecopyresampled($resized, $this->gd(), 0, 0, 0, 0, $dw, $dh, $w, $h)) {
-            throw new \RuntimeException('Resizing of image failed.');
+            throw new ImageException('Cannot resize image.');
         }
 
         $this->image->swapGd($resized);
@@ -86,7 +90,9 @@ class Edit extends AbstractEdit
         }
 
         $size = $this->getSize()->rotate($deg);
-        $rotate = imagerotate($this->gd(), (float)(-1.0 * $deg), $this->getColorId($this->gd(), $color));
+        if (!$rotate = imagerotate($this->gd(), (float)(-1.0 * $deg), $this->getColorId($this->gd(), $color))) {
+            throw new ImageException('Cannot rotate image.', $e->getCode(), $e);
+        }
 
         $this->image->swapGd($rotate);
 
@@ -103,9 +109,33 @@ class Edit extends AbstractEdit
 
         imagealphablending($extent, true);
 
-        $this->doCopy($extent, $this->gd(), $this->getStartPoint($size, $start), 'canvas');
+        try {
+            $this->doCopy($extent, $this->gd(), $this->getStartPoint($size, $start), 'canvas');
+        } catch (ImageException $e) {
+            throw new ImageException('Cannot create canvas.', $e->getCode(), $e);
+        }
 
         imagealphablending($this->gd(), false);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flip()
+    {
+        if (false === imageflip($this->gd(), IMG_FLIP_VERTICAL)) {
+            throw new ImageException('Cannot flip image.');
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flop()
+    {
+        if (false === imageflip($this->gd(), IMG_FLIP_HORIZONTAL)) {
+            throw new ImageException('Cannot flop image.');
+        }
     }
 
     /**
@@ -119,7 +149,11 @@ class Edit extends AbstractEdit
 
         $start = $this->getStartPoint($image->getSize(), $start)->negate();
 
-        $this->doCopy($this->gd(), $image->getGd(), $start, 'paste');
+        try {
+            $this->doCopy($this->gd(), $image->getGd(), $start, 'paste');
+        } catch (ImageException $e) {
+            throw new ImageException('Cannot paste image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -133,7 +167,11 @@ class Edit extends AbstractEdit
      */
     protected function doCopy($gd, $dest, PointInterface $start, $ops = 'paste')
     {
-        imagecopy($gd, $dest, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight());
+        if (
+            false === imagecopy($gd, $dest, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight())
+        ) {
+            throw new ImageException('Cannot copy image');
+        }
 
         if ($gd !== $this->gd()) {
             $this->image->swapGd($gd);

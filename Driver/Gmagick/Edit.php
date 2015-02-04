@@ -13,6 +13,7 @@ namespace Thapp\Image\Driver\Gmagick;
 
 use Gmagick;
 use GmagickPixel;
+use GmagickException;
 use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\SizeInterface;
@@ -22,6 +23,7 @@ use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Driver\MagickHelper;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Edit
@@ -55,7 +57,11 @@ class Edit extends AbstractEdit
     {
         $color = $color ?: $this->newColor([255, 255, 255, 0]);
 
-        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Gmagick::COMPOSITE_COPY);
+        try {
+            $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Gmagick::COMPOSITE_COPY);
+        } catch (GmagickException $e) {
+            throw new ImageException('Cannot extent image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -63,7 +69,11 @@ class Edit extends AbstractEdit
      */
     public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
-        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Gmagick::COMPOSITE_OVER);
+        try {
+            $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Gmagick::COMPOSITE_OVER);
+        } catch (GmagickException $e) {
+            throw new ImageException('Cannot create canvas.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -71,7 +81,11 @@ class Edit extends AbstractEdit
      */
     public function resize(SizeInterface $size, $filter = ImageInterface::FILTER_UNDEFINED)
     {
-        $this->gmagick()->resizeImage($size->getWidth(), $size->getHeight(), $this->mapFilter($filter), 1);
+        try {
+            $this->gmagick()->resizeImage($size->getWidth(), $size->getHeight(), $this->mapFilter($filter), 1);
+        } catch (GmagickException $e) {
+            throw new ImageException('Cannot resize image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -79,7 +93,35 @@ class Edit extends AbstractEdit
      */
     public function rotate($deg, ColorInterface $color = null)
     {
-        $this->gmagick()->rotateImage($px = $this->newPixel($color), (float)$deg);
+        try {
+            $this->gmagick()->rotateImage($px = $this->newPixel($color), (float)$deg);
+        } catch (GmagickException $e) {
+            throw new ImageException('Cannot rotate image.', $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flip()
+    {
+        try {
+            $this->gmagick()->flipImage();
+        } catch (GmagickException $e) {
+            throw new ImageException('Cannot flip image.', $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flop()
+    {
+        try {
+            $this->gmagick()->flopImage();
+        } catch (GmagickException $e) {
+            throw new ImageException('Cannot flop image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -99,7 +141,11 @@ class Edit extends AbstractEdit
         $index = $gmagick->getImageIndex();
         $gmagick->setImageIndex(0);
 
-        $this->doCopy($this->gmagick(), $gmagick, $start, Gmagick::COMPOSITE_COPY);
+        try {
+            $this->doCopy($this->gmagick(), $gmagick, $start, Gmagick::COMPOSITE_COPY);
+        } catch (GmagickException $e) {
+            throw new ImageException('Cannot paste image.', $e->getCode(), $e);
+        }
 
         // reset the iterator index to the previous index:
         $gmagick->setImageIndex($index);

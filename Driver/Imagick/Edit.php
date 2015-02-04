@@ -13,6 +13,7 @@ namespace Thapp\Image\Driver\Imagick;
 
 use Imagick;
 use ImagickPixel;
+use ImagickException;
 use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\SizeInterface;
@@ -22,6 +23,7 @@ use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Driver\MagickHelper;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Exception\ImageException;
 
 /**
  * @class Edit
@@ -55,9 +57,12 @@ class Edit extends AbstractEdit
     {
         $color = $color ?: $this->newColor([255, 255, 255, 0]);
 
-        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_COPY);
-
-        $this->imagick()->setImagePage(0, 0, 0, 0);
+        try {
+            $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_COPY);
+            $this->imagick()->setImagePage(0, 0, 0, 0);
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot extent image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -65,7 +70,11 @@ class Edit extends AbstractEdit
      */
     public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
-        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_OVER);
+        try {
+            $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_OVER);
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot create canvas.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -73,7 +82,11 @@ class Edit extends AbstractEdit
      */
     public function resize(SizeInterface $size, $filter = ImageInterface::FILTER_UNDEFINED)
     {
-        $this->imagick()->resizeImage($size->getWidth(), $size->getHeight(), $this->mapFilter($filter), 1);
+        try {
+            $this->imagick()->resizeImage($size->getWidth(), $size->getHeight(), $this->mapFilter($filter), 1);
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot resize image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -81,10 +94,38 @@ class Edit extends AbstractEdit
      */
     public function rotate($deg, ColorInterface $color = null)
     {
-        $this->imagick()->rotateImage($px = $this->newPixel($color ?: $this->newColor([255, 255, 255])), (float)$deg);
+        try {
+            $this->imagick()->rotateImage($px = $this->newPixel($color ?: $this->newColor([255, 255, 255])), (float)$deg);
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot rotate image.', $e->getCode(), $e);
+        }
 
         $px->clear();
         $px->destroy();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flip()
+    {
+        try {
+            $this->imagick()->flipImage();
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot flip image.', $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flop()
+    {
+        try {
+            $this->imagick()->flopImage();
+        } catch (\ImagickException $e) {
+            throw new ImageException('Cannot flop image.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -104,7 +145,11 @@ class Edit extends AbstractEdit
         $index = $imagick->getIteratorIndex();
         $imagick->setFirstIterator();
 
-        $this->doCopy($this->imagick(), $imagick, $start, Imagick::COMPOSITE_COPY);
+        try {
+            $this->doCopy($this->imagick(), $imagick, $start, Imagick::COMPOSITE_COPY);
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot paste image.', $e->getCode(), $e);
+        }
 
         // reset the iterator index to the previous index:
         $imagick->setIteratorIndex($index);

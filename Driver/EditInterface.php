@@ -94,6 +94,20 @@ interface EditInterface
     public function crop(SizeInterface $size, PointInterface $crop = null, ColorInterface $color = null);
 
     /**
+     * Flip the image vertically
+     *
+     * @return void
+     */
+    public function flip();
+
+    /**
+     * Flip the image horizontally
+     *
+     * @return void
+     */
+    public function flop();
+
+    /**
      * copy
      *
      * @param ImageInterface $image
