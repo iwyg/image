@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Metrics package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,7 +14,7 @@ namespace Thapp\Image\Geometry;
 /**
  * @interface GravityInterface
  *
- * @package Thapp\Image\Metrics
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -31,9 +31,10 @@ interface GravityInterface
     const GRAVITY_SOUTHEAST = 9;
 
     /**
-     * getMode
+     * Get the mode
      *
-     * @return int
+     * @return int mode defined by one of the GravityInterface::GRAVITY_*
+     * constants.
      */
     public function getMode();
 
@@ -43,7 +44,7 @@ interface GravityInterface
      * @param SizeInterface $source
      * @param SizeInterface $target
      *
-     * @return void
+     * @return PointInterface
      */
     public function getPoint(SizeInterface $source, SizeInterface $target);
 }

@@ -9,10 +9,9 @@
 [![License](https://poser.pugx.org/thapp/image/license.png)](https://packagist.org/packages/thapp/image)
 
 
-
 This module was created for the usage in [Thapp/JitImage](https://github.com/iwyg/jitimage/tree/develop), but can be used as
 a standalone library for manipulating images. It's highly inspired by the Imagine
-library, but resolves a views flaws, but also way more limited. 
+library, but resolves a views flaws, but is also way more limited in features. 
 
 ## Installation
 
@@ -87,7 +86,7 @@ By default, a new instance of `Thapp\Image\Info\ImageReader` is created for
 you. `ImageReader` is capable of reading basic image information derived from
 the php [`getimagesize()`](http://php.net/manual/en/function.getimagesize.php) function.
 
-You may use the `Thapp\Image\Info\ImageReader` class instead, which provides
+You may use the `Thapp\Image\Info\ExifReader` class instead, which provides
 a wider range of information (e.g. needed for `GD` and `Gmagick` drivers to
 determine the correct image orientation).
 
@@ -300,14 +299,14 @@ To rotate an image, you'll have to pass the rotation angel in degrees (not radia
 
 use Thapp\Image\Filter\Autorotate;
 
-$color = $image->palette()->getColor('#ff000'); // red background
+$color = $image->palette()->getColor('#ff0000'); // red background
 $image->edit()->rotate(45, $color);
 
 ```
 
 #### Auto rotating according to its orientation
 
-If you image contains EXIF data and you've loaded the image with the `ExifReader`, you can use a filter to autororate the image according to its orientation. Using the imagick image driver, the ExifReader is not necessary. 
+If your image contains EXIF data, and was loaded using the `ExifReader`, you can use a filter to autororate the image according to its orientation. However, using the imagick image driver, the ExifReader is not necessary for this task. 
 
 ```php
 <?php

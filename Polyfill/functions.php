@@ -1,8 +1,15 @@
 <?php
 
-// php >= 5.5
+// php < 5.5
 if (!function_exists('imagepalettetotruecolor')) {
 
+    /**
+     * Converts a palette based image to true color
+     *
+     * @see http://php.net/manual/en/function.imagepalettetotruecolor.php
+     *
+     * @return boolean
+     */
     function imagepalettetotruecolor(&$gd)
     {
         $truecolor = imagecreatetruecolor($w = imagesx($gd), $h = imagesy($gd));
@@ -12,6 +19,7 @@ if (!function_exists('imagepalettetotruecolor')) {
         }
 
         imagedestroy($gd);
+
         $gd = $truecolor;
 
         return true;
