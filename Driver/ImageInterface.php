@@ -15,6 +15,7 @@ use Thapp\Image\Geometry\SizeInterface;
 use Thapp\Image\Geometry\PointInterface;
 use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Filter\FilterInterface;
 
 /**
  * @interface ImageInterface
@@ -145,6 +146,15 @@ interface ImageInterface
      * @return FramesInterface
      */
     public function frames();
+
+    /**
+     * filter
+     *
+     * @param FilterInterface $filter
+     *
+     * @return void
+     */
+    public function filter(FilterInterface $filter);
 
     /**
      * Gets an edit object.
