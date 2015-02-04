@@ -152,7 +152,7 @@ final class Parser
      */
     public static function isHex($color)
     {
-        return (boolean)preg_match('#^([[:xdigit:]]{6}|[[:xdigit:]]{3})$#', ltrim($color, '#'));
+        return ctype_xdigit($color = ltrim($color, '#')) && in_array(strlen($color), [3, 6]);
     }
 
     /**
