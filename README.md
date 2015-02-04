@@ -202,9 +202,10 @@ use Thapp\Image\Geometry\Size;
 
 // fits the image into a 400 x 400 box. 
 
-$size = new Size(400, 400);
+$size = $image->getSize();
+$fit = $size->fit(new Size(400, 400));
 
-$image->edit()->fit($size);
+$image->edit()->resize($fit);
 
 ```
 
@@ -217,9 +218,10 @@ use Thapp\Image\Geometry\Size;
 
 // fill a given box of 400 x 400.
 
-$size = new Size(400, 400);
+$size = $image->getSize();
+$fill = $size->fill(new Size(400, 400));
 
-$image->edit()->fill($size);
+$image->edit()->resize($fill);
 
 ```
 
