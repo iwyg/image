@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Color\Palette;
 
+use Thapp\Image\Color\Profile\ProfileInterface;
+
 /**
  * @class AbstractPalette
  *
@@ -26,6 +28,17 @@ abstract class AbstractPalette implements PaletteInterface
      * @var mixed
      */
     protected static $colors;
+    protected $profile;
+
+    /**
+     * Constructor.
+     *
+     * @param ProfileInterface $profile
+     */
+    public function __construct(ProfileInterface $profile = null)
+    {
+        $this->profile = $profile;
+    }
 
     /**
      * {@inheritdoc}
@@ -37,6 +50,26 @@ abstract class AbstractPalette implements PaletteInterface
         }
 
         return $this->ensureColor($color, $cstring ? $color : null);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProfile()
+    {
+        if (null === $this->profile) {
+            $this->profile = $this->getDefaultProfile();
+        }
+
+        return $this->profile;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setProfile(ProfileInterface $profile)
+    {
+        $this->profile = $profile;
     }
 
     /**
@@ -61,6 +94,15 @@ abstract class AbstractPalette implements PaletteInterface
 
         return static::$colors[$index];
     }
+
+    /**
+     * setDefaultProfile
+     *
+     * @param ProfileInterface $profile
+     *
+     * @return void
+     */
+    abstract protected function getDefaultProfile();
 
     /**
      * Creates a new color.

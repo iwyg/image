@@ -85,6 +85,7 @@ final class Parser
     {
         $colors = static::parse($color);
 
+
         if (!array_key_exists(ColorInterface::CHANNEL_KEY, $colors)) {
             $r = ($colors[ColorInterface::CHANNEL_RED] / 255);
             $g = ($colors[ColorInterface::CHANNEL_GREEN] / 255);
@@ -95,10 +96,10 @@ final class Parser
             $a = $colors[ColorInterface::CHANNEL_ALPHA];
 
             $colors = [
-                1.0 === $k ? 0 : round((100 * $a) * ((1 - $r - $k) / (1 - $k)), 2),
-                1.0 === $k ? 0 : round((100 * $a) * ((1 - $g - $k) / (1 - $k)), 2),
-                1.0 === $k ? 0 : round((100 * $a) * ((1 - $b - $k) / (1 - $k)), 2),
-                $key = round($a * ($k * 100), 2)
+                1.0 === $k ? 0 : round(((1 - $r - $k) / (1 - $k)), 2),
+                1.0 === $k ? 0 : round(((1 - $g - $k) / (1 - $k)), 2),
+                1.0 === $k ? 0 : round(((1 - $b - $k) / (1 - $k)), 2),
+                $key = round($k, 2)//round($a * ($k * 100), 2)
             ];
         }
 
@@ -289,7 +290,7 @@ final class Parser
     private static function map4c(array $colors)
     {
         return array_map(function ($color) {
-            return (float)$color;
+            return (int)($color * 100);
         }, array_values($colors));
     }
 

@@ -14,6 +14,7 @@ namespace Thapp\Image\Color\Palette;
 use Thapp\Image\Color\Parser;
 use Thapp\Image\Color\Rgb as RgbColor;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\Profile\Profile;
 
 /**
  * @class Rgb
@@ -24,12 +25,37 @@ use Thapp\Image\Color\ColorInterface;
  */
 class Rgb extends AbstractPalette implements RgbPaletteInterface
 {
+    private static $defaultProfile;
+
     /**
      * {@inheritdoc}
      */
     public function getDefinition()
     {
         return RgbColor::keys();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConstant()
+    {
+        return self::PALETTE_RGB;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultProfile()
+    {
+        if (null === static::$defaultProfile) {
+            static::$defaultProfile = new Profile(
+                'icc',
+                realpath(__DIR__.'/../../resource/color.org/sRGB_IEC61966-2-1_black_scaled.icc')
+            );
+        }
+
+        return static::$defaultProfile;
     }
 
     /**

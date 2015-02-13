@@ -56,7 +56,8 @@ class Grayscale extends AbstractColor implements GrayscaleInterface
      */
     public function getColorAsString()
     {
-        return sprintf('rgba(%1$d,%1$d,%1$d,%2$s)', $this->g, $this->getAlpha());
+        return sprintf('gray(%1$d,%2$s)', $this->g, $this->getAlpha());
+        //return sprintf('rgba(%1$d,%1$d,%1$d,%2$s)', $this->g, $this->getAlpha());
     }
 
     /**

@@ -83,7 +83,7 @@ class Rgb extends AbstractColor implements RgbInterface
      */
     public function getColorAsString()
     {
-        if (null !== $this->a) {
+        if (null !== $this->a && 1.0 > $this->a) {
             return sprintf('rgba(%s,%s,%s,%s)', $this->r, $this->g, $this->b, $this->a);
         }
 

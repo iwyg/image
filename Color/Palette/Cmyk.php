@@ -14,6 +14,7 @@ namespace Thapp\Image\Color\Palette;
 use Thapp\Image\Color\Parser;
 use Thapp\Image\Color\Cmyk as CmykColor;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\Profile\Profile;
 
 /**
  * @class Cmyk
@@ -24,12 +25,39 @@ use Thapp\Image\Color\ColorInterface;
  */
 class Cmyk extends AbstractPalette implements CmykPaletteInterface
 {
+    private static $defaultProfile;
+
     /**
      * {@inheritdoc}
      */
     public function getDefinition()
     {
         return CmykColor::keys();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConstant()
+    {
+        return self::PALETTE_CMYK;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultProfile()
+    {
+        if (null === static::$defaultProfile) {
+            static::$defaultProfile = new Profile(
+                'icc',
+                realpath(__DIR__.'/../../resource/adobe/CMYK/USWebUncoated.icc')
+                //realpath(__DIR__.'/../../resource/adobe/CMYK/CoatedFOGRA27.icc')
+                //realpath(__DIR__.'/../../resource/adobe/CMYK/WebCoatedFOGRA28.icc')
+            );
+        }
+
+        return static::$defaultProfile;
     }
 
     /**

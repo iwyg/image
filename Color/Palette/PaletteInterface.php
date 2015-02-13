@@ -20,6 +20,10 @@ namespace Thapp\Image\Color\Palette;
  */
 interface PaletteInterface
 {
+    const PALETTE_RGB = 0;
+    const PALETTE_CMYK = 1;
+    const PALETTE_GRAYSCALE = 2;
+
     /**
      * Gets a color object.
      *
@@ -35,4 +39,11 @@ interface PaletteInterface
      * @return array
      */
     public function getDefinition();
+
+    /**
+     * getConstant
+     *
+     * @return int
+     */
+    public function getConstant();
 }

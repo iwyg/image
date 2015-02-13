@@ -13,6 +13,7 @@ namespace Thapp\Image\Color\Palette;
 
 use Thapp\Image\Color\Parser;
 use Thapp\Image\Color\Grayscale as GrayscaleColor;
+use Thapp\Image\Color\Profile\Profile;
 
 /**
  * @class Greyscale
@@ -23,12 +24,37 @@ use Thapp\Image\Color\Grayscale as GrayscaleColor;
  */
 class Grayscale extends AbstractPalette implements GrayscalePaletteInterface
 {
+    private static $defaultProfile;
+
     /**
      * {@inheritdoc}
      */
     public function getDefinition()
     {
         return GrayscaleColor::keys();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConstant()
+    {
+        return self::PALETTE_GRAYSCALE;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultProfile()
+    {
+        if (null === static::$defaultProfile) {
+            static::$defaultProfile = new Profile(
+                'icc',
+                realpath(__DIR__.'/../../resource/colormanagement.org/ISOcoated_v2_grey1c_bas.icc')
+            );
+        }
+
+        return static::$defaultProfile;
     }
 
     /**
