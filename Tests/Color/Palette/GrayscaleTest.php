@@ -13,6 +13,7 @@ namespace Thapp\Image\Tests\Color\Palette;
 
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Color\Palette\Grayscale;
+use Thapp\Image\Color\Palette\PaletteInterface;
 
 /**
  * @class RgbTest
@@ -35,5 +36,29 @@ class GrayscaleTest extends \PHPUnit_Framework_TestCase
     {
         $palette = new Grayscale;
         $this->assertSame([ColorInterface::CHANNEL_GRAY, ColorInterface::CHANNEL_ALPHA], $palette->getDefinition());
+    }
+
+    /** @test */
+    public function itShouldGetItsProfile()
+    {
+        $this->assertInstanceof(
+            'Thapp\Image\Color\Profile\ProfileInterface',
+            (new Grayscale)->getProfile()
+        );
+    }
+
+    /** @test */
+    public function profileShouldBeSettable()
+    {
+        $gray = new Grayscale;
+        $gray->setProfile($profile = $this->getMock('Thapp\Image\Color\Profile\ProfileInterface'));
+        $this->assertSame($profile, $gray->getProfile());
+    }
+
+    /** @test */
+    public function itShouldGetPaletteConstant()
+    {
+        $gray = new Grayscale;
+        $this->assertSame(PaletteInterface::PALETTE_GRAYSCALE, $gray->getConstant());
     }
 }

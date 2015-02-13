@@ -287,6 +287,7 @@ use Thapp\Image\Geometry\Gravity;
 
 $crop = new Size(200, 200);
 
+// crops a 200 x 200 thumbnail from the center of the image:
 $image->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
 $image->edit()->crop($crop);
 

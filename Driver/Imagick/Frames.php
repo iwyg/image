@@ -74,7 +74,7 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
 
             do {
                 $index = $coalesce->getIteratorIndex();
-                $this->setFrame($coalesce->getIteratorIndex(), $coalesce->getImage());
+                $this->setFrame($index, $coalesce->getImage());
             } while ($coalesce->nextImage());
         }
 
@@ -139,9 +139,9 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
      *
      * @return void
      */
-    protected function setFrame($index, Imagick $image)
+    protected function setFrame($index, Imagick $imagick)
     {
-        $this->frames[$index] = new Image($image, $this->image->getPalette(), $this->image->getMetaData());
+        $this->frames[$index] = new Image($imagick, $this->image->getPalette(), $this->image->getMetaData());
 
         $gravity = $this->image->getGravity();
 

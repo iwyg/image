@@ -28,12 +28,17 @@ trait ImageTestHelper
     protected function getTestImage($w = 100, $h = 100, $format = 'jpeg')
     {
         $stream = tmpfile();
+        $meta = stream_get_meta_data($stream);
+        $path = $meta['uri'];
+
         $resource = imagecreatetruecolor($w, $h);
 
-        $fn = 'image'.$format;
+        if (!function_exists($fn = 'image'.$format)) {
+            throw new \RuntimeException(sprintf('Cannot create test image of type %s.', $fromat));
+        }
 
         ob_start();
-        call_user_func($fn, $resource);
+        call_user_func($fn, $resource, $path);
 
         fwrite($stream, ob_get_clean());
         rewind($stream);

@@ -11,7 +11,7 @@
 
 namespace Thapp\Image\Tests\Geometry;
 
-use Thapp\Image\Geometry\Box;
+use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 
 /**
@@ -32,11 +32,36 @@ class PointTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function itShouldNegatePoint()
     {
-        $point = new Point(100, -200);
-
-        $point = $point->negate();
+        $point = (new Point(100, -200))->negate();
 
         $this->assertSame(-100, $point->getX());
         $this->assertSame(200, $point->getY());
+    }
+
+    /** @test */
+    public function itShouldAbsPoint()
+    {
+        $point = (new Point(100, -200))->abs();
+
+        $this->assertSame(100, $point->getX());
+        $this->assertSame(200, $point->getY());
+    }
+
+    /** @test */
+    public function itShouldBeIn()
+    {
+        $point = new Point(100, 100);
+        $size = new Size(100, 200);
+
+        $this->assertTrue($point->isIn($size));
+    }
+
+    /** @test */
+    public function itShouldNotBeIn()
+    {
+        $point = new Point(100, 100);
+        $size = new Size(100, 99);
+
+        $this->assertFalse($point->isIn($size));
     }
 }

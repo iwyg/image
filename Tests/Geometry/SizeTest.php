@@ -97,8 +97,8 @@ class SizeTest extends \PHPUnit_Framework_TestCase
 
         $b = $box->increaseByWidth(200);
 
-        $this->assertSame(200, $b->getWidth());
-        $this->assertSame(100, $b->getHeight());
+        $this->assertSame(300, $b->getWidth());
+        $this->assertSame(150, $b->getHeight());
     }
 
     /** @test */
@@ -108,8 +108,8 @@ class SizeTest extends \PHPUnit_Framework_TestCase
 
         $b = $box->increaseByHeight(100);
 
-        $this->assertSame(200, $b->getWidth());
-        $this->assertSame(100, $b->getHeight());
+        $this->assertSame(300, $b->getWidth());
+        $this->assertSame(150, $b->getHeight());
     }
 
     /**

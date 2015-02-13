@@ -20,6 +20,8 @@ use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\DriverAwareFilterInterface;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
+use Thapp\Image\Color\Profile\ProfileInterface;
 use Thapp\Image\Exception\ImageException;
 
 /**
@@ -53,6 +55,20 @@ abstract class AbstractImage implements ImageInterface
     public function copy()
     {
         return clone $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function backup($name = null)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function restore($name = null)
+    {
     }
 
     /**
@@ -98,6 +114,20 @@ abstract class AbstractImage implements ImageInterface
     /**
      * {@inheritdoc}
      */
+    public function applyPalette(PaletteInterface $palette)
+    {
+        if ($this->palette->getConstant() === ($const = $palette->getConstant())) {
+            return false;
+        }
+
+        if (!$this->supportsPalette($palette)) {
+            throw new ImageException(sprintf('Image doesn\'t supports palette of type %s.', get_class($palette)));
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getPalette()
     {
         return $this->palette;
@@ -121,36 +151,6 @@ abstract class AbstractImage implements ImageInterface
         }
 
         return $this->edit;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save($path, $format = null, array $options = [])
-    {
-        if (false !== @file_put_contents($path, $this->getBlob($format, $options))) {
-            return true;
-        }
-
-        throw new ImageException(sprintf('Couldn\'t save image to "%s".', $path));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function write($stream, $format = null, array $options = [])
-    {
-        if (!is_resource($stream) || 'stream' !== get_resource_type($stream)) {
-            throw new ImageException('Couldn\'t write image data to stream. Stream is invalid.');
-        }
-
-        // fwrite doesn't return false if stream is read only. Instead it just
-        // writes 0 bytes.
-        if (0 !== fwrite($stream, $this->getBlob($format, $options))) {
-            return true;
-        }
-
-        throw new ImageException('Couldn\'t write image data to stream. Stream is not writable.');
     }
 
     /**
@@ -198,6 +198,46 @@ abstract class AbstractImage implements ImageInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function strip()
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function save($path, $format = null, array $options = [])
+    {
+        $content = $this->getBlob($format, $options);
+        if (false !== @file_put_contents($path, $content)) {
+            return true;
+        }
+
+        throw new ImageException(sprintf('Couldn\'t save image to "%s".', $path));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function write($stream, $format = null, array $options = [])
+    {
+        if (!is_resource($stream) || 'stream' !== get_resource_type($stream)) {
+            throw new ImageException('Couldn\'t write image data to stream. Stream is invalid.');
+        }
+
+        // fwrite doesn't return false if stream is read only. Instead it just
+        // writes 0 bytes.
+        if (0 !== fwrite($stream, $this->getBlob($format, $options))) {
+            return true;
+        }
+
+        throw new ImageException('Couldn\'t write image data to stream. Stream is not writable.');
+    }
+
+
+    /**
      * newEdit
      *
      * @return EditInterface
@@ -232,6 +272,7 @@ abstract class AbstractImage implements ImageInterface
     {
         switch ($fmt = strtolower($format)) {
             case 'jpg':
+            case 'ejpg':
             case self::FORMAT_JPEG:
                 return self::FORMAT_JPEG;
             case 'tif':
@@ -260,6 +301,18 @@ abstract class AbstractImage implements ImageInterface
         }
 
         return $default;
+    }
+
+    /**
+     * supportsPalette
+     *
+     * @param PaletteInterface $palette
+     *
+     * @return void
+     */
+    protected function supportsPalette(PaletteInterface $palette)
+    {
+        return false;
     }
 
     ///**

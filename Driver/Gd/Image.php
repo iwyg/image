@@ -19,6 +19,8 @@ use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Color\Palette\RgbPaletteInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
+use Thapp\Image\Color\Profile\ProfileInterface;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\GdFilter;
 use Thapp\Image\Info\MetaData;
@@ -54,8 +56,8 @@ class Image extends AbstractImage
     public function __construct($resource, RgbPaletteInterface $palette, MetaDataInterface $meta = null)
     {
         $this->setResource($resource);
-        $this->palette = $palette;
         $this->meta = $meta ?: new MetaData([]);
+        $this->palette = $palette;
         $this->frames = new Frames($this);
     }
 
@@ -96,6 +98,14 @@ class Image extends AbstractImage
         }
 
         return $this->format;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function applyProfile(ProfileInterface $profile)
+    {
+        throw new \LogicException('GD doesn\'t support profiles');
     }
 
     /**
@@ -229,6 +239,14 @@ class Image extends AbstractImage
     protected function &getInterlaceMap()
     {
         return static::$interlaceMap;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function supportsPalette(PaletteInterface $palette)
+    {
+        return $palette instanceof RgbPaletteInterface;
     }
 
     /**
@@ -399,6 +417,7 @@ class Image extends AbstractImage
     private function getPngSaveArgs(array $options)
     {
         $compression = (9 - (int)round(9 * (min(100, max(0, $this->getOption($options, 'compression_quality_png', 50))) / 100)));
+
         return ['imagepng', [null, $compression]];
     }
 

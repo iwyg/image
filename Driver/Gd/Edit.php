@@ -102,7 +102,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
+    protected function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
         $color = $color ?: $this->image->getPalette()->getColor([255, 255, 255, 0]);
         $extent = $this->image->newGd($size, $color);
@@ -123,7 +123,7 @@ class Edit extends AbstractEdit
      */
     public function flip()
     {
-        if (false === imageflip($this->gd(), IMG_FLIP_VERTICAL)) {
+        if (false === $this->doFlip()) {
             throw new ImageException('Cannot flip image.');
         }
     }
@@ -133,7 +133,7 @@ class Edit extends AbstractEdit
      */
     public function flop()
     {
-        if (false === imageflip($this->gd(), IMG_FLIP_HORIZONTAL)) {
+        if (false === $this->doFlop()) {
             throw new ImageException('Cannot flop image.');
         }
     }
@@ -186,5 +186,74 @@ class Edit extends AbstractEdit
     private function gd()
     {
         return $this->image->getGd();
+    }
+
+    /**
+     * doFlip
+     *
+     * @return boolean
+     */
+    private function doFlip()
+    {
+        if (function_exists('imageflip')) {
+            return imageflip($this->gd(), IMG_FLIP_VERTICAL);
+        }
+
+        list ($gd, $dest, $width, $height, $i) = $this->flipFlopArgs();
+
+        while ($i < $height && imagecopy($dest, $gd, 0, $i, 0, ($height - 1) - $i, $width, 1)) {
+            $i++;
+        }
+
+        if ($i < $height) {
+            imagedestroy($dest);
+
+            return false;
+        }
+
+        $this->getImage()->swapGd($dest);
+
+        return true;
+    }
+
+    /**
+     * doFlop
+     *
+     * @return boolean
+     */
+    private function doFlop()
+    {
+        if (function_exists('imageflip')) {
+            return imageflip($this->gd(), IMG_FLIP_HORIZONTAL);
+        }
+
+        list ($gd, $dest, $width, $height, $i) = $this->flipFlopArgs();
+
+        $i = 0;
+        while ($i < $width && imagecopy($dest, $gd, $i, 0, ($width - 1) - $i, 0, 1, $height)) {
+            $i++;
+        }
+
+        if ($i < $width) {
+            imagedestroy($dest);
+
+            return false;
+        }
+
+        $this->getImage()->swapGd($dest);
+
+        return true;
+    }
+
+    /**
+     * flipFlopArgs
+     *
+     * @return array
+     */
+    private function flipFlopArgs()
+    {
+        $dest = $this->image->newGd($size = $this->getImage()->getSize());
+
+        return [$this->gd(), $dest, $size->getWidth(), $size->getHeight(), 0];
     }
 }

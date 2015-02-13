@@ -13,6 +13,7 @@ namespace Thapp\Image\Tests\Color\Palette;
 
 use Thapp\Image\Color\Palette\Cmyk;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
 
 /**
  * @class RgbTest
@@ -59,5 +60,29 @@ class CmykTest extends \PHPUnit_Framework_TestCase
             ],
             $palette->getDefinition()
         );
+    }
+
+    /** @test */
+    public function itShouldGetItsProfile()
+    {
+        $this->assertInstanceof(
+            'Thapp\Image\Color\Profile\ProfileInterface',
+            (new Cmyk)->getProfile()
+        );
+    }
+
+    /** @test */
+    public function profileShouldBeSettable()
+    {
+        $cmyk = new Cmyk;
+        $cmyk->setProfile($profile = $this->getMock('Thapp\Image\Color\Profile\ProfileInterface'));
+        $this->assertSame($profile, $cmyk->getProfile());
+    }
+
+    /** @test */
+    public function itShouldGetPaletteConstant()
+    {
+        $cmyk = new Cmyk;
+        $this->assertSame(PaletteInterface::PALETTE_CMYK, $cmyk->getConstant());
     }
 }

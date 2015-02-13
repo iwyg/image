@@ -23,7 +23,12 @@ use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Driver\MagickHelper;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\RgbInterface;
+use Thapp\Image\Color\CmykInterface;
+use Thapp\Image\Color\Palette\Rgb;
+use Thapp\Image\Color\Parser;
 use Thapp\Image\Exception\ImageException;
+use Thapp\Image\Color\Palette\CmykPaletteInterface;
 
 /**
  * @class Edit
@@ -34,7 +39,8 @@ use Thapp\Image\Exception\ImageException;
  */
 class Edit extends AbstractEdit
 {
-    use MagickHelper;
+    use MagickHelper,
+        HelperTrait;
 
     private static $filterMap;
 
@@ -55,14 +61,26 @@ class Edit extends AbstractEdit
      */
     public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
-        $color = $color ?: $this->newColor([255, 255, 255, 0]);
+        //$alpha = Imagick::ALPHACHANNEL_ACTIVATE === $this->imagick()->getImageAlphaChannel() ? 0 : 1;
 
-        try {
-            $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_COPY);
-            $this->imagick()->setImagePage(0, 0, 0, 0);
-        } catch (ImagickException $e) {
-            throw new ImageException('Cannot extent image.', $e->getCode(), $e);
+        $point = $this->getStartPoint($size, $start);
+
+
+        if (null !== $color) {
+            $pixel = $this->pixelFromColor($color);
+            $this->imagick()->setImageBackgroundColor($pixel);
+            //$this->imagick()->setBackgroundColor($pixel);
+
+            //if ($this->isMatteImage($this->imagick())) {
+            //    $overlay = new Imagick;
+            //    $overlay->setBackgroundColor(new ImagickPixel('transparent'));
+            //    $overlay->newImage($size->getWidth(), $size->getHeight(), $pixel);
+            //    $this->imagick()->compositeImage($overlay, Imagick::COMPOSITE_DSTOVER, 0, 0);
+            //} else {
+            //    $this->imagick()->setImageBackgroundColor($pixel);
+            //}
         }
+        $this->imagick()->extentImage($size->getWidth(), $size->getHeight(), -$point->getX(), -$point->getY());
     }
 
     /**
@@ -167,12 +185,25 @@ class Edit extends AbstractEdit
      */
     protected function doCopy(Imagick $canvas, Imagick $dest, PointInterface $point, $mode = Imagick::COMPOSITE_OVER)
     {
-        $canvas->compositeImage($dest, $mode, $point->getX(), $point->getY());
-
-        if ($canvas !== $this->imagick() && $dest === $this->imagick()) {
+        if ($strip = ($canvas !== $this->imagick() && $dest === $this->imagick())) {
+            $palette = $this->image->getPalette();
+            //$canvas->setColorspace($dest->getColorspace());
             $canvas->setImageFormat($dest->getImageFormat());
-            $this->image->swapImagick($canvas);
+            $dest->stripImage();
+            $dest->setColorspace(Imagick::COLORSPACE_SRGB);
         }
+
+        $canvas->compositeImage($dest, $dest->getImageCompose(), $point->getX(), $point->getY());
+
+        if ($strip) {
+            $canvas->setColorspace(Imagick::COLORSPACE_SRGB);
+            //$canvas->setColorspace($dest->getColorspace());
+            //$image = new Image($canvas, new Rgb);
+            //$image->applyPalette($palette);
+        }
+
+        $this->image->swapImagick($canvas);
+        //$this->imagick()->setImageAlphaChannel(Imagick::ALPHACHANNEL_DEACTIVATE);
     }
 
     /**
@@ -188,11 +219,12 @@ class Edit extends AbstractEdit
     protected function createCanvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null, $mode = Imagick::COMPOSITE_OVER)
     {
         $canvas = new Imagick();
-        $canvas->newImage($size->getWidth(), $size->getHeight(), null !== $color ? $color->getColorAsString() : self::COLOR_NONE);
+
+        $color = null !== $color ? $this->pixelFromColor($color) : new ImagickPixel('srgba(255, 255, 255, 0)');
+        $canvas->newImage($size->getWidth(), $size->getHeight(), $color);
 
         $this->doCopy($canvas, $this->imagick(), $point, $mode);
     }
-
 
     /**
      * imagick
@@ -252,7 +284,7 @@ class Edit extends AbstractEdit
      */
     private function newPixel(ColorInterface $color)
     {
-        return new ImagickPixel($color ? $color->getColorAsString() : self::COLOR_NONE);
+        return $color ? $this->pixelFromColor($color) : new ImagickPixel(self::COLOR_NONE);
     }
 
     /**

@@ -12,9 +12,11 @@
 namespace Thapp\Image\Driver\Imagick;
 
 use Imagick;
+use ImagickPixel;
 use ImagickException;
 use Thapp\Image\Color\Palette\Rgb;
 use Thapp\Image\Color\Palette\Cmyk;
+use Thapp\Image\Color\Profile\Profile;
 use Thapp\Image\Color\Palette\Grayscale;
 use Thapp\Image\Driver\AbstractSource;
 use Thapp\Image\Exception\ImageException;
@@ -36,6 +38,7 @@ class Source extends AbstractSource
         $this->validateStream($resource);
 
         $imagick = new Imagick;
+        //$imagick->setBackgroundColor(new ImagickPixel('none'));
 
         try {
             $imagick->readImageFile($resource);
@@ -46,7 +49,6 @@ class Source extends AbstractSource
         }
 
         return new Image($imagick, $this->getColorPalette($imagick), $this->getReader()->readFromStream($resource));
-
     }
 
     /**
@@ -55,6 +57,7 @@ class Source extends AbstractSource
     public function load($file)
     {
         $imagick = new Imagick;
+        //$imagick->setBackgroundColor(new ImagickPixel('none'));
 
         try {
             $imagick->readImage($file);
@@ -73,6 +76,7 @@ class Source extends AbstractSource
     public function create($image)
     {
         $imagick = new Imagick;
+        //$imagick->setBackgroundColor(new ImagickPixel('none'));
 
         try {
             $imagick->readImageBlob($image);
@@ -97,15 +101,33 @@ class Source extends AbstractSource
         switch($imagick->getImageColorspace()) {
             case Imagick::COLORSPACE_RGB:
             case Imagick::COLORSPACE_SRGB:
-                return new Rgb;
+                return new Rgb($this->getIccProfile($imagick));
             case Imagick::COLORSPACE_CMYK:
-                return new Cmyk;
+                return new Cmyk($this->getIccProfile($imagick));
             case Imagick::COLORSPACE_GRAY:
-                return new Grayscale;
+                return new Grayscale($this->getIccProfile($imagick));
             default:
                 break;
         }
 
         throw new ImageException('Unsupported color space.');
+    }
+
+    /**
+     * getIccProfile
+     *
+     * @param Imagick $imagick
+     *
+     * @return ProfileInterface
+     */
+    protected function getIccProfile(Imagick $imagick)
+    {
+        try {
+            $profile = $imagick->getImageProfile('icc');
+        } catch (ImagickException $e) {
+            return;
+        }
+
+        return Profile::fromString('icc', $profile);
     }
 }

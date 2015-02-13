@@ -87,7 +87,7 @@ class GrayscaleTest extends ColorTest
     {
         $color = new Grayscale([50, 0.1]);
 
-        $this->assertSame('rgba(50,50,50,0.1)', (string)$color);
+        $this->assertSame('gray(50,0.1)', (string)$color);
     }
 
     protected function newColor($r, $g, $b, $a = null)

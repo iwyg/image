@@ -17,6 +17,8 @@ use Thapp\Image\Driver\Imagick\Source;
 use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\Gravity;
+use Thapp\Image\Color\Palette\Cmyk;
+use Thapp\Image\Color\Palette\Rgb;
 use Thapp\Image\Tests\Driver\ImageTest as AbstractImageTest;
 use Thapp\Image\Info\ImageReader as FileReader;
 
@@ -98,9 +100,54 @@ class ImageTest extends AbstractImageTest
         $this->assertFalse($image->hasFrames());
     }
 
+    /**
+     * @test
+     * @dataProvider rgbToCmykProvider
+     */
+    public function itShouldConvertRgbToCmykColorspace($source, $format)
+    {
+        $src = new Source;
+        $image = $this->loadImage($this->asset($source));
+        $image->applyPalette(new Cmyk);
+
+        $dst = $src->create($image->getBlob($format));
+        $image->destroy();
+
+        $this->assertInstanceof('Thapp\Image\Color\Palette\CmykPaletteInterface', $dst->getPalette());
+    }
+
+    public function rgbToCmykProvider()
+    {
+        return [
+            ['pattern.tiff', 'TIFF'],
+            ['pattern.tiff', 'JPEG'],
+            ['pattern.png', 'TIFF'],
+            ['pattern.png', 'JPEG']
+        ];
+    }
+
+    /** @test */
+    public function itShouldSaveImageWithWhiteBackground()
+    {
+        $image = $this->loadImage($this->asset('transparent4.png'));
+        $image->setGravity(new Gravity(5));
+        $image->edit()->extent(new Size(800, 800));
+        //$image->edit()->extent(new Size(1000, 1000), null, $image->getPalette()->getColor('#ff0000'));
+        $image->setFormat('PNG');
+        $image->save($this->asset('_save_as_png.png'));
+        //$content = $image->getBlob();
+        //$image->destroy();
+
+        //$image = (new Source)->create($content);
+
+        //$color = $image->getColorAt(new Point(1, 1));
+        //var_dump($color);
+    }
+
+
     protected function loadImage($file, $reader = null)
     {
-        $image = (new Source($reader ?: new FileReader))->load($file);
+        $image = (new Source($reader === null ? new FileReader : null))->load($file);
 
         return $image;
     }

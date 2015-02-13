@@ -13,6 +13,7 @@ namespace Thapp\Image\Tests\Color\Palette;
 
 use Thapp\Image\Color\Palette\Rgb;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
 
 /**
  * @class RgbTest
@@ -54,5 +55,29 @@ class RgbTest extends \PHPUnit_Framework_TestCase
             ],
             $palette->getDefinition()
         );
+    }
+
+    /** @test */
+    public function itShouldGetItsProfile()
+    {
+        $this->assertInstanceof(
+            'Thapp\Image\Color\Profile\ProfileInterface',
+            (new Rgb)->getProfile()
+        );
+    }
+
+    /** @test */
+    public function profileShouldBeSettable()
+    {
+        $rgb = new Rgb;
+        $rgb->setProfile($profile = $this->getMock('Thapp\Image\Color\Profile\ProfileInterface'));
+        $this->assertSame($profile, $rgb->getProfile());
+    }
+
+    /** @test */
+    public function itShouldGetPaletteConstant()
+    {
+        $rgb = new Rgb;
+        $this->assertSame(PaletteInterface::PALETTE_RGB, $rgb->getConstant());
     }
 }

@@ -23,10 +23,16 @@ use Thapp\Image\Driver\AbstractImage;
 use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Filter\ImagickFilter;
 use Thapp\Image\Color\ColorInterface;
+use Thapp\Image\Color\RgbInterface;
+use Thapp\Image\Color\CmykInterface;
+use Thapp\Image\Color\GrayscaleInterface;
 use Thapp\Image\Color\Palette\PaletteInterface;
 use Thapp\Image\Color\Palette\RgbPaletteInterface;
 use Thapp\Image\Color\Palette\CmykPaletteInterface;
 use Thapp\Image\Color\Palette\GrayscalePaletteInterface;
+use Thapp\Image\Color\Palette\Rgb as RgbPalette;
+use Thapp\Image\Color\Profile\ProfileInterface;
+use Thapp\Image\Color\Profile\Profile;
 use Thapp\Image\Info\MetaData;
 use Thapp\Image\Info\MetaDataInterface;
 use Thapp\Image\Exception\ImageException;
@@ -40,7 +46,23 @@ use Thapp\Image\Exception\ImageException;
  */
 class Image extends AbstractImage
 {
-    private $imagick;
+    use HelperTrait;
+
+    private static $typeMap;
+
+    private static $interlaceMap = [
+        self::INTERLACE_NO        => Imagick::INTERLACE_NO,
+        self::INTERLACE_LINE      => Imagick::INTERLACE_LINE,
+        self::INTERLACE_PLANE     => Imagick::INTERLACE_PLANE,
+        self::INTERLACE_PARTITION => Imagick::INTERLACE_PARTITION
+    ];
+
+    private static $cspaceMap = [
+        PaletteInterface::PALETTE_RGB       => Imagick::COLORSPACE_SRGB,
+        PaletteInterface::PALETTE_CMYK      => Imagick::COLORSPACE_CMYK,
+        PaletteInterface::PALETTE_GRAYSCALE => Imagick::COLORSPACE_GRAY,
+    ];
+
     private static $orientMap = [
         Imagick::ORIENTATION_UNDEFINED   => self::ORIENT_UNDEFINED,
         Imagick::ORIENTATION_TOPLEFT     => self::ORIENT_TOPLEFT,
@@ -53,24 +75,7 @@ class Image extends AbstractImage
         Imagick::ORIENTATION_LEFTBOTTOM  => self::ORIENT_LEFTBOTTOM
     ];
 
-    private static $colorMap = [
-        ColorInterface::CHANNEL_RED     => Imagick::COLOR_RED,
-        ColorInterface::CHANNEL_GREEN   => Imagick::COLOR_GREEN,
-        ColorInterface::CHANNEL_BLUE    => Imagick::COLOR_BLUE,
-        ColorInterface::CHANNEL_ALPHA   => Imagick::COLOR_ALPHA,
-        ColorInterface::CHANNEL_CYAN    => Imagick::COLOR_CYAN,
-        ColorInterface::CHANNEL_MAGENTA => Imagick::COLOR_MAGENTA,
-        ColorInterface::CHANNEL_YELLOW  => Imagick::COLOR_YELLOW,
-        ColorInterface::CHANNEL_KEY     => Imagick::COLOR_BLACK,
-        ColorInterface::CHANNEL_GRAY    => Imagick::COLOR_RED
-    ];
-
-    private static $interlaceMap = [
-        self::INTERLACE_NO => Imagick::INTERLACE_NO,
-        self::INTERLACE_LINE => Imagick::INTERLACE_LINE,
-        self::INTERLACE_PLANE => Imagick::INTERLACE_PLANE,
-        self::INTERLACE_PARTITION => Imagick::INTERLACE_PARTITION
-    ];
+    private $imagick;
 
     /**
      * Constructor.
@@ -82,9 +87,10 @@ class Image extends AbstractImage
     public function __construct(Imagick $imagick, PaletteInterface $palette, MetaDataInterface $meta = null)
     {
         $this->imagick = $imagick;
-        $this->palette  = $palette;
         $this->meta  = $meta ?: new MetaData([]);
+        $this->setImageColorspace($palette);
         $this->frames  = new Frames($this);
+        $this->channel = $this->imagick->getImageAlphaChannel();
     }
 
     /**
@@ -115,6 +121,50 @@ class Image extends AbstractImage
         $this->frames = null;
 
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * If ImageMagick was not compiled with little-cms support,
+     * this will do nothing.
+     * Make shure the lcms delegate is available:
+     * convert -list configure | grep DELEGATES
+     */
+    public function applyProfile(ProfileInterface $profile)
+    {
+        try {
+            return $this->imagick->profileImage($profile->getName(), (string)$profile);
+        } catch (ImagickException $e) {
+            throw new ImageException(sprintf('Cannot set %s profile.', $profile->getName()), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function applyPalette(PaletteInterface $palette)
+    {
+        if (false === parent::applyPalette($palette)) {
+            return false;
+        }
+
+        if (false === (boolean)$this->imagick->getImageProfiles('icc')) {
+            $this->applyProfile($this->palette->getProfile());
+        } else {
+            $this->applyProfile(Profile::fromString('icc', $this->imagick->getImageProfile('icc')));
+        }
+
+        $this->setImageColorspace($palette, true);
+        $this->applyProfile($palette->getProfile());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function supportsPalette(PaletteInterface $palette)
+    {
+        return isset(static::$cspaceMap[$palette->getConstant()]);
     }
 
     /**
@@ -180,11 +230,23 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      */
+    public function strip()
+    {
+        try {
+            $this->imagick->stripImage();
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot strip image data', $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function newImage($format = null, ColorInterface $color = null)
     {
         $imagick = new Imagick;
-        $color = $color ? $color->getColorAsString() : $this->imagick->getImageBackgroundColor();
-        $imagick->newImage($this->getWidth(), $this->getHeight(), $color);
+        $px = $color ? $color->getColorAsString() : $this->imagick->getImageBackgroundColor();
+        $imagick->newImage($this->getWidth(), $this->getHeight(), $px);
 
         if (null === $format && $fmt = $this->getFormat()) {
             $format = $fmt;
@@ -194,7 +256,9 @@ class Image extends AbstractImage
             $imagick->setImageFormat($fmt);
         }
 
-        return new static($imagick, clone $this->palette);
+        $palette = $color ? $color->getPalette() : $this->palette;
+
+        return new static($imagick, $palette, clone $this->meta);
     }
 
     /**
@@ -210,6 +274,8 @@ class Image extends AbstractImage
     /**
      * Swaps the current imagick resource.
      *
+     * Will try to preserve the previous colorspace and profile.
+     *
      * @param Imagick $imagick
      *
      * @return void
@@ -217,8 +283,22 @@ class Image extends AbstractImage
     public function swapImagick(Imagick $imagick)
     {
         if (null !== $this->imagick) {
+
+            if ($this->imagick->getColorspace() !== $imagick->getColorspace()) {
+                //throw new ImageException('Cannot swap imagick, colospace missmatch.');
+            }
+
             $map = array_flip(static::$orientMap);
             $orient = $map[$this->getOrientation()];
+
+            try {
+                $profile = $this->getPalette()->getProfile();
+                //$imagick->profileImage($profile->getName(), (string)$profile);
+                //$imagick->setColorspace($this->imagick->getImageColorSpace());
+                //$canvas->setImageType($this->imagick()->getImageType());
+            } catch (ImagickException $e) {
+                throw new ImageException('Failed to set attributes imagick resource.', $e->getCode(), $e);
+            }
 
             $this->imagick->clear();
             $this->imagick->destroy();
@@ -240,9 +320,12 @@ class Image extends AbstractImage
         $format = $this->getOutputFormat($format, $options);
 
         if (!in_array($format, ['png', 'gif', 'tiff'])) {
-            // preserve color apearance when flatten images
-            if (Imagick::ALPHACHANNEL_ACTIVATE === $this->imagick->getImageAlphaChannel()) {
-                $this->edit()->canvas($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
+            // Preserve color appearance on transparent images.
+            // Setting the background color doesn't really work.
+            // Instead copy the image to a white background.
+            if ($this->isMatteImage($this->imagick)) {
+                //$this->edit()->extent($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
+                $this->flatten();
             }
         }
 
@@ -250,7 +333,7 @@ class Image extends AbstractImage
             $this->frames()->merge();
 
             if ($this->getOption($options, 'flatten', false)) {
-                $this->imagick->flattenImages();
+                $this->flatten();
             }
         }
 
@@ -271,6 +354,11 @@ class Image extends AbstractImage
         return new Edit($this);
     }
 
+    /**
+     * &getInterlaceMap
+     *
+     * @return void
+     */
     protected function &getInterlaceMap()
     {
         return static::$interlaceMap;
@@ -291,29 +379,80 @@ class Image extends AbstractImage
     }
 
     /**
-     * pixelToColor
-     *
-     * @param ImagickPixel $px
+     * flatten
      *
      * @return void
      */
-    private function colorFromPixel(ImagickPixel $px)
+    private function flatten()
     {
-        $colorMap =& static::$colorMap;
-        $multiply = $this->palette instanceof CmykPaletteInterface ? 100 : 255;
+        try {
+            $this->imagick = $this->imagick->flattenImages();
+        } catch (ImagickException $e) {
+            throw new ImageException('Cannot flatten image', $e->getCode(), $e);
+        }
+    }
 
-        $colors = array_map(function ($color) use ($colorMap, $px, $multiply) {
-            if (!isset($colorMap[$color])) {
-                throw new \RuntimeException;
-            }
+    /**
+     * setImageColorspace
+     *
+     * @param PaletteInterface $palette
+     * @param mixed $switch
+     *
+     * @return void
+     */
+    private function setImageColorspace(PaletteInterface $palette, $switch = false)
+    {
+        $cs = $this->imagick->getColorspace();
 
-            $value = $px->getColorValue($colorMap[$color]);
+        try {
+            $this->imagick->setColorspace(static::$cspaceMap[$palette->getConstant()]);
+        } catch (ImagickException $e) {
+            throw new ImagickException('setting colorspace failed.', $e->getCode(), $e);
+        }
 
-            return ColorInterface::CHANNEL_ALPHA === $color ? (float)$value : ($value * $multiply);
+        if (false !== $switch && $cs === $this->imagick->getColorspace()) {
+            throw new ImageException('Changing coloespace failed. Make shure ImageMagick has little-cms support.');
+        }
 
-        }, $keys = $this->palette->getDefinition());
+        $this->palette = $palette;
+    }
 
-        return $this->palette->getColor(array_combine($keys, $colors));
+    /**
+     * setImageType
+     *
+     * @param PaletteInterface $palette
+     *
+     * @return void
+     */
+    private function setImageType(PaletteInterface $palette)
+    {
+        $map = $this->getTypeMap();
+        if (!isset($map[$palette->getConstant()])) {
+            throw new ImageException('Colorspace is not supported.');
+        }
+
+        $this->imagick->setType($map[$palette->getConstant()]);
+    }
+
+    /**
+     * getTypeMap
+     *
+     * @return void
+     */
+    private function getTypeMap()
+    {
+        if (null === static::$typeMap) {
+            static::$typeMap = array_combine(
+                array_keys(static::$cspaceMap),
+                [
+                    Imagick::IMGTYPE_TRUECOLORMATTE,
+                    Imagick::IMGTYPE_TRUECOLOR,
+                    Imagick::IMGTYPE_GRAYSCALEMATTE,
+                ]
+            );
+        }
+
+        return static::$typeMap;
     }
 
     /**

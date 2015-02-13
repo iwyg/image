@@ -69,4 +69,12 @@ class Point implements PointInterface
 
         return new static(0 !== $x ? -$x : 0, 0 !== $y ? -$y : 0);
     }
+
+    public function abs()
+    {
+        $x = $this->getX();
+        $y = $this->getY();
+
+        return new static(abs($x), abs($y));
+    }
 }

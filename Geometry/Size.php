@@ -91,7 +91,14 @@ class Size implements SizeInterface
     {
         $point = $point ?: new Point(0, 0);
 
-        return $this->width >= $size->getWidth() + $point->getX() && $this->height >= $size->getHeight() + $point->getY();
+        $sw = $size->getWidth() + $point->getX();
+        $sh = $size->getHeight() + $point->getY();
+
+        if (0 > min($point->getX(), $point->getY())) {
+            return false;
+        }
+
+        return $this->width >= $sw && $this->height >= $sh;
     }
 
     /**
@@ -107,7 +114,9 @@ class Size implements SizeInterface
      */
     public function increaseByWidth($width)
     {
-        return new static((int)$width, $this->heightFromRatio($width, $this->getRatio()));
+        $width = $this->getWidth() + (int)$width;
+
+        return new static($width, $this->heightFromRatio($width, $this->getRatio()));
     }
 
     /**
@@ -115,7 +124,8 @@ class Size implements SizeInterface
      */
     public function increaseByHeight($height)
     {
-        return new static($this->widthFromRatio($height, $this->getRatio()), (int)$height);
+        $height = $this->getHeight() + (int)$height;
+        return new static($this->widthFromRatio($height, $this->getRatio()), $height);
     }
 
     /**

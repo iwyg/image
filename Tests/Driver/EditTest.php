@@ -80,7 +80,7 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
     public function itShouldPaseteImage()
     {
         $edit = $this->newEdit([200, 100]);
-        $img = $this->newImage([100, 50]);
+        $img = $this->newEdit([200, 100])->getImage();
 
         $edit->paste($img, new Point(0, 0));
     }
@@ -141,7 +141,7 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         $edit = $this->newEdit('transparent4.png');
         $edit->getImage()->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
 
-        $edit->canvas(new Size(600, 600), null, $edit->getImage()->getPalette()->getColor([255, 255, 255]));
+        $edit->extent(new Size(600, 600), null, $edit->getImage()->getPalette()->getColor([255, 255, 255]));
 
         $color = $edit->getImage()->getColorAt(new Point(300, 300));
         $this->assertTrue(1.0 === $color->getAlpha());
@@ -153,9 +153,11 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         $edit = $this->newEdit('transparent4.png');
         $edit->getImage()->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
 
-        $edit->canvas(new Size(600, 600));
+        $edit->extent(new Size(600, 600));
 
         $color = $edit->getImage()->getColorAt(new Point(300, 300));
+
+        $this->image->save($this->asset('_'.gethostname().'_test_trans.png'));
 
         $this->assertTrue(1 > $color->getAlpha());
     }
@@ -174,6 +176,26 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
 
         $color = $edit->getImage()->getColorAt(new Point(142, 142));
         $this->assertTrue(1 > $color->getAlpha());
+    }
+
+    /** @test */
+    public function itShouldFlipImage()
+    {
+        $edit = $this->newEdit([200, 100]);
+        $edit->flip();
+
+        $this->assertSame(200, $this->image->getSize()->getWidth());
+        $this->assertSame(100, $this->image->getSize()->getHeight());
+    }
+
+    /** @test */
+    public function itShouldFlopImage()
+    {
+        $edit = $this->newEdit([200, 100]);
+        $edit->flop();
+
+        $this->assertSame(200, $this->image->getSize()->getWidth());
+        $this->assertSame(100, $this->image->getSize()->getHeight());
     }
 
     protected function getImageClass()

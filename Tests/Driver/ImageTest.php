@@ -107,7 +107,7 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function itShouldSaveToFormat($format, $mime)
     {
-        $image = $this->newImage(100, 100);
+        $image = $this->newImage(100, 100, 'jpeg');
         $path = tempnam(sys_get_temp_dir(), 'image');
 
         $image->setFormat($format);

@@ -11,11 +11,13 @@
 
 namespace Thapp\Image\Driver;
 
+use Thapp\Image\Filter\FilterInterface;
 use Thapp\Image\Geometry\SizeInterface;
 use Thapp\Image\Geometry\PointInterface;
 use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Color\ColorInterface;
-use Thapp\Image\Filter\FilterInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
+use Thapp\Image\Color\Profile\ProfileInterface;
 
 /**
  * @interface ImageInterface
@@ -79,6 +81,24 @@ interface ImageInterface
      * @return void
      */
     public function copy();
+
+    /**
+     * backup
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function backup($name = null);
+
+    /**
+     * restore
+     *
+     * @param string $name
+     *
+     * @return ImageInterface
+     */
+    public function restore($name = null);
 
     /**
      * Coalesce image frames.
@@ -180,7 +200,7 @@ interface ImageInterface
      *
      * @return ImageInterface
      */
-    public function newImage($format = null, ColorInterface $color = null);
+    public function newImage($format = null, ColorInterface $backgound = null);
 
     /**
      * Get the image gravity.
@@ -228,7 +248,22 @@ interface ImageInterface
     /**
      * Get the color palette associated with the image.
      *
+     * @return void
+     */
+    public function applyPalette(PaletteInterface $palette);
+    public function applyProfile(ProfileInterface $profile);
+
+    /**
+     * Get the color palette associated with the image.
+     *
      * @return Thapp\Image\Color\Palette\PaletteInterface
      */
     public function getPalette();
+
+    /**
+     * Strip all profiles and comments
+     *
+     * @return void
+     */
+    public function strip();
 }
