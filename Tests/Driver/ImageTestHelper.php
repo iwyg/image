@@ -24,10 +24,13 @@ use Thapp\Image\Driver\ImageInterface;
 trait ImageTestHelper
 {
     protected $assets;
+    protected $streams = [];
 
     protected function getTestImage($w = 100, $h = 100, $format = 'jpeg')
     {
-        $stream = tmpfile();
+        //$f = tempnam(sys_get_temp_dir(), 'img_'.(string)microtime(true));
+        //$stream = fopen($f, 'rw+'$f, 'rw+');
+        $this->streams[] = $stream = tmpfile();
         $meta = stream_get_meta_data($stream);
         $path = $meta['uri'];
 

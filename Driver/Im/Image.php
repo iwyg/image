@@ -40,7 +40,7 @@ class Image extends AbstractImage
 {
     private $size;
     private $mime;
-    private $file;
+    public $file;
     private $fileFormat;
     private $hasProfile;
     private $tmp;
@@ -169,6 +169,10 @@ class Image extends AbstractImage
      */
     public function getColorAt(PointInterface $pixel)
     {
+        if (!$this->getSize()->has($pixel)) {
+            throw new \OutOfBoundsException();
+        }
+
         $conv = new Convert($this->convert->getShellCommand(), $this->convert->getBin());
 
         $conv->addCommand(new ColorAt($pixel));
@@ -242,6 +246,12 @@ class Image extends AbstractImage
         return new self($this->newInfo($target, $format, $size, $this->palette), clone $this->palette, new MetaData([]), $conv);
     }
 
+    public function getFile()
+    {
+        //var_dump(is_readable($this->file));
+        return $this->file;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -259,6 +269,25 @@ class Image extends AbstractImage
 
         return true;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function write($stream, $format = null, array $options = [])
+    {
+        if (!is_resource($stream) || 'stream' !== get_resource_type($stream)) {
+            throw new ImageException('Couldn\'t write image data to stream. Stream is invalid.');
+        }
+
+        // fwrite doesn't return false if stream is read only. Instead it just
+        // writes 0 bytes.
+        if (0 !== fwrite($stream, $this->getBlob($format, $options))) {
+            return true;
+        }
+
+        throw new ImageException('Couldn\'t write image data to stream. Stream is not writable.');
+    }
+
 
     /**
      * {@inheritdoc}

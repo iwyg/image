@@ -102,7 +102,11 @@ class Convert
         try {
             $ret = $this->command->run($cmd, '\RuntimeException', null, explode(' ', '\[ \] " % { }, [ ]'));
         } catch (\RuntimeException $e) {
-            throw $e;
+            throw new \RuntimeException(
+                sprintf('Executing command "%s" failed.', $cmd),
+                $e->getCode(),
+                $e
+            );
         }
 
         return $ret;

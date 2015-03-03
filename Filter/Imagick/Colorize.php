@@ -51,7 +51,6 @@ class Colorize extends ImagickFilter
         } else {
             $this->applyComposite($image, $overlay);
         }
-
     }
 
     private function applyComposite(ImageInterface $image, Imagick $overlay)

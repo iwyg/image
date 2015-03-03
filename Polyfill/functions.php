@@ -1,10 +1,20 @@
 <?php
 
-// php < 5.5
+/*
+ * This File is part of the Thapp\Image package
+ *
+ * (c) iwyg <mail@thomas-appel.com>
+ *
+ * For full copyright and license information, please refer to the LICENSE file
+ * that was distributed with this package.
+ */
+
 if (!function_exists('imagepalettetotruecolor')) {
 
     /**
      * Converts a palette based image to true color
+     *
+     * Used for PHP versions < 5.5
      *
      * @see http://php.net/manual/en/function.imagepalettetotruecolor.php
      *

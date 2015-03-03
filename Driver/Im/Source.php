@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -22,7 +22,7 @@ use Thapp\Image\Color\Palette\Grayscale;
 /**
  * @class Source
  *
- * @package Thapp\Image\Driver\Im
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -47,9 +47,14 @@ class Source extends AbstractSource
      */
     public function load($file)
     {
+        if (!is_file($file) || !stream_is_local($file)) {
+            throw new ImageException(sprintf('Cannot load image "%s". No such file or directory', $file));
+        }
+
         try {
             $info = $this->identify->identify($file);
             return new Image($info, $this->getImagePalette($info), $this->reader->readFromFile($file));
+
         } catch (\Exception $e) {
             throw ImageException::load($e);
         }
@@ -63,7 +68,9 @@ class Source extends AbstractSource
         $this->validateStream($stream);
 
         try {
-            return $this->load($this->streamUrl($stream));
+            $url = $this->streamUrl($stream);
+
+            return $this->load($url);
         } catch (ImageException $e) {
             throw ImageException::read($e);
         }

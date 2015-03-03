@@ -1,13 +1,14 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Tests\Driver\Im package
+ * This File is part of the Thapp\Image package
  *
- * (c)  <>
+ * (c) iwyg <mail@thomas-appel.com>
  *
  * For full copyright and license information, please refer to the LICENSE file
  * that was distributed with this package.
  */
+
 
 namespace Thapp\Image\Tests\Driver\Im;
 
@@ -24,10 +25,11 @@ use Thapp\Image\Color\Palette\Cmyk;
 
 /**
  * @class ImageTest
+ * @see AbstractImageTest
  *
- * @package
+ * @package Thapp\Image
  * @version $Id$
- * @author  <>
+ * @author iwyg <mail@thomas-appel.com>
  */
 class ImageTest extends AbstractImageTest
 {
@@ -46,32 +48,32 @@ class ImageTest extends AbstractImageTest
         $this->markTestIncomplete();
     }
 
-    /**
-     * @test
-     * @dataProvider formatMimeProvider
-     */
-    public function itShouldWriteToStream($format, $mime)
-    {
-        $this->markTestIncomplete();
-    }
+    ///**
+    // * @test
+    // * @dataProvider formatMimeProvider
+    // */
+    //public function itShouldWriteToStream($format, $mime)
+    //{
+    //    $this->markTestIncomplete();
+    //}
 
-    /** @test */
-    public function itShouldGetColorAtPixel()
-    {
-        $this->markTestIncomplete();
-    }
+    ///** @test */
+    //public function itShouldGetColorAtPixel()
+    //{
+    //    $this->markTestIncomplete();
+    //}
 
-    /** @test */
-    public function itShouldCreateNewImage()
-    {
-        $this->markTestIncomplete();
-    }
+    ///** @test */
+    //public function itShouldCreateNewImage()
+    //{
+    //    $this->markTestIncomplete();
+    //}
 
-    /** @test */
-    public function gettingColorOfInvalidPointShouldThrowExpcetion()
-    {
-        $this->markTestIncomplete();
-    }
+    ///** @test */
+    //public function gettingColorOfInvalidPointShouldThrowExpcetion()
+    //{
+    //    $this->markTestIncomplete();
+    //}
 
     /** @test */
     public function itShouldCopyInstance()
@@ -85,31 +87,14 @@ class ImageTest extends AbstractImageTest
         $this->markTestIncomplete();
     }
 
-    /** @test */
-    public function itIsExpectedThat()
-    {
-        $image = $this->loadImage($file = $this->asset('transparent4.png'));
-
-        var_dump($image->getColorAt(new Point(50, 50)));
-
-        //$image->setGravity(new Gravity(5));
-        ////$image->edit()->extent(new Size(200, 200), null, $image->getPalette()->getColor('#ff00ff'));
-        //$image->applyPalette(new Cmyk);
-        //var_dump($image->convert);
-
-        //$image->convert->run(new File($file, 'JPEG'), new File($this->asset('_im_test.jpg'), 'JPEG'));
-
-        //$new = $image->newImage('TIFF', $color = $image->getPalette()->getColor('#ccccff'));
-
-        //file_put_contents($this->asset('newfile.tif'), $new->getBlob('TIFF'));
-    }
-
     protected function newImage($w, $h, $format = 'jpeg', $reader = null)
     {
         $resource = $this->getTestImage($w, $h, $format);
         $source = new Source($reader ?: new FileReader);
 
-        return $source->read($resource);
+        $image = $source->read($resource);
+
+        return $image;
     }
 
     protected function getDriverName()
