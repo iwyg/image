@@ -27,6 +27,10 @@ if [ "$IMAGE_DRIVER" = "imagick" ] ; then
 	cd ..;
 fi
 
+if [ "$IMAGE_DRIVER" = "im" ] ; then
+	sudo apt-get install -y libtiff-dev libjpeg-dev imagemagick;
+fi
+
 #if [ "$IMAGE_DRIVER" = "gmagick" ] ; then
 #	curl -O http://pecl.php.net/get/gmagick-1.1.7RC2.tgz;
 #	tar xzf gmagick-1.1.7RC2.tgz;

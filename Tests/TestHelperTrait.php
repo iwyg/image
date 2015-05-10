@@ -34,6 +34,13 @@ trait TestHelperTrait
         }
     }
 
+    protected function skipIfImagemagick($message = 'imagemagick not available.')
+    {
+        if (!isset($_ENV['IMAGE_DRIVER']) || 'im' !== $_ENV['IMAGE_DRIVER']) {
+            $this->markTestSkipped($message);
+        }
+    }
+
     protected function fixure($path = null)
     {
         $fixure = __DIR__ . '/Fixures';

@@ -108,4 +108,10 @@ class ImageTest extends AbstractImageTest
 
         return $image;
     }
+
+    protected function setUp()
+    {
+        $this->skipIfImagemagick();
+        parent::setUp();
+    }
 }

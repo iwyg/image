@@ -23,6 +23,11 @@ use Thapp\Image\Tests\Driver\SourceTest as AbstracSourceTest;
  */
 class SourceTest extends AbstracSourceTest
 {
+    protected function setUp()
+    {
+        $this->skipIfImagemagick();
+        parent::setUp();
+    }
     /**
      * {@inheritdoc}
      */

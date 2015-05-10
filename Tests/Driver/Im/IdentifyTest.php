@@ -12,6 +12,7 @@
 namespace Thapp\Image\Tests\Driver\Im;
 
 use Thapp\Image\Driver\Im\Identify;
+use Thapp\Image\Tests\TestHelperTrait;
 
 /**
  * @class IdentifyTest
@@ -22,6 +23,8 @@ use Thapp\Image\Driver\Im\Identify;
  */
 class IdentifyTest extends \PHPUnit_Framework_TestCase
 {
+    use TestHelperTrait;
+
     /** @test */
     public function itIsExpectedThat()
     {
@@ -33,5 +36,10 @@ class IdentifyTest extends \PHPUnit_Framework_TestCase
     protected function asset($file)
     {
         return dirname(__DIR__).'/../Fixures/'.$file;
+    }
+
+    protected function setUp()
+    {
+        $this->skipIfImagemagick();
     }
 }
