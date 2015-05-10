@@ -78,6 +78,16 @@ interface SizeInterface
     public function increaseByHeight($height);
 
     /**
+     * sizeFromRatio
+     *
+     * @param int $width
+     * @param int $height
+     *
+     * @return SizeInterface
+     */
+    public function getSizeFromRatio($width = 0, $height = 0);
+
+    /**
      * contains
      *
      * @param SizeInterface $box

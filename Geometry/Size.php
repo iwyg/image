@@ -131,6 +131,26 @@ class Size implements SizeInterface
     /**
      * {@inheritdoc}
      */
+    public function getSizeFromRatio($width = 0, $height = 0)
+    {
+        if (0 === max($width, $height)) {
+            throw new \LogicException('Foo');
+        }
+
+        if (0 === $width) {
+            return new static($this->widthFromRatio($height, $this->getRatio()), $height);
+        }
+
+        if (0 === $height) {
+            return new static($width, $this->heightFromRatio($width, $this->getRatio()));
+        }
+
+        throw new \LogicException('Either height, or width must be zero');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function fit(SizeInterface $target)
     {
         $width  = $this->getWidth();
