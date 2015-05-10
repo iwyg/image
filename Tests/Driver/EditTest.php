@@ -142,11 +142,9 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         $edit->getImage()->setGravity(new Gravity(Gravity::GRAVITY_CENTER));
 
         $color = $edit->getImage()->getColorAt(new Point(100, 100));
-        var_dump($color->getAlpha());
         $edit->extent(new Size(600, 600), null, $edit->getImage()->getPalette()->getColor([255, 255, 255]));
 
         $color = $edit->getImage()->getColorAt(new Point(300, 300));
-        var_dump($color->getAlpha());
         $this->assertTrue(1.0 === $color->getAlpha());
     }
 
