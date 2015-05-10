@@ -3,7 +3,7 @@
 /*
  * This File is part of the Thapp\Image\Tests\Driver\Im package
  *
- * (c)  <>
+ * (c) iwyg <mail@thomas-appel.com>
  *
  * For full copyright and license information, please refer to the LICENSE file
  * that was distributed with this package.
@@ -18,7 +18,7 @@ use Thapp\Image\Driver\Im\Identify;
  *
  * @package Thapp\Image\Tests\Driver\Im
  * @version $Id$
- * @author  <>
+ * @author iwyg <mail@thomas-appel.com>
  */
 class IdentifyTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +27,7 @@ class IdentifyTest extends \PHPUnit_Framework_TestCase
     {
         $id = new Identify;
 
-        $id->identify($this->asset('4c_image_010.jpg'));
+        $id->identify($this->asset('pattern4c.jpg'));
     }
 
     protected function asset($file)

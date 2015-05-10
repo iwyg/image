@@ -65,11 +65,13 @@ class Edit extends AbstractEdit
 
         $point = $this->getStartPoint($size, $start);
 
+        //$this->imagick()->setBackgroundColor('none');
+        //$this->imagick()->setImageBackgroundColor('none');
 
         if (null !== $color) {
             $pixel = $this->pixelFromColor($color);
-            $this->imagick()->setImageBackgroundColor($pixel);
-            //$this->imagick()->setBackgroundColor($pixel);
+            //$this->imagick()->setImageBackgroundColor($pixel);
+            $this->imagick()->setBackgroundColor($pixel);
 
             //if ($this->isMatteImage($this->imagick())) {
             //    $overlay = new Imagick;
@@ -79,21 +81,24 @@ class Edit extends AbstractEdit
             //} else {
             //    $this->imagick()->setImageBackgroundColor($pixel);
             //}
+        } else {
+            $this->imagick()->setImageBackgroundColor('none');
         }
+
         $this->imagick()->extentImage($size->getWidth(), $size->getHeight(), -$point->getX(), -$point->getY());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
-    {
-        try {
-            $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_OVER);
-        } catch (ImagickException $e) {
-            throw new ImageException('Cannot create canvas.', $e->getCode(), $e);
-        }
-    }
+    ///**
+    // * {@inheritdoc}
+    // */
+    //public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
+    //{
+    //    try {
+    //        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_OVER);
+    //    } catch (ImagickException $e) {
+    //        throw new ImageException('Cannot create canvas.', $e->getCode(), $e);
+    //    }
+    //}
 
     /**
      * {@inheritdoc}

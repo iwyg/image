@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Tests\Driver\Im;
 
+use Thapp\Image\Exception\ImageException;
 use Thapp\Image\Tests\Driver\SourceTest as AbstracSourceTest;
 
 /**
@@ -28,5 +29,20 @@ class SourceTest extends AbstracSourceTest
     protected function getSourceClass()
     {
         return 'Thapp\Image\Driver\Im\Source';
+    }
+
+    /** @test */
+    public function itShouldThrowOnLoadingIvalidFile()
+    {
+        $source = $this->newSource();
+
+        try {
+            $source->load('not a file');
+        } catch (ImageException $e) {
+            $this->assertSame('Cannot load image "not a file". No such file or directory', $e->getMessage());
+            return;
+        }
+
+        $this->fail();
     }
 }
