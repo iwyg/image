@@ -20,7 +20,7 @@ use Thapp\Image\Geometry\SizeInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Resize extends AbstracCommand
+class Resize extends AbstractCommand
 {
     /**
      * size
@@ -52,7 +52,7 @@ class Resize extends AbstracCommand
      */
     public function asString()
     {
-        $filter = null !== $filter ? ' '.$filter->asString() : '';
+        $filter = null !== $this->filter ? ' '.$this->filter->asString() : '';
 
         return sprintf('-resize %sx%s%s', $this->size->getWidth(), $this->size->getHeight(), $filter);
     }

@@ -18,7 +18,7 @@ namespace Thapp\Image\Driver\Im\Command;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Flip extends AbstracCommand
+class Flip extends AbstractCommand
 {
     public function asString()
     {

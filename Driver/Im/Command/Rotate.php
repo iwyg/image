@@ -18,7 +18,7 @@ namespace Thapp\Image\Driver\Im\Command;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Rotate extends AbstracCommand
+class Rotate extends AbstractCommand
 {
     private $deg;
 
