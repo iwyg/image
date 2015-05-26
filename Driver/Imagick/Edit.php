@@ -118,7 +118,12 @@ class Edit extends AbstractEdit
     public function rotate($deg, ColorInterface $color = null)
     {
         try {
-            $this->imagick()->rotateImage($px = $this->newPixel($color ?: $this->newColor([255, 255, 255])), (float)$deg);
+            $this->imagick()->rotateImage(
+                $px = $this->newPixel(
+                    $color ?: $this->newColor([255, 255, 255])
+                ),
+                (float)$deg
+            );
         } catch (ImagickException $e) {
             throw new ImageException('Cannot rotate image.', $e->getCode(), $e);
         }
@@ -221,8 +226,12 @@ class Edit extends AbstractEdit
      *
      * @return void
      */
-    protected function createCanvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null, $mode = Imagick::COMPOSITE_OVER)
-    {
+    protected function createCanvas(
+        SizeInterface $size,
+        PointInterface $point,
+        ColorInterface $color = null,
+        $mode = Imagick::COMPOSITE_OVER
+    ) {
         $canvas = new Imagick();
 
         $color = null !== $color ? $this->pixelFromColor($color) : new ImagickPixel('srgba(255, 255, 255, 0)');

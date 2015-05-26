@@ -324,7 +324,11 @@ class Image extends AbstractImage
             // Setting the background color doesn't really work.
             // Instead copy the image to a white background.
             if ($this->isMatteImage($this->imagick)) {
-                //$this->edit()->extent($this->getSize(), new Point(0, 0), $this->palette->getColor([255, 255, 255, 1]));
+                //$this->edit()->extent(
+                //    $this->getSize(),
+                //    new Point(0, 0),
+                //    $this->palette->getColor([255, 255, 255, 1])
+                //);
                 $this->flatten();
             }
         }
