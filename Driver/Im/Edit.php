@@ -37,6 +37,8 @@ class Edit extends AbstractEdit
 {
     use MagickHelper;
 
+    private static $filterMap;
+
     /**
      * Constructor.
      *
@@ -59,7 +61,7 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function resize(SizeInterface $size, $filter = self::FILTER_UNDEFINED)
+    public function resize(SizeInterface $size, $filter = ImageInterface::FILTER_UNDEFINED)
     {
         $this->image->addCommand(new Resize($size, $this->mapFilter($filter)), $size);
     }

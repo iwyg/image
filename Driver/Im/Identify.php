@@ -60,7 +60,7 @@ class Identify
     private function parse($result)
     {
         $out = [];
-        foreach (explode("\n", $result) as $value) {
+        foreach (explode("\n", trim($result)) as $value) {
             list ($key, $val) = explode('=', $value);
 
             if ('colorspace' === $key) {

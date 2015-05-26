@@ -11,7 +11,6 @@
 
 namespace Thapp\Image\Driver\Im;
 
-use Thapp\Image\Driver\Im\Identify;
 use Thapp\Image\Driver\AbstractSource;
 use Thapp\Image\Info\MetaDataReaderInterface;
 use Thapp\Image\Exception\ImageException;
@@ -29,6 +28,7 @@ use Thapp\Image\Color\Palette\Grayscale;
 class Source extends AbstractSource
 {
     private $identify;
+    private $convert;
 
     /**
      * Constructor.
@@ -36,10 +36,11 @@ class Source extends AbstractSource
      * @param MetaDataReaderInterface $reader
      * @param Identify $identify
      */
-    public function __construct(MetaDataReaderInterface $reader = null, Identify $identify = null)
+    public function __construct(MetaDataReaderInterface $reader = null, Identify $identify = null, Convert $conv = null)
     {
         parent::__construct($reader);
         $this->identify = $identify ?: new Identify;
+        $this->convert = $conv ?: new Convert;
     }
 
     /**
@@ -53,7 +54,7 @@ class Source extends AbstractSource
 
         try {
             $info = $this->identify->identify($file);
-            return new Image($info, $this->getImagePalette($info), $this->reader->readFromFile($file));
+            return new Image($info, $this->getImagePalette($info), $this->reader->readFromFile($file), $this->convert);
 
         } catch (\Exception $e) {
             throw ImageException::load($e);
@@ -131,8 +132,6 @@ class Source extends AbstractSource
             case 'gray':
                 return new Grayscale;
         }
-
-        var_dump($info);
 
         throw new ImageException(sprintf('Colorspace %s is currently not supported', $info['colorspace']));
     }
