@@ -6,7 +6,6 @@ php:
   - hhvm
   - hhvm-nightly
 env:
-  #- IMAGE_DRIVER=gmagick
   - IMAGE_DRIVER=imagick
   - IMAGE_DRIVER=im
 matrix: 
