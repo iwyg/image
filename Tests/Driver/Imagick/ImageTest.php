@@ -141,7 +141,6 @@ class ImageTest extends AbstractImageTest
         //$image = (new Source)->create($content);
 
         //$color = $image->getColorAt(new Point(1, 1));
-        //var_dump($color);
     }
 
 

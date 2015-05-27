@@ -248,7 +248,6 @@ class Image extends AbstractImage
 
     public function getFile()
     {
-        //var_dump(is_readable($this->file));
         return $this->file;
     }
 

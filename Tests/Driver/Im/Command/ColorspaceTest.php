@@ -31,7 +31,5 @@ class ColorspaceTest extends \PHPUnit_Framework_TestCase
     public function itShouldCompileToString()
     {
         $cs = new Colorspace(new Cmyk);
-
-        var_dump($cs->asString());
     }
 }

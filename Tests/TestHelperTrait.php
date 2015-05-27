@@ -36,7 +36,11 @@ trait TestHelperTrait
 
     protected function skipIfImagemagick($message = 'imagemagick not available.')
     {
-        if ('' === system('which convert') || (!isset($_ENV['IMAGE_DRIVER']) || 'im' !== $_ENV['IMAGE_DRIVER'])) {
+        ob_start();
+        $im = system('which convert');
+        ob_end_clean();
+
+        if ('' === trim($im) || (!isset($_ENV['IMAGE_DRIVER']) || 'im' !== $_ENV['IMAGE_DRIVER'])) {
             $this->markTestSkipped($message);
         }
     }
