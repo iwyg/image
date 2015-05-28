@@ -55,7 +55,7 @@ class Edit extends AbstractEdit
     public function extent(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
     {
         $this->image->addCommand(new Background($color));
-        $this->image->addCommand(new Extent($size, $this->getStartPoint($size, $start)->negate()));
+        $this->image->addCommand(new Extent($size, $this->getStartPoint($size, $start)->negate()), $size);
     }
 
     /**
@@ -76,7 +76,7 @@ class Edit extends AbstractEdit
         }
 
         $this->image->addCommand(new Rotate($deg), $size = $this->image->getSize()->rotate($deg));
-        $this->image->addCommand(new Resize($size, 'Qubic', $size));
+        $this->image->addCommand(new Resize($size, 'Qubic'), $size);
     }
 
     /**
