@@ -14,6 +14,7 @@ namespace Thapp\Image\Driver\Im;
 use Thapp\Image\Driver\Im\Command\File;
 use Thapp\Image\Driver\Im\Shell\Command;
 use Thapp\Image\Driver\Im\Command\CommandInterface;
+use Psr\Log\LoggerInterface as Logger;
 
 /**
  * @class Convert
@@ -38,11 +39,18 @@ class Convert
      * @param Command $command
      * @param string $bin
      */
-    public function __construct(Command $command = null, $bin = 'convert')
+    public function __construct(Command $command = null, $bin = 'convert', Logger $logger = null)
     {
         $this->command = $command ?: new Command;
         $this->bin = $bin ?: 'convert';
+        $this->logger = $logger;
         $this->ops = [];
+        $this->compiled = false;
+    }
+
+    public function __clone()
+    {
+        $this->clean();
     }
 
     /**
@@ -109,7 +117,20 @@ class Convert
             );
         }
 
+        if (null !== $this->logger) {
+            $this->logRun($ret, $cmd);
+        }
+
         return $ret;
+    }
+
+    private function logRun($ret, $cmd)
+    {
+        if (false === $ret) {
+            $this->logger->warn(sprintf('Imagemagick failed with command: %s', $cmd));
+        } else {
+            $this->logger->debug(sprintf('Imagemagick: %s', $cmd));
+        }
     }
 
     /**
