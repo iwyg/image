@@ -70,8 +70,8 @@ class Edit extends AbstractEdit
 
         if (null !== $color) {
             $pixel = $this->pixelFromColor($color);
-            //$this->imagick()->setImageBackgroundColor($pixel);
-            $this->imagick()->setBackgroundColor($pixel);
+            $this->imagick()->setImageBackgroundColor($pixel);
+            //$this->imagick()->setBackgroundColor($pixel);
 
             //if ($this->isMatteImage($this->imagick())) {
             //    $overlay = new Imagick;
