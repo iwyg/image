@@ -134,7 +134,7 @@ class Size implements SizeInterface
     public function getSizeFromRatio($width = 0, $height = 0)
     {
         if (0 === max($width, $height)) {
-            throw new \LogicException('Foo');
+            throw new \LogicException('Invalid Geometry');
         }
 
         if (0 === $width) {

@@ -1,9 +1,9 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im\Command package
+ * This File is part of the Thapp\Image package
  *
- * (c)  <>
+ * (c) iwyg <mail@thomas-appel.com>
  *
  * For full copyright and license information, please refer to the LICENSE file
  * that was distributed with this package.
@@ -16,9 +16,9 @@ use Thapp\Image\Color\ColorInterface;
 /**
  * @class Canvas
  *
- * @package Thapp\Image\Driver\Im\Command
+ * @package Thapp\Image
  * @version $Id$
- * @author  <>
+ * @author iwyg <mail@thomas-appel.com>
  */
 class Canvas extends AbstractCommand
 {
