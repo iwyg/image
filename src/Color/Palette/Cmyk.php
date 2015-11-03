@@ -50,8 +50,6 @@ class Cmyk extends AbstractPalette implements CmykPaletteInterface
      */
     protected function getDefaultProfile()
     {
-        var_dump(sprintf('I am isntanceof CmykPaletteInterface: %s', $this instanceof CmykPaletteInterface ? 'true' : 'false'));
-        var_dump(sprintf('I am isntanceof CmykPaletteInterface: %s', $this instanceof PaletteInterface ? 'true' : 'false'));
         if (null === static::$defaultProfile) {
             static::$defaultProfile = new Profile(
                 'icc',
