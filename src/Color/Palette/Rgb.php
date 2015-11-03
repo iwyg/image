@@ -15,6 +15,7 @@ use Thapp\Image\Color\Parser;
 use Thapp\Image\Color\Rgb as RgbColor;
 use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Color\Profile\Profile;
+use Thapp\Image\Color\Profile\ProfileInterface;
 
 /**
  * @class Rgb
@@ -25,6 +26,7 @@ use Thapp\Image\Color\Profile\Profile;
  */
 class Rgb extends AbstractPalette implements RgbPaletteInterface
 {
+    /** @var ProfileInterface */
     private static $defaultProfile;
 
     /**
@@ -51,7 +53,7 @@ class Rgb extends AbstractPalette implements RgbPaletteInterface
         if (null === static::$defaultProfile) {
             static::$defaultProfile = new Profile(
                 'icc',
-                realpath(__DIR__.'/../../resource/color.org/sRGB_IEC61966-2-1_black_scaled.icc')
+                realpath(ProfileInterface::RESOURCE_PATH.'/color.org/sRGB_IEC61966-2-1_black_scaled.icc')
             );
         }
 

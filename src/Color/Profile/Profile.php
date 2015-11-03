@@ -20,8 +20,13 @@ namespace Thapp\Image\Color\Profile;
  */
 class Profile implements ProfileInterface
 {
+    /** @var string */
     private $name;
+
+    /** @var string */
     private $file;
+
+    /** @var string */
     private $content;
 
     /**
@@ -88,17 +93,18 @@ class Profile implements ProfileInterface
     }
 
     /**
-     * setFile
+     * Sets the filepath for the icc profile.
      *
-     * @param mixed $file
-     * @throws \RuntimeException
+     * @param string $file
+     * @throws \InvalidArgumentException if $file is not a string
+     * @throws \RuntimeException if $file is not readable
      *
      * @return void
      */
     private function setFile($file)
     {
         if (!is_string($file)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(sprintf('%s expects $file to be string, instead saw %s', __METHOD__, gettype($file)));
         }
 
         if ((!is_file($file) || !stream_is_local($file)) && 0 !== mb_strpos($file, 'data://', 0, '8bit')) {

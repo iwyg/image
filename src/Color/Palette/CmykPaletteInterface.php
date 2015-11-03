@@ -12,7 +12,7 @@
 namespace Thapp\Image\Color\Palette;
 
 /**
- * @interface PaletteInterface
+ * @interface CmykPaletteInterface
  *
  * @package Thapp\Image
  * @version $Id$
@@ -20,4 +20,5 @@ namespace Thapp\Image\Color\Palette;
  */
 interface CmykPaletteInterface extends PaletteInterface
 {
+    const P_TYPE = self::PALETTE_CMYK;
 }

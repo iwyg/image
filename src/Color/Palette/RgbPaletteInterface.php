@@ -12,7 +12,7 @@
 namespace Thapp\Image\Color\Palette;
 
 /**
- * @interface PaletteInterface
+ * @interface RgbPaletteInterface
  *
  * @package Thapp\Image
  * @version $Id$
@@ -20,4 +20,5 @@ namespace Thapp\Image\Color\Palette;
  */
 interface RgbPaletteInterface extends PaletteInterface, AlphaAwareInterface
 {
+    const P_TYPE = self::PALETTE_RGB;
 }

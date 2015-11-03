@@ -28,6 +28,8 @@ abstract class AbstractPalette implements PaletteInterface
      * @var mixed
      */
     protected static $colors;
+
+    /** @var ProfileInterface */
     protected $profile;
 
     /**
@@ -96,11 +98,9 @@ abstract class AbstractPalette implements PaletteInterface
     }
 
     /**
-     * setDefaultProfile
+     * Get the default profile.
      *
-     * @param ProfileInterface $profile
-     *
-     * @return void
+     * @return ProfileInterface
      */
     abstract protected function getDefaultProfile();
 

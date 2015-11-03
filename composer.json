@@ -24,6 +24,7 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "Thapp\\Image\\":"src/",
       "Thapp\\Image\\Tests\\":"tests/"
     }
   },
