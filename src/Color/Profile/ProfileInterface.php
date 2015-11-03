@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Color\Profile;
 
+define('THAPP_IMAGE_RESOURCE_PATH', __DIR__ . '/../../../resource');
+
 /**
  * @interface ProfileInterface
  *
@@ -30,7 +32,7 @@ interface ProfileInterface
     const PROFILE_GRAYSCALE = 2;
 
     /** @var string */
-    const RESOURCE_PATH = __DIR__ . '/../../../resource';
+    const RESOURCE_PATH = THAPP_IMAGE_RESOURCE_PATH;
 
     /**
      * Get the file path to the icc profile.
