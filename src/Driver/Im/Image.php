@@ -38,37 +38,51 @@ use Thapp\Image\Exception\ImageException;
  */
 class Image extends AbstractImage
 {
+    /** @var SizeInterface */
     private $size;
-    private $mime;
-    public $file;
-    private $fileFormat;
-    private $hasProfile;
-    private $tmp;
-    private $numberImages;
-    public $convert;
 
+    /** @var string */
+    private $file;
+
+    /** @var string */
+    private $fileFormat;
+
+    /** @var bool */
+    private $hasProfile;
+
+    /** @var array */
+    private $tmp;
+
+    /** @var int */
+    private $numberImages;
+
+    /** @var Convert */
+    private $convert;
+
+    /** @var array */
     private static $cspaceMap = [
-        PaletteInterface::PALETTE_RGB => 'RGB',
-        PaletteInterface::PALETTE_CMYK => 'CMYK',
+        PaletteInterface::PALETTE_RGB       => 'RGB',
+        PaletteInterface::PALETTE_CMYK      => 'CMYK',
         PaletteInterface::PALETTE_GRAYSCALE => 'Gray'
     ];
 
     /**
      * Constructor.
      *
-     * @param array $image
+     * @param array $imageInfo
      * @param PaletteInterface $palette
      * @param MetaDataInterface $metaData
      * @param Convert $convert
      */
-    public function __construct(array $image, PaletteInterface $palette, MetaDataInterface $metaData = null, Convert $convert = null)
+    public function __construct(array $imageInfo, PaletteInterface $palette, MetaDataInterface $metaData = null, Convert $convert = null)
     {
-        $this->setImageInfo($image);
+        $this->setImageInfo($imageInfo);
+
         $this->palette = $palette;
-        $this->meta = $metaData ?: new MetaData;
+        $this->meta    = $metaData ?: new MetaData;
         $this->convert = $convert ?: new Convert;
         $this->frames  = new Frames($this);
-        $this->tmp = [];
+        $this->tmp     = [];
     }
 
     /**
@@ -84,9 +98,9 @@ class Image extends AbstractImage
      */
     public function __clone()
     {
-        $this->size = clone $this->size;
+        $this->size    = clone $this->size;
         $this->palette = clone $this->palette;
-        $this->meta = clone $this->meta;
+        $this->meta    = clone $this->meta;
         $this->convert = clone $this->convert;
     }
 
@@ -148,29 +162,14 @@ class Image extends AbstractImage
     }
 
     /**
-     * updateSize
-     *
-     * @param Edit $edit
-     *
-     * @throws \LogicException
-     * @return void
-     */
-    public function updateSize(Edit $edit)
-    {
-        if ($this !== $edit->getImage()) {
-            throw new \LogicException('Cannot update size from foreing edit object.');
-        }
-
-        $this->size = $edit->getCurrentSize();
-    }
-
-    /**
      * {@inheritdoc}
+     * @TODO: this will only return the color of the source file and ignore all
+     * prior modifications
      */
     public function getColorAt(PointInterface $pixel)
     {
         if (!$this->getSize()->has($pixel)) {
-            throw new \OutOfBoundsException();
+            throw new \OutOfBoundsException('Pixel position is outside of image.');
         }
 
         $conv = new Convert($this->convert->getShellCommand(), $this->convert->getBin());
@@ -246,6 +245,12 @@ class Image extends AbstractImage
         return new self($this->newInfo($target, $format, $size, $this->palette), clone $this->palette, new MetaData([]), $conv);
     }
 
+
+    /**
+     * Get the source file path.
+     *
+     * @return string
+     */
     public function getFile()
     {
         return $this->file;
@@ -315,10 +320,10 @@ class Image extends AbstractImage
     /**
      * prepareOpts
      *
-     * @param mixed $format
+     * @param string $format
      * @param array $options
      *
-     * @return void
+     * @return array
      */
     private function prepareOpts($format = null, array $options = [])
     {
@@ -336,32 +341,42 @@ class Image extends AbstractImage
         return new Edit($this);
     }
 
+    /**
+     * @return array
+     */
     protected function &getInterlaceMap()
     {
         return [];
     }
 
     /**
-     * setImageInfo
+     * Initialize image info attributes.
      *
      * @param array $info
+     * @throws \InvalidArgumentException if $info miesses an attribute
      *
      * @return void
      */
     private function setImageInfo(array $info)
     {
-        $this->file = $info['file'];
-        $this->size = new Size($info['width'], $info['height']);
-        $this->format = $info['format'];
-        $this->fileFormat = $info['format'];
-        $this->hasProfile = null !== $info['icc'] || null !== $info['icm'];
-        $this->numberImages =$info['frames'];
+        foreach (['file', 'width', 'height', 'icc', 'icm', 'format', 'frames'] as $attr) {
+            if (!array_key_exists($attr, $info)) {
+                throw new \InvalidArgumentException(sprintf('Invalid image info: expected to see "%s"', $attr));
+            }
+        }
+
+        $this->file         = $info['file'];
+        $this->size         = new Size($info['width'], $info['height']);
+        $this->format       = $info['format'];
+        $this->fileFormat   = $info['format'];
+        $this->hasProfile   = null !== $info['icc'] || null !== $info['icm'];
+        $this->numberImages = $info['frames'];
     }
 
     /**
      * newInfo
      *
-     * @param mixed $file
+     * @param string $file
      * @param SizeInterface $size
      * @param PaletteInterface $palette
      *
@@ -370,14 +385,14 @@ class Image extends AbstractImage
     private function newInfo($file, $format, SizeInterface $size, PaletteInterface $palette)
     {
         $info = [
-            'file' => $file,
-            'format' => strtoupper($format),
-            'width' => $size->getWidth(),
-            'height' => $size->getHeight(),
+            'file'       => $file,
+            'format'     => strtoupper($format),
+            'width'      => $size->getWidth(),
+            'height'     => $size->getHeight(),
             'colorspace' => $this->mapColorspace($palette),
-            'frames' => 1,
-            'icc' => null,
-            'icm' => null
+            'frames'     => 1,
+            'icc'        => null,
+            'icm'        => null
         ];
 
         $info[$palette->getProfile()->getName()] = true;

@@ -37,8 +37,7 @@ class Source extends AbstractSource
     {
         $this->validateStream($resource);
 
-        $imagick = new Imagick;
-        //$imagick->setBackgroundColor(new ImagickPixel('none'));
+        $imagick = $this->newImagick();
 
         try {
             $imagick->readImageFile($resource);
@@ -56,8 +55,7 @@ class Source extends AbstractSource
      */
     public function load($file)
     {
-        $imagick = new Imagick;
-        //$imagick->setBackgroundColor(new ImagickPixel('none'));
+        $imagick = $this->newImagick();
 
         try {
             $imagick->readImage($file);
@@ -73,20 +71,32 @@ class Source extends AbstractSource
     /**
      * {@inheritdoc}
      */
-    public function create($image)
+    public function create($content)
     {
-        $imagick = new Imagick;
-        //$imagick->setBackgroundColor(new ImagickPixel('none'));
+        $imagick = $this->newImagick();
 
         try {
-            $imagick->readImageBlob($image);
+            $imagick->readImageBlob($content);
         } catch (ImagickException $e) {
             $imagick->destroy();
 
             throw ImageException::create($e);
         }
 
-        return new Image($imagick, $this->getColorPalette($imagick), $this->getReader()->readFromBlob($image));
+        return new Image($imagick, $this->getColorPalette($imagick), $this->getReader()->readFromBlob($content));
+    }
+
+    /**
+     * newImagick
+     *
+     * @return \Imagick
+     */
+    private function newImagick()
+    {
+        $imagick = new Imagick;
+        //$imagick->setBackgroundColor(new ImagickPixel('none'));
+
+        return $imagick;
     }
 
     /**
@@ -94,11 +104,11 @@ class Source extends AbstractSource
      *
      * @param Imagick $imagick
      *
-     * @return Thapp\Image\Color\PaletteInterface
+     * @return \Thapp\Image\Color\PaletteInterface
      */
-    protected function getColorPalette(Imagick $imagick)
+    private function getColorPalette(Imagick $imagick)
     {
-        switch($imagick->getImageColorspace()) {
+        switch ($imagick->getImageColorspace()) {
             case Imagick::COLORSPACE_RGB:
             case Imagick::COLORSPACE_SRGB:
                 return new Rgb($this->getIccProfile($imagick));
@@ -118,9 +128,9 @@ class Source extends AbstractSource
      *
      * @param Imagick $imagick
      *
-     * @return ProfileInterface
+     * @return \Thapp\Image\Color\Profile\ProfileInterface
      */
-    protected function getIccProfile(Imagick $imagick)
+    private function getIccProfile(Imagick $imagick)
     {
         try {
             $profile = $imagick->getImageProfile('icc');

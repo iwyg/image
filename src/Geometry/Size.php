@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Metrics package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,7 +14,7 @@ namespace Thapp\Image\Geometry;
 /**
  * @class Box
  *
- * @package Thapp\Image\Metrics
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -205,7 +205,7 @@ class Size implements SizeInterface
 
         $deg = (float)$deg;
 
-        // don't need to caclulate surrounding box.
+        // don't need to calculate surrounding box.
         if (0 === $deg || 0 === $deg % 180.0) {
             return clone $this;
         } elseif (0 === $deg % 90.0) {
@@ -223,6 +223,15 @@ class Size implements SizeInterface
         return new static((int)round($w + $pw), (int)round($h + $ph));
     }
 
+    /**
+     * doRotate
+     *
+     * @param float $rad
+     * @param int $w
+     * @param int $h
+     *
+     * @return array
+     */
     private function doRotate($rad, $w, $h)
     {
         return [
@@ -247,7 +256,7 @@ class Size implements SizeInterface
     /**
      * heightFromRatio
      *
-     * @param mixed $width
+     * @param int $width
      * @param float $ratio
      *
      * @return int
@@ -260,7 +269,7 @@ class Size implements SizeInterface
     /**
      * widthFromRatio
      *
-     * @param mixed $height
+     * @param int $height
      * @param float $ratio
      *
      * @return int

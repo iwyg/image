@@ -19,6 +19,7 @@ use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\Im\Command\Flip;
 use Thapp\Image\Driver\Im\Command\Flop;
+use Thapp\Image\Driver\Im\Command\Filter;
 use Thapp\Image\Driver\Im\Command\Extent;
 use Thapp\Image\Driver\Im\Command\Resize;
 use Thapp\Image\Driver\Im\Command\Rotate;
@@ -37,6 +38,7 @@ class Edit extends AbstractEdit
 {
     use MagickHelper;
 
+    /** @var array */
     private static $filterMap;
 
     /**
@@ -76,7 +78,7 @@ class Edit extends AbstractEdit
         }
 
         $this->image->addCommand(new Rotate($deg), $size = $this->image->getSize()->rotate($deg));
-        $this->image->addCommand(new Resize($size, 'Qubic'), $size);
+        $this->image->addCommand(new Resize($size, new Filter('Qubic')), $size);
     }
 
     /**

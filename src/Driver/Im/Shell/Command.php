@@ -55,7 +55,6 @@ class Command
         $cmd = escapeshellcmd($cmd);
 
         if (is_array($noEscapeChars) and !empty($noEscapeChars)) {
-
             $repl = "\\\\" . implode("|\\\\", $noEscapeChars);
             $cmd = preg_replace_callback(
                 "~$repl~",

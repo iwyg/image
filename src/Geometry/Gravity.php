@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Metrics package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,27 +14,28 @@ namespace Thapp\Image\Geometry;
 /**
  * @class Gravity
  *
- * @package Thapp\Image\Metrics
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Gravity implements GravityInterface
 {
-    /**
-     * mode
-     *
-     * @var int
-     */
+    /** @var int */
     private $mode;
 
     /**
      * Constructor.
      *
      * @param int $mode
+     * @throws \InvalidArgumentException if $mode is not an integer.
      */
-    public function __construct($mode)
+    public function __construct($mode = self::GRAVITY_CENTER)
     {
-        $this->mode = max(self::GRAVITY_NORTHWEST, min(self::GRAVITY_SOUTHEAST, (int)$mode));
+        if (!is_int($mode)) {
+            throw new \InvalidArgumentException(sprintf('Mode must be an integer, instead saw "%s"', gettype($mode)));
+        }
+
+        $this->mode = max(self::GRAVITY_NORTHWEST, min(self::GRAVITY_SOUTHEAST, $mode));
     }
 
     /**

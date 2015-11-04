@@ -167,8 +167,7 @@ class Edit extends AbstractEdit
      */
     protected function doCopy($gd, $dest, PointInterface $start, $ops = 'paste')
     {
-        if (
-            false === imagecopy($gd, $dest, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight())
+        if (false === imagecopy($gd, $dest, $start->getX(), $start->getY(), 0, 0, $this->getWidth(), $this->getHeight())
         ) {
             throw new ImageException('Cannot copy image');
         }

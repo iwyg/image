@@ -42,14 +42,13 @@ class Edit extends AbstractEdit
     use MagickHelper,
         HelperTrait;
 
+    /** @var array */
     private static $filterMap;
 
     /**
      * Constructor.
      *
      * @param Image $image
-     *
-     * @return void
      */
     public function __construct(Image $image)
     {

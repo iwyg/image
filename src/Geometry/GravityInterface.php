@@ -20,18 +20,35 @@ namespace Thapp\Image\Geometry;
  */
 interface GravityInterface
 {
+    /** @var int */
     const GRAVITY_NORTHWEST = 1;
-    const GRAVITY_NORTH = 2;
+
+    /** @var int */
+    const GRAVITY_NORTH     = 2;
+
+    /** @var int */
     const GRAVITY_NORTHEAST = 3;
-    const GRAVITY_WEST = 4;
-    const GRAVITY_CENTER = 5;
-    const GRAVITY_EAST = 6;
+
+    /** @var int */
+    const GRAVITY_WEST      = 4;
+
+    /** @var int */
+    const GRAVITY_CENTER    = 5;
+
+    /** @var int */
+    const GRAVITY_EAST      = 6;
+
+    /** @var int */
     const GRAVITY_SOUTHWEST = 7;
-    const GRAVITY_SOUTH = 8;
+
+    /** @var int */
+    const GRAVITY_SOUTH     = 8;
+
+    /** @var int */
     const GRAVITY_SOUTHEAST = 9;
 
     /**
-     * Get the mode
+     * Get the Gravity mode.
      *
      * @return int mode defined by one of the GravityInterface::GRAVITY_*
      * constants.
@@ -39,7 +56,7 @@ interface GravityInterface
     public function getMode();
 
     /**
-     * getPoint
+     * Get the top left point of a target size from a given source size.
      *
      * @param SizeInterface $source
      * @param SizeInterface $target

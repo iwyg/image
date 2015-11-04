@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -18,13 +18,14 @@ use Thapp\Image\Exception\ImageException;
 /**
  * @class AbstractSource
  *
- * @package Thapp\Image\Driver
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 abstract class AbstractSource implements SourceInterface
 {
-    protected $reader;
+    /** @var MetaDataReaderInterface */
+    private $reader;
 
     /**
      * Constructor.
@@ -33,11 +34,7 @@ abstract class AbstractSource implements SourceInterface
      */
     public function __construct(MetaDataReaderInterface $reader = null)
     {
-        if (null !== $reader) {
-            $this->reader = $reader;
-        } else {
-            $this->getReader();
-        }
+        $this->reader = $reader ?: $this->getReader();
     }
 
     /**
@@ -50,8 +47,9 @@ abstract class AbstractSource implements SourceInterface
         $meta = stream_get_meta_data($resource);
 
         try {
+            // NOTE:
             // e.g. Gmagick::readImageFile may cause segfault error.
-            // GD has no opton to read file streams.
+            // GD has no option to read file streams.
             if (isset($meta['uri']) && stream_is_local($file = $meta['uri'])) {
                 return $this->load($file);
             }
@@ -64,9 +62,9 @@ abstract class AbstractSource implements SourceInterface
     /**
      * validateStream
      *
-     * @param mixed $resource
+     * @param resource $resource
      *
-     * @return boolean
+     * @return bool
      */
     protected function validateStream($resource)
     {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -27,19 +27,32 @@ use Thapp\Image\Exception\ImageException;
 /**
  * @class AbstractImage
  *
- * @package Thapp\Image\Driver
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 abstract class AbstractImage implements ImageInterface
 {
-    protected $edit;
-    protected $format;
-    protected $frames;
-    protected $gravity;
-    protected $palette;
-    protected $meta;
+    /** @var array */
     protected static $orients;
+
+    /** @var string */
+    protected $format;
+
+    /** @var \Thapp\Image\Driver\FramesInterface */
+    protected $frames;
+
+    /** @var \Thapp\Image\Geometry\GravityInterface */
+    protected $gravity;
+
+    /** @var \Thapp\Image\Color\Palette\PaletteInterface */
+    protected $palette;
+
+    /** @var \Thapp\Image\Info\MetaDataInterface */
+    protected $meta;
+
+    /** @var \Thapp\Image\Driver\EditInterface */
+    protected $edit;
 
     /**
      * {@inheritdoc}
@@ -147,6 +160,7 @@ abstract class AbstractImage implements ImageInterface
     public function edit()
     {
         if (null === $this->edit) {
+            /** @var EditInterface */
             $this->edit = $this->newEdit();
         }
 

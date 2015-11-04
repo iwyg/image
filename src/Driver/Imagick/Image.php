@@ -48,8 +48,10 @@ class Image extends AbstractImage
 {
     use HelperTrait;
 
+    /** @var array */
     private static $typeMap;
 
+    /** @var array */
     private static $interlaceMap = [
         self::INTERLACE_NO        => Imagick::INTERLACE_NO,
         self::INTERLACE_LINE      => Imagick::INTERLACE_LINE,
@@ -57,12 +59,14 @@ class Image extends AbstractImage
         self::INTERLACE_PARTITION => Imagick::INTERLACE_PARTITION
     ];
 
+    /** @var array */
     private static $cspaceMap = [
         PaletteInterface::PALETTE_RGB       => Imagick::COLORSPACE_SRGB,
         PaletteInterface::PALETTE_CMYK      => Imagick::COLORSPACE_CMYK,
         PaletteInterface::PALETTE_GRAYSCALE => Imagick::COLORSPACE_GRAY,
     ];
 
+    /** @var array */
     private static $orientMap = [
         Imagick::ORIENTATION_UNDEFINED   => self::ORIENT_UNDEFINED,
         Imagick::ORIENTATION_TOPLEFT     => self::ORIENT_TOPLEFT,
@@ -75,6 +79,7 @@ class Image extends AbstractImage
         Imagick::ORIENTATION_LEFTBOTTOM  => self::ORIENT_LEFTBOTTOM
     ];
 
+    /** @var Imagick */
     private $imagick;
 
     /**
@@ -90,7 +95,6 @@ class Image extends AbstractImage
         $this->meta  = $meta ?: new MetaData([]);
         $this->setImageColorspace($palette);
         $this->frames  = new Frames($this);
-        $this->channel = $this->imagick->getImageAlphaChannel();
     }
 
     /**
@@ -126,7 +130,7 @@ class Image extends AbstractImage
     /**
      * {@inheritdoc}
      *
-     * If ImageMagick was not compiled with little-cms support,
+     * NOTE: If ImageMagick was not compiled with little-cms support,
      * this will do nothing.
      * Make shure the lcms delegate is available:
      * convert -list configure | grep DELEGATES
@@ -283,7 +287,6 @@ class Image extends AbstractImage
     public function swapImagick(Imagick $imagick)
     {
         if (null !== $this->imagick) {
-
             if ($this->imagick->getColorspace() !== $imagick->getColorspace()) {
                 //throw new ImageException('Cannot swap imagick, colospace missmatch.');
             }

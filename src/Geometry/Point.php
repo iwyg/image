@@ -70,6 +70,9 @@ class Point implements PointInterface
         return new static(0 !== $x ? -$x : 0, 0 !== $y ? -$y : 0);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function abs()
     {
         $x = $this->getX();

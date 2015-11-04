@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -21,14 +21,16 @@ use Thapp\Image\Geometry\GravityInterface;
 /**
  * @class AbstractEdit
  *
- * @package Thapp\Image\Driver
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 abstract class AbstractEdit implements EditInterface
 {
+    /** @var string */
     const COLOR_NONE = 'None';
 
+    /** @var \Thapp\Image\Driver\ImageInterface */
     protected $image;
 
     /**

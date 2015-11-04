@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Metrics package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,7 +14,7 @@ namespace Thapp\Image\Geometry;
 /**
  * @class SizeInterface
  *
- * @package Thapp\Image\Metrics
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -62,7 +62,9 @@ interface SizeInterface
     /**
      * increaseByWidth
      *
-     * @param mixed $width
+     * This method MUST return a new instance of SizeInterface.
+     *
+     * @param int $width
      *
      * @return SizeInterface
      */
@@ -71,7 +73,9 @@ interface SizeInterface
     /**
      * increaseByHeight
      *
-     * @param mixed $height
+     * This method MUST return a new instance of SizeInterface.
+     *
+     * @param int $height
      *
      * @return SizeInterface
      */
@@ -93,7 +97,7 @@ interface SizeInterface
      * @param SizeInterface $box
      * @param PointInterface $point
      *
-     * @return boolean
+     * @return bool
      */
     public function contains(SizeInterface $box, PointInterface $point = null);
 
@@ -110,6 +114,8 @@ interface SizeInterface
     /**
      * fill
      *
+     * This method MUST return a new instance of SizeInterface.
+     *
      * @param SizeInterface $target
      *
      * @return SizeInterface
@@ -119,6 +125,8 @@ interface SizeInterface
     /**
      * fit
      *
+     * This method MUST return a new instance of SizeInterface.
+     *
      * @param SizeInterface $target
      *
      * @return SizeInterface
@@ -126,7 +134,9 @@ interface SizeInterface
     public function fit(SizeInterface $target);
 
     /**
-     * rotate
+     * Rotates the quadrant.
+     *
+     * This method MUST return a new instance of SizeInterface.
      *
      * @param float $deg
      *
