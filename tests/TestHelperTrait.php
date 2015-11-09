@@ -40,8 +40,7 @@ trait TestHelperTrait
         $im = system('which convert');
         ob_end_clean();
 
-        //if ('' === trim($im) || (!isset($_ENV['IMAGE_DRIVER']) || 'im' !== $_ENV['IMAGE_DRIVER'])) {
-        if ('' === trim($im)) {
+        if ('' === trim($im) || (!isset($_ENV['IMAGE_DRIVER']) || 'im' !== $_ENV['IMAGE_DRIVER'])) {
             $this->markTestSkipped($message);
         }
     }

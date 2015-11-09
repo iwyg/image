@@ -148,7 +148,6 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
 
         $color = $edit->getImage()->getColorAt(new Point(300, 300));
         $this->markTestIncomplete();
-        var_dump($color->getAlpha());
         $this->assertTrue(1.0 === $color->getAlpha());
     }
 
