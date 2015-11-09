@@ -11,6 +11,8 @@
 
 namespace Thapp\Image\Driver;
 
+use Countable;
+
 /**
  * @interface FramesInterface
  *
@@ -18,7 +20,7 @@ namespace Thapp\Image\Driver;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-interface FramesInterface extends \Countable, \Iterator
+interface FramesInterface extends Countable, \Iterator
 {
     /**
      * merge

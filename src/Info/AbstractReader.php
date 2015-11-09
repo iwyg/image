@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Meta package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,7 +14,7 @@ namespace Thapp\Image\Info;
 /**
  * @class AbstractReader
  *
- * @package Thapp\Image\Meta
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -33,11 +33,11 @@ abstract class AbstractReader implements MetaDataReaderInterface
     }
 
     /**
-     * getStreamUri
+     * Get the stream url.
      *
-     * @param mixed $resource
+     * @param resource $resource
      *
-     * @return void
+     * @return string
      */
     protected function getStreamUri($resource)
     {
@@ -50,6 +50,13 @@ abstract class AbstractReader implements MetaDataReaderInterface
         return $meta['uri'];
     }
 
+    /**
+     * map
+     *
+     * @param array $data
+     *
+     * @return array
+     */
     protected function map(array $data)
     {
         foreach ($this->getMappedKeys() as $key => $value) {
@@ -62,5 +69,10 @@ abstract class AbstractReader implements MetaDataReaderInterface
         return $data;
     }
 
+    /**
+     * Get the keys that should be reflected in the meta data array.
+     *
+     * @return array
+     */
     abstract protected function getMappedKeys();
 }

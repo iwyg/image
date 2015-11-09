@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -32,11 +32,11 @@ use Thapp\Image\Exception\ImageException;
 /**
  * @class Image
  *
- * @package Thapp\Image\Driver\Im
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Image extends AbstractImage
+class Image extends AbstractImage implements ImageInterface
 {
     /** @var SizeInterface */
     private $size;
@@ -176,6 +176,7 @@ class Image extends AbstractImage
 
         $conv->addCommand(new ColorAt($pixel));
         $conv->setSource(new File($this->file));
+        $conv->setTarget(new File(''));
 
         try {
             $color = $conv->run();

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Imagick package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -12,25 +12,12 @@
 namespace Thapp\Image\Driver\Imagick;
 
 use Imagick;
-use ImagickPixel;
 use ImagickException;
-use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
-use Thapp\Image\Geometry\SizeInterface;
 use Thapp\Image\Geometry\PointInterface;
-use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Driver\AbstractImage;
-use Thapp\Image\Filter\FilterInterface;
-use Thapp\Image\Filter\ImagickFilter;
 use Thapp\Image\Color\ColorInterface;
-use Thapp\Image\Color\RgbInterface;
-use Thapp\Image\Color\CmykInterface;
-use Thapp\Image\Color\GrayscaleInterface;
 use Thapp\Image\Color\Palette\PaletteInterface;
-use Thapp\Image\Color\Palette\RgbPaletteInterface;
-use Thapp\Image\Color\Palette\CmykPaletteInterface;
-use Thapp\Image\Color\Palette\GrayscalePaletteInterface;
-use Thapp\Image\Color\Palette\Rgb as RgbPalette;
 use Thapp\Image\Color\Profile\ProfileInterface;
 use Thapp\Image\Color\Profile\Profile;
 use Thapp\Image\Info\MetaData;
@@ -40,7 +27,7 @@ use Thapp\Image\Exception\ImageException;
 /**
  * @class Image
  *
- * @package Thapp\Image\Driver\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -92,9 +79,10 @@ class Image extends AbstractImage
     public function __construct(Imagick $imagick, PaletteInterface $palette, MetaDataInterface $meta = null)
     {
         $this->imagick = $imagick;
-        $this->meta  = $meta ?: new MetaData([]);
-        $this->setImageColorspace($palette);
         $this->frames  = new Frames($this);
+        $this->meta    = $meta ?: new MetaData([]);
+
+        $this->setImageColorspace($palette);
     }
 
     /**
@@ -105,8 +93,8 @@ class Image extends AbstractImage
     public function __clone()
     {
         $this->imagick  = $this->cloneImagick();
-        $this->frames   = new Frames($this);
         $this->meta     = clone $this->meta;
+        $this->frames   = new Frames($this);
     }
 
     /**

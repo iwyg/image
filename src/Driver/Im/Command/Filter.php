@@ -1,9 +1,9 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im\Command package
+ * This File is part of the Thapp\Image package
  *
- * (c)  <>
+ * (c) iwyg <mail@thomas-appel.com>
  *
  * For full copyright and license information, please refer to the LICENSE file
  * that was distributed with this package.
@@ -14,17 +14,13 @@ namespace Thapp\Image\Driver\Im\Command;
 /**
  * @class Filter
  *
- * @package Thapp\Image\Driver\Im\Command
+ * @package Thapp\Image
  * @version $Id$
- * @author  <>
+ * @author iwyg <mail@thomas-appel.com>
  */
 class Filter extends AbstractCommand
 {
-    /**
-     * filter
-     *
-     * @var string
-     */
+    /** @var string */
     private $filter;
 
     /**

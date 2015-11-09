@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Driver\Im;
 
+use InvalidArgumentException;
 use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\SizeInterface;
@@ -24,8 +25,8 @@ use Thapp\Image\Driver\Im\Command\Extent;
 use Thapp\Image\Driver\Im\Command\Resize;
 use Thapp\Image\Driver\Im\Command\Rotate;
 use Thapp\Image\Driver\Im\Command\Background;
-use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Driver\MagickHelper;
+use Thapp\Image\Driver\ImageInterface as BaseImageInterface;
 
 /**
  * @class Edit
@@ -44,9 +45,9 @@ class Edit extends AbstractEdit
     /**
      * Constructor.
      *
-     * @param Image $image
+     * @param ImageInterface $image
      */
-    public function __construct(Image $image)
+    public function __construct(ImageInterface $image)
     {
         $this->image = $image;
     }
@@ -100,8 +101,11 @@ class Edit extends AbstractEdit
     /**
      * {@inheritdoc}
      */
-    public function paste(ImageInterface $image, PointInterface $start = null)
+    public function paste(BaseImageInterface $image, PointInterface $start = null)
     {
+        if (false === $image instanceof ImageInterface) {
+            throw new InvalidArgumentException('Can\'t copy image from different driver.');
+        }
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Exception package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -11,23 +11,25 @@
 
 namespace Thapp\Image\Exception;
 
+use Exception;
+
 /**
  * @class ImageException
  *
- * @package Thapp\Image\Exception
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class ImageException extends \Exception
+class ImageException extends Exception
 {
     /**
      * read
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return ImageException
      */
-    public static function read(\Exception $previous = null)
+    public static function read(Exception $previous = null)
     {
         return new static('Reading image from file handle failed.', $previous ? $previous->getCode() : null, $previous);
     }
@@ -35,11 +37,11 @@ class ImageException extends \Exception
     /**
      * load
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return ImageException
      */
-    public static function load(\Exception $previous = null)
+    public static function load(Exception $previous = null)
     {
         return new static('Loading image from file failed.', $previous ? $previous->getCode() : null, $previous);
     }
@@ -47,11 +49,11 @@ class ImageException extends \Exception
     /**
      * resource
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return ImageException
      */
-    public static function create(\Exception $previous = null)
+    public static function create(Exception $previous = null)
     {
         return new static('Creating image resource failed.', $previous ? $previous->getCode() : null, $previous);
     }
@@ -59,23 +61,23 @@ class ImageException extends \Exception
     /**
      * resource
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return ImageException
      */
-    public static function resource(\Exception $previous = null)
+    public static function resource(Exception $previous = null)
     {
         return new static('Supplied resource is invalid.', $previous ? $previous->getCode() : null, $previous);
     }
 
     /**
-     * resource
+     * output
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return ImageException
      */
-    public static function output(\Exception $previous = null)
+    public static function output(Exception $previous = null)
     {
         return new static('Can\'t generate image contents.', $previous ? $previous->getCode() : null, $previous);
     }

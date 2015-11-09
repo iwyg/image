@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Gd package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -13,12 +13,9 @@ namespace Thapp\Image\Driver\Gd;
 
 use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
-use Thapp\Image\Geometry\Gravity;
 use Thapp\Image\Geometry\SizeInterface;
 use Thapp\Image\Geometry\PointInterface;
-use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Color\ColorInterface;
-use Thapp\Image\Color\RgbInterface;
 use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Exception\ImageException;
@@ -26,7 +23,7 @@ use Thapp\Image\Exception\ImageException;
 /**
  * @class Edit
  *
- * @package Thapp\Image\Driver\Gd
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -178,9 +175,9 @@ class Edit extends AbstractEdit
     }
 
     /**
-     * imagick
+     * Get the GD resource
      *
-     * @return \Imagick
+     * @return resource the GD resource.
      */
     private function gd()
     {

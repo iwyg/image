@@ -12,8 +12,8 @@
 namespace Thapp\Image\Driver;
 
 use Thapp\Image\Info\ImageReader;
-use Thapp\Image\Info\MetaDataReaderInterface;
 use Thapp\Image\Exception\ImageException;
+use Thapp\Image\Info\MetaDataReaderInterface;
 
 /**
  * @class AbstractSource

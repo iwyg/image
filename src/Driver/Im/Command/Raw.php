@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im\Command package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,14 +14,20 @@ namespace Thapp\Image\Driver\Im\Command;
 /**
  * @class Raw
  *
- * @package Thapp\Image\Driver\Im\Command
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Raw extends AbstractCommand
 {
+    /* @var string */
     private $string;
 
+    /**
+     * Constructor.
+     *
+     * @param string $string
+     */
     public function __construct($string)
     {
         $this->string = $string;

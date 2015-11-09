@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Imagick package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -18,22 +18,17 @@ use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\SizeInterface;
 use Thapp\Image\Geometry\PointInterface;
-use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Driver\AbstractEdit;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Driver\MagickHelper;
 use Thapp\Image\Color\ColorInterface;
-use Thapp\Image\Color\RgbInterface;
-use Thapp\Image\Color\CmykInterface;
 use Thapp\Image\Color\Palette\Rgb;
-use Thapp\Image\Color\Parser;
 use Thapp\Image\Exception\ImageException;
-use Thapp\Image\Color\Palette\CmykPaletteInterface;
 
 /**
  * @class Edit
  *
- * @package Thapp\Image\Driver\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -86,18 +81,6 @@ class Edit extends AbstractEdit
 
         $this->imagick()->extentImage($size->getWidth(), $size->getHeight(), -$point->getX(), -$point->getY());
     }
-
-    ///**
-    // * {@inheritdoc}
-    // */
-    //public function canvas(SizeInterface $size, PointInterface $start = null, ColorInterface $color = null)
-    //{
-    //    try {
-    //        $this->createCanvas($size, $this->getStartPoint($size, $start), $color, Imagick::COMPOSITE_OVER);
-    //    } catch (ImagickException $e) {
-    //        throw new ImageException('Cannot create canvas.', $e->getCode(), $e);
-    //    }
-    //}
 
     /**
      * {@inheritdoc}
@@ -225,18 +208,29 @@ class Edit extends AbstractEdit
      *
      * @return void
      */
-    protected function createCanvas(
-        SizeInterface $size,
-        PointInterface $point,
-        ColorInterface $color = null,
-        $mode = Imagick::COMPOSITE_OVER
-    ) {
+    protected function createCanvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null, $mode = Imagick::COMPOSITE_OVER)
+    {
         $canvas = new Imagick();
 
         $color = null !== $color ? $this->pixelFromColor($color) : new ImagickPixel('srgba(255, 255, 255, 0)');
         $canvas->newImage($size->getWidth(), $size->getHeight(), $color);
 
         $this->doCopy($canvas, $this->imagick(), $point, $mode);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getMagickFilters()
+    {
+        return [
+            Imagick::FILTER_UNDEFINED, Imagick::FILTER_POINT,    Imagick::FILTER_BOX,
+            Imagick::FILTER_TRIANGLE,  Imagick::FILTER_HERMITE,  Imagick::FILTER_HANNING,
+            Imagick::FILTER_HAMMING,   Imagick::FILTER_BLACKMAN, Imagick::FILTER_GAUSSIAN,
+            Imagick::FILTER_QUADRATIC, Imagick::FILTER_CUBIC,    Imagick::FILTER_CATROM,
+            Imagick::FILTER_MITCHELL,  Imagick::FILTER_LANCZOS,  Imagick::FILTER_BESSEL,
+            Imagick::FILTER_SINC
+        ];
     }
 
     /**
@@ -267,51 +261,15 @@ class Edit extends AbstractEdit
         return $map[$filter];
     }
 
-    ///**
-    // * mapMode
-    // *
-    // * @param string $mode
-    // *
-    // * @return int
-    // */
-    //private function mapMode($mode)
-    //{
-    //    if (array_key_exists($mode, $map = [
-    //        self::COPY_DEFAULT => Imagick::COMPOSITE_COPY,
-    //        self::COPY_OVER    => Imagick::COMPOSITE_OVER,
-    //        self::COPY_OVERLAY => Imagick::COMPOSITE_OVERLAY
-    //    ])
-    //    ) {
-    //        return $map[$mode];
-    //    }
-
-    //    return Imagick::COMPOSITE_DEFAULT;
-    //}
-
     /**
      * newPixel
      *
      * @param ColorInterface $color
      *
-     * @return ImagickPixel
+     * @return \ImagickPixel
      */
     private function newPixel(ColorInterface $color)
     {
         return $color ? $this->pixelFromColor($color) : new ImagickPixel(self::COLOR_NONE);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getMagickFilters()
-    {
-        return [
-            Imagick::FILTER_UNDEFINED, Imagick::FILTER_POINT,    Imagick::FILTER_BOX,
-            Imagick::FILTER_TRIANGLE,  Imagick::FILTER_HERMITE,  Imagick::FILTER_HANNING,
-            Imagick::FILTER_HAMMING,   Imagick::FILTER_BLACKMAN, Imagick::FILTER_GAUSSIAN,
-            Imagick::FILTER_QUADRATIC, Imagick::FILTER_CUBIC,    Imagick::FILTER_CATROM,
-            Imagick::FILTER_MITCHELL,  Imagick::FILTER_LANCZOS,  Imagick::FILTER_BESSEL,
-            Imagick::FILTER_SINC
-        ];
     }
 }

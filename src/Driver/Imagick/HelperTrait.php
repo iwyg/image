@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Imagick package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -21,12 +21,13 @@ use Thapp\Image\Color\ColorInterface;
 /**
  * @class ImagickHelperTrait
  *
- * @package Thapp\Image\Driver\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 trait HelperTrait
 {
+    /** @var array **/
     private static $colorMap = [
         ColorInterface::CHANNEL_RED     => Imagick::COLOR_RED,
         ColorInterface::CHANNEL_GREEN   => Imagick::COLOR_GREEN,
@@ -39,9 +40,12 @@ trait HelperTrait
         ColorInterface::CHANNEL_GRAY    => Imagick::COLOR_RED
     ];
 
+    /** @var array **/
     private static $matteTypes = [
-        Imagick::IMGTYPE_PALETTEMATTE => true, Imagick::IMGTYPE_COLORSEPARATIONMATTE => true,
-        Imagick::IMGTYPE_TRUECOLORMATTE => true, Imagick::IMGTYPE_GRAYSCALEMATTE => true
+        Imagick::IMGTYPE_PALETTEMATTE         => true,
+        Imagick::IMGTYPE_COLORSEPARATIONMATTE => true,
+        Imagick::IMGTYPE_TRUECOLORMATTE       => true,
+        Imagick::IMGTYPE_GRAYSCALEMATTE       => true
     ];
 
     /**
@@ -67,7 +71,7 @@ trait HelperTrait
      *
      * @param ColorInterface $color
      *
-     * @return void
+     * @return \ImagickPixel
      */
     private function pixelFromColor(ColorInterface $color)
     {
@@ -91,7 +95,7 @@ trait HelperTrait
      *
      * @param ImagickPixel $px
      *
-     * @return void
+     * @return \Thapp\Image\Color\ColorInterface
      */
     private function colorFromPixel(ImagickPixel $px)
     {

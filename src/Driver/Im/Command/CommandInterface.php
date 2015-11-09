@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im\Command package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -12,13 +12,18 @@
 namespace Thapp\Image\Driver\Im\Command;
 
 /**
- * @class CommandInterface
+ * @interface CommandInterface
  *
- * @package Thapp\Image\Driver\Im\Command
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 interface CommandInterface
 {
+    /**
+     * Get command as string.
+     *
+     * @return string
+     */
     public function __toString();
 }

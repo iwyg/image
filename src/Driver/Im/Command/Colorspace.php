@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im\Command package
+ * This File is part of the Thapp\Image\Driver package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -11,24 +11,26 @@
 
 namespace Thapp\Image\Driver\Im\Command;
 
+use InvalidArgumentException;
 use Thapp\Image\Color\Palette\PaletteInterface;
 
 /**
  * @class Colorspace
  *
- * @package Thapp\Image\Driver\Im\Command
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Colorspace extends AbstractCommand
 {
-    /**
-     * palette
-     *
-     * @var PaletteInterface
-     */
+    /** @var PaletteInterface */
     private $palette;
 
+    /**
+     * Constructor.
+     *
+     * @param PaletteInterface $palette
+     */
     public function __construct(PaletteInterface $palette)
     {
         $this->palette = $palette;
@@ -53,7 +55,7 @@ class Colorspace extends AbstractCommand
      */
     private function translateColorspace(PaletteInterface $palette)
     {
-        switch($palette->getConstant()) {
+        switch ($palette->getConstant()) {
             case PaletteInterface::PALETTE_RGB:
                 return 'RGB';
             case PaletteInterface::PALETTE_CMYK:
@@ -64,6 +66,6 @@ class Colorspace extends AbstractCommand
                 break;
         }
 
-        throw new \InvalidArgumentException('Colorspace is not supported.');
+        throw new InvalidArgumentException('Colorspace is not supported.');
     }
 }

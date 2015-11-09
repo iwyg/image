@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im\Command package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,16 +14,26 @@ namespace Thapp\Image\Driver\Im\Command;
 /**
  * @class AbstractCommand
  *
- * @package Thapp\Image\Driver\Im\Command
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 abstract class AbstractCommand implements CommandInterface
 {
+    /**
+     * Return command es string.
+     *
+     * @return string
+     */
     public function __toString()
     {
         return $this->asString();
     }
 
+    /**
+     * @see as string
+     *
+     * @return string
+     */
     abstract public function asString();
 }

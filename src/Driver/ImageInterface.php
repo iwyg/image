@@ -28,44 +28,114 @@ use Thapp\Image\Color\Profile\ProfileInterface;
  */
 interface ImageInterface
 {
-    const FORMAT_JPEG = 'jpeg';
-    const FORMAT_PNG  = 'png';
-    const FORMAT_GIF  = 'gif';
-    const FORMAT_TIFF = 'tiff';
-    const FORMAT_WBMP = 'wbmp';
-    const FORMAT_WEBP = 'webp';
-    const FORMAT_XBM  = 'xbm';
+    /** @var string */
+    const FORMAT_JPEG         = 'jpeg';
 
-    const FILTER_UNDEFINED = 0;
-    const FILTER_POINT = 1;
-    const FILTER_BOX = 2;
-    const FILTER_TRIANGLE = 3;
-    const FILTER_HERMITE = 4;
-    const FILTER_HANNING = 5;
-    const FILTER_HAMMING = 6;
-    const FILTER_BLACKMAN = 7;
-    const FILTER_GAUSSIAN = 8;
-    const FILTER_QUADRATIC = 9;
-    const FILTER_CUBIC = 10;
-    const FILTER_CATROM = 11;
-    const FILTER_MITCHELL = 12;
-    const FILTER_LANCZOS = 13;
-    const FILTER_BESSEL = 14;
-    const FILTER_SINC = 15;
+    /** @var string */
+    const FORMAT_PNG          = 'png';
 
-    const ORIENT_UNDEFINED = 0;
-    const ORIENT_TOPLEFT = 1;
-    const ORIENT_TOPRIGHT = 2;
-    const ORIENT_BOTTOMRIGHT = 3;
-    const ORIENT_BOTTOMLEFT = 4;
-    const ORIENT_LEFTTOP = 5;
-    const ORIENT_RIGHTTOP = 6;
-    const ORIENT_RIGHTBOTTOM = 7;
-    const ORIENT_LEFTBOTTOM = 8;
+    /** @var string */
+    const FORMAT_GIF          = 'gif';
 
-    const INTERLACE_NO = 0;
-    const INTERLACE_LINE = 1;
-    const INTERLACE_PLANE = 2;
+    /** @var string */
+    const FORMAT_TIFF         = 'tiff';
+
+    /** @var string */
+    const FORMAT_WBMP         = 'wbmp';
+
+    /** @var string */
+    const FORMAT_WEBP         = 'webp';
+
+    /** @var string */
+    const FORMAT_XBM          = 'xbm';
+
+    /** @var int */
+    const FILTER_UNDEFINED    = 0;
+
+    /** @var int */
+    const FILTER_POINT        = 1;
+
+    /** @var int */
+    const FILTER_BOX          = 2;
+
+    /** @var int */
+    const FILTER_TRIANGLE     = 3;
+
+    /** @var int */
+    const FILTER_HERMITE      = 4;
+
+    /** @var int */
+    const FILTER_HANNING      = 5;
+
+    /** @var int */
+    const FILTER_HAMMING      = 6;
+
+    /** @var int */
+    const FILTER_BLACKMAN     = 7;
+
+    /** @var int */
+    const FILTER_GAUSSIAN     = 8;
+
+    /** @var int */
+    const FILTER_QUADRATIC    = 9;
+
+    /** @var int */
+    const FILTER_CUBIC        = 10;
+
+    /** @var int */
+    const FILTER_CATROM       = 11;
+
+    /** @var int */
+    const FILTER_MITCHELL     = 12;
+
+    /** @var int */
+    const FILTER_LANCZOS      = 13;
+
+    /** @var int */
+    const FILTER_BESSEL       = 14;
+
+    /** @var int */
+    const FILTER_SINC         = 15;
+
+
+    /** @var int */
+    const ORIENT_UNDEFINED    = 0;
+
+    /** @var int */
+    const ORIENT_TOPLEFT      = 1;
+
+    /** @var int */
+    const ORIENT_TOPRIGHT     = 2;
+
+    /** @var int */
+    const ORIENT_BOTTOMRIGHT  = 3;
+
+    /** @var int */
+    const ORIENT_BOTTOMLEFT   = 4;
+
+    /** @var int */
+    const ORIENT_LEFTTOP      = 5;
+
+    /** @var int */
+    const ORIENT_RIGHTTOP     = 6;
+
+    /** @var int */
+    const ORIENT_RIGHTBOTTOM  = 7;
+
+    /** @var int */
+    const ORIENT_LEFTBOTTOM   = 8;
+
+
+    /** @var int */
+    const INTERLACE_NO        = 0;
+
+    /** @var int */
+    const INTERLACE_LINE      = 1;
+
+    /** @var int */
+    const INTERLACE_PLANE     = 2;
+
+    /** @var int */
     const INTERLACE_PARTITION = 2;
 
     /**
@@ -251,6 +321,14 @@ interface ImageInterface
      * @return void
      */
     public function applyPalette(PaletteInterface $palette);
+
+    /**
+     * Applies a color profile to the image.
+     *
+     * @param ProfileInterface $profile
+     *
+     * @return void
+     */
     public function applyProfile(ProfileInterface $profile);
 
     /**

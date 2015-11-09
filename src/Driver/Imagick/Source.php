@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Imagick package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -24,7 +24,7 @@ use Thapp\Image\Exception\ImageException;
 /**
  * @class Source
  *
- * @package Thapp\Image\Driver\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */

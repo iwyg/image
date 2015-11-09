@@ -12,7 +12,7 @@
 namespace Thapp\Image\Info;
 
 /**
- * @class MetaDataReaderInterface
+ * @interface MetaDataReaderInterface
  *
  * @package Thapp\Image
  * @version $Id$
@@ -21,29 +21,29 @@ namespace Thapp\Image\Info;
 interface MetaDataReaderInterface
 {
     /**
-     * readFromFile
+     * Read from a given file path.
      *
-     * @param string $file
+     * @param string $file the file path
      *
-     * @return MetaDataInterface
+     * @return \Thapp\Image\Info\MetaDataInterface
      */
     public function readFromFile($file);
 
     /**
-     * readFromBlob
+     * Read from a given file blob.
      *
-     * @param string $blob
+     * @param string $blob the file content
      *
-     * @return MetaDataInterface
+     * @return \Thapp\Image\Info\MetaDataInterface
      */
     public function readFromBlob($blob);
 
     /**
-     * readFromResource
+     * Read from a given input stream.
      *
-     * @param mixed $resource
+     * @param stream $resource stream resource
      *
-     * @return MetaDataInterface
+     * @return \Thapp\Image\Info\MetaDataInterface
      */
     public function readFromStream($resource);
 }

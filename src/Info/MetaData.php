@@ -21,8 +21,14 @@ namespace Thapp\Image\Info;
  */
 class MetaData implements MetaDataInterface
 {
+    /** @var array */
     private $attributes;
 
+    /**
+     * Constructor.
+     *
+     * @param array $attributes
+     */
     public function __construct(array $attributes = [])
     {
         $this->attributes = $attributes;

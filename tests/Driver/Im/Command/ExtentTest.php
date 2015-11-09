@@ -30,10 +30,7 @@ class ExtentTest extends \PHPUnit_Framework_TestCase
      */
     public function itShouldCompileToString($w, $h, $x, $y, $expected)
     {
-        $size = new Size($w, $h);
-        $point = new Point($x, $y);
-
-        $extent = new Extent($size, $point);
+        $extent = new Extent($size = new Size($w, $h), $point = new Point($x, $y));
 
         $this->assertSame($expected, $extent->asString());
     }

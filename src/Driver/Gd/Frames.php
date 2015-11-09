@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Gd package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Driver\Gd;
 
+use LogicException;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Driver\AbstractFrames;
 use Thapp\Image\Driver\FramesInterface;
@@ -18,12 +19,13 @@ use Thapp\Image\Driver\FramesInterface;
 /**
  * @class Frames
  *
- * @package Thapp\Image\Driver\Gd
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Frames extends AbstractFrames
 {
+    /** @var ImageInterface */
     private $image;
 
     /**
@@ -39,11 +41,11 @@ class Frames extends AbstractFrames
 
     /**
      * {@inheritdoc}
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function set($index, ImageInterface $image)
     {
-        throw new \LogicException(sprintf('%s doesn\'t support multiple images', get_class($this)));
+        throw new LogicException(sprintf('%s doesn\'t support multiple images', get_class($this)));
     }
 
     /**
@@ -92,4 +94,3 @@ class Frames extends AbstractFrames
         return $this->image;
     }
 }
-

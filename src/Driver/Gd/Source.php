@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Imagick package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Driver\Gd;
 
+use RuntimeException;
 use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Color\Palette\Rgb;
 use Thapp\Image\Driver\AbstractSource;
@@ -19,7 +20,7 @@ use Thapp\Image\Exception\ImageException;
 /**
  * @class Source
  *
- * @package Thapp\Image\Driver\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -62,13 +63,13 @@ class Source extends AbstractSource
     }
 
     /**
-     * postProcess
+     * post process GD resource creation
      *
      * @param resource GD resource $gd
      *
      * @return void
      */
-    protected function postProcess(&$gd)
+    private function postProcess(&$gd)
     {
         if (!is_resource($gd) || !$this->ensureTrueColor($gd)) {
             throw new ImageException('Can\'t prepare image.');
@@ -79,13 +80,13 @@ class Source extends AbstractSource
     }
 
     /**
-     * ensureTrueColor
+     * Ensures GD resource has TrueColor
      *
-     * @param mixed $gd
+     * @param resource $gd
      *
-     * @return void
+     * @return bool
      */
-    protected function ensureTrueColor(&$gd)
+    private function ensureTrueColor(&$gd)
     {
         if (imageistruecolor($gd)) {
             return true;
@@ -95,13 +96,13 @@ class Source extends AbstractSource
     }
 
     /**
-     * getMimeFromFile
+     * Get the MimeType from file path.
      *
      * @param string $file
      *
      * @return string
      */
-    protected function getMimeFromFile($file)
+    private function getMimeFromFile($file)
     {
         $handle = fopen($file, 'r');
         $mime = $this->getMimeFromBlob(fread($handle, 8));
@@ -111,13 +112,13 @@ class Source extends AbstractSource
     }
 
     /**
-     * getMimeFromBlob
+     * Get the MimeType from blob.
      *
      * @param string $blob
      *
      * @return string
      */
-    protected function getMimeFromBlob($blob)
+    private function getMimeFromBlob($blob)
     {
         $info = finfo_open(FILEINFO_MIME);
 
@@ -132,20 +133,20 @@ class Source extends AbstractSource
     }
 
     /**
-     * gdCreateFromBlob
+     * Creates a GD resource from a blob.
      *
      * @param string $blob
      *
      * @return resource GD resource
      */
-    protected function gdCreateFromBlob(&$blob)
+    private function gdCreateFromBlob(&$blob)
     {
         if (!$mime = $this->getMimeFromBlob(mb_substr($blob, 0, 8, '8bit'))) {
-            throw new \RuntimeException('Cannot detect image type.');
+            throw new RuntimeException('Cannot detect image type.');
         }
 
         if (!$gd = imagecreatefromstring($blob)) {
-            throw new \RuntimeException;
+            throw new RuntimeException;
         }
 
         $this->postProcess($gd);
@@ -154,26 +155,26 @@ class Source extends AbstractSource
     }
 
     /**
-     * gdCreateFromFile
+     * Creates an GD resource from a given filepath.
      *
      * @param string $file
      * @param string $mime
      *
      * @return resource GD resource
      */
-    protected function gdCreateFromFile($file)
+    private function gdCreateFromFile($file)
     {
         if (!$mime = $this->getMimeFromFile($file)) {
-            throw new \RuntimeException(sprintf('Cannot detect image type for %s.', $file));
+            throw new RuntimeException(sprintf('Cannot detect image type for %s.', $file));
         }
 
 
         if (!function_exists($fn = $this->getCreateFunc($mime))) {
-            throw new \RuntimeException(sprintf('Unsupported image type in  %s.', $file));
+            throw new RuntimeException(sprintf('Unsupported image type in  %s.', $file));
         }
 
         if (!$gd = call_user_func($fn, $file)) {
-            throw new \RuntimeException(sprintf('Createing GD resource failed for %s.', $file));
+            throw new RuntimeException(sprintf('Createing GD resource failed for %s.', $file));
         }
 
         $this->postProcess($gd);
@@ -181,7 +182,14 @@ class Source extends AbstractSource
         return [$gd, $mime];
     }
 
-    protected function getCreateFunc($mime)
+    /**
+     * Get the gd creation function name.
+     *
+     * @param string $mime
+     *
+     * @return string
+     */
+    private function getCreateFunc($mime)
     {
         switch ($mime) {
             case 'image/jpeg':
@@ -209,7 +217,7 @@ class Source extends AbstractSource
      *
      * @return string
      */
-    protected function getImageTypeFromMimetype($mime)
+    private function getImageTypeFromMimetype($mime)
     {
         switch ($mime) {
             case 'image/jpeg':

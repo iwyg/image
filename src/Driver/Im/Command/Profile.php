@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im\Command package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -16,13 +16,16 @@ use Thapp\Image\Color\Profile\ProfileInterface;
 /**
  * @class Profile
  *
- * @package Thapp\Image\Driver\Im\Command
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Profile extends AbstractCommand
 {
+    /** @var string */
     private $path;
+
+    /** @var ProfileInterface */
     private $profile;
 
     /**
@@ -51,7 +54,6 @@ class Profile extends AbstractCommand
     private function profilePath()
     {
         if (null === $this->path) {
-
             if (!stream_is_local($path = $this->profile->getFile())) {
                 $tmp = tmpfile();
                 $meta = stream_get_meta_data($tmp);

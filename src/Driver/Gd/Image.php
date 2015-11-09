@@ -11,6 +11,7 @@
 
 namespace Thapp\Image\Driver\Gd;
 
+use LogicException;
 use Thapp\Image\Geometry\Size;
 use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\SizeInterface;
@@ -21,8 +22,6 @@ use Thapp\Image\Color\ColorInterface;
 use Thapp\Image\Color\Palette\RgbPaletteInterface;
 use Thapp\Image\Color\Palette\PaletteInterface;
 use Thapp\Image\Color\Profile\ProfileInterface;
-use Thapp\Image\Filter\FilterInterface;
-use Thapp\Image\Filter\GdFilter;
 use Thapp\Image\Info\MetaData;
 use Thapp\Image\Info\MetaDataInterface;
 use Thapp\Image\Exception\ImageException;
@@ -38,9 +37,13 @@ class Image extends AbstractImage
 {
     use GdHelper;
 
+    /** @var resource */
     private $gd;
+
+    /** @var string */
     private $sourceFormat;
 
+    /** @var array */
     private static $interlaceMap = [
         self::INTERLACE_NO        => 0,
         self::INTERLACE_LINE      => 1,
@@ -52,24 +55,26 @@ class Image extends AbstractImage
      * Constructor.
      *
      * @param resource $resource GD Image resource
+     * @param RgbPaletteInterface $palette
+     * @param MetaDataInterface $meta
      */
     public function __construct($resource, RgbPaletteInterface $palette, MetaDataInterface $meta = null)
     {
         $this->setResource($resource);
-        $this->meta = $meta ?: new MetaData([]);
         $this->palette = $palette;
-        $this->frames = new Frames($this);
+        $this->meta    = $meta ?: new MetaData([]);
+        $this->frames  = new Frames($this);
     }
 
     /**
-     * __clone
+     * Prepares the image object when cloned.
      *
      * @return void
      */
     public function __clone()
     {
-        $this->gd = $this->cloneGd();
-        $this->meta = clone $this->meta;
+        $this->gd     = $this->cloneGd();
+        $this->meta   = clone $this->meta;
         $this->frames = new Frames($this);
     }
 
@@ -102,10 +107,12 @@ class Image extends AbstractImage
 
     /**
      * {@inheritdoc}
+     * @throws LogicException will always throw as GD does not support color
+     * profiles.
      */
     public function applyProfile(ProfileInterface $profile)
     {
-        throw new \LogicException('GD doesn\'t support profiles');
+        throw new LogicException('GD doesn\'t support profiles');
     }
 
     /**
@@ -154,7 +161,7 @@ class Image extends AbstractImage
     }
 
     /**
-     * getGd
+     * Get the current GD resource
      *
      * @return resource
      */
@@ -164,7 +171,7 @@ class Image extends AbstractImage
     }
 
     /**
-     * swapGd
+     * Swaps the current GD resource
      *
      * @param resource $resource GD image resource
      *
@@ -190,10 +197,11 @@ class Image extends AbstractImage
     }
 
     /**
-     * setSourceFormat
+     * Set the file format of the source image.
      *
      * @internal
-     * @param mixed $format
+     *
+     * @param string $format
      *
      * @return void
      */
@@ -228,6 +236,9 @@ class Image extends AbstractImage
         return $this->generateOutPut(array_merge(['format' => $format], $options));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function newEdit()
     {
         return new Edit($this);
@@ -250,9 +261,9 @@ class Image extends AbstractImage
     }
 
     /**
-     * copyGd
+     * Clone the existing GD resource
      *
-     * @return void
+     * @return resource
      */
     private function cloneGd()
     {
@@ -269,7 +280,7 @@ class Image extends AbstractImage
     /**
      * generateOutPut
      *
-     * @param string $fn
+     * @param array $options
      *
      * @return string
      */
@@ -304,9 +315,10 @@ class Image extends AbstractImage
     }
 
     /**
-     * newFromGd
+     * Create a new GD resource from the existing one.
      *
      * @param SizeInterface $size
+     * @param ColorInterface $color
      *
      * @return resource
      */
@@ -335,7 +347,7 @@ class Image extends AbstractImage
     /**
      * setResource
      *
-     * @param mixed $resource
+     * @param resource $resource
      *
      * @return void
      */
@@ -359,9 +371,9 @@ class Image extends AbstractImage
     /**
      * mapOutputFormat
      *
-     * @param mixed $fmt
+     * @param array $options
      *
-     * @return string
+     * @return array
      */
     private function mapOutputFormat(array $options)
     {
@@ -400,7 +412,7 @@ class Image extends AbstractImage
      *
      * @param array $options
      *
-     * @return void
+     * @return array
      */
     private function getJpegSaveArgs(array $options)
     {
@@ -412,7 +424,7 @@ class Image extends AbstractImage
      *
      * @param array $options
      *
-     * @return void
+     * @return array
      */
     private function getPngSaveArgs(array $options)
     {
@@ -426,11 +438,10 @@ class Image extends AbstractImage
      *
      * @param resource $gd
      *
-     * @return boolean
+     * @return bool
      */
     private function isValidResource($gd)
     {
         return is_resource($gd) && 'gd' === get_resource_type($gd);
     }
-
 }

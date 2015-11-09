@@ -22,11 +22,7 @@ use Thapp\Image\Color\ColorInterface;
  */
 class Canvas extends AbstractCommand
 {
-    /**
-     * color
-     *
-     * @var ColorInterface
-     */
+    /** @var ColorInterface */
     private $color;
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Exception package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -11,12 +11,13 @@
 
 namespace Thapp\Image\Exception;
 
-use \RuntimeException;
+use Exception;
+use RuntimeException;
 
 /**
  * @class SourceException
  *
- * @package Thapp\Image\Exception
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -25,11 +26,11 @@ class SourceException extends RuntimeException
     /**
      * read
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return SourceException
      */
-    public static function read(\Exception $previous = null)
+    public static function read(Exception $previous = null)
     {
         return new static('Reading image from file handle failed.', $previous ? $previous->getCode() : null, $previous);
     }
@@ -37,11 +38,11 @@ class SourceException extends RuntimeException
     /**
      * load
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return SourceException
      */
-    public static function load(\Exception $previous = null)
+    public static function load(Exception $previous = null)
     {
         return new static('Loading image from file failed.', $previous ? $previous->getCode() : null, $previous);
     }
@@ -49,11 +50,11 @@ class SourceException extends RuntimeException
     /**
      * resource
      *
-     * @param \Exception $previous
+     * @param Exception $previous
      *
      * @return SourceException
      */
-    public static function resource(\Exception $previous = null)
+    public static function resource(Exception $previous = null)
     {
         return new static('Creating image resource failed.', $previous ? $previous->getCode() : null, $previous);
     }

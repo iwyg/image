@@ -11,7 +11,16 @@
 
 namespace Thapp\Image\Info;
 
-interface MetaDataInterface extends \ArrayAccess
+use ArrayAccess;
+
+/**
+ * @class MetaDataInterface
+ *
+ * @package Thapp\Image
+ * @version $Id$
+ * @author iwyg <mail@thomas-appel.com>
+ */
+interface MetaDataInterface extends ArrayAccess
 {
     /**
      * Get all attributes as map.
@@ -21,10 +30,10 @@ interface MetaDataInterface extends \ArrayAccess
     public function all();
 
     /**
-     * set
+     * Sets an attribute.
      *
-     * @param mixed $attr
-     * @param mixed $value
+     * @param string $attr
+     * @param string $value
      *
      * @return void
      */
@@ -35,23 +44,23 @@ interface MetaDataInterface extends \ArrayAccess
      *
      * @param string $attr
      *
-     * @return mixed
+     * @return string
      */
     public function get($attr, $default = null);
 
     /**
-     * has
+     * Checks if an attribute exists.
      *
      * @param string $attr
      *
-     * @return boolean
+     * @return bool
      */
     public function has($attr);
 
     /**
-     * delete
+     * Delete a attribute.
      *
-     * @param mixed $attr
+     * @param string $attr
      *
      * @return void
      */

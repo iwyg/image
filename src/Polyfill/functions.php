@@ -10,7 +10,6 @@
  */
 
 if (!function_exists('imagepalettetotruecolor')) {
-
     /**
      * Converts a palette based image to true color
      *

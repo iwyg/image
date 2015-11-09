@@ -12,17 +12,12 @@
 namespace Thapp\Image\Driver;
 
 use Thapp\Image\Geometry\Size;
-use Thapp\Image\Geometry\Point;
 use Thapp\Image\Geometry\Gravity;
-use Thapp\Image\Geometry\SizeInterface;
-use Thapp\Image\Geometry\PointInterface;
-use Thapp\Image\Geometry\GravityInterface;
 use Thapp\Image\Filter\FilterInterface;
-use Thapp\Image\Filter\DriverAwareFilterInterface;
-use Thapp\Image\Color\ColorInterface;
-use Thapp\Image\Color\Palette\PaletteInterface;
-use Thapp\Image\Color\Profile\ProfileInterface;
 use Thapp\Image\Exception\ImageException;
+use Thapp\Image\Geometry\GravityInterface;
+use Thapp\Image\Color\Palette\PaletteInterface;
+use Thapp\Image\Filter\DriverAwareFilterInterface;
 
 /**
  * @class AbstractImage
@@ -241,7 +236,7 @@ abstract class AbstractImage implements ImageInterface
             throw new ImageException('Couldn\'t write image data to stream. Stream is invalid.');
         }
 
-        // fwrite doesn't return false if stream is read only. Instead it just
+        // NOTE: fwrite doesn't return false if stream is read only. Instead it just
         // writes 0 bytes.
         if (0 !== fwrite($stream, $this->getBlob($format, $options))) {
             return true;
@@ -254,7 +249,7 @@ abstract class AbstractImage implements ImageInterface
     /**
      * newEdit
      *
-     * @return EditInterface
+     * @return \Thapp\Image\Driver\EditInterface
      */
     abstract protected function newEdit();
 
@@ -400,7 +395,7 @@ abstract class AbstractImage implements ImageInterface
      *
      * @param string $format
      *
-     * @return void
+     * @return array
      */
     protected function getInterlaceScheme($scheme)
     {

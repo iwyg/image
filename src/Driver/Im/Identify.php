@@ -1,9 +1,9 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Im package
+ * This File is part of the Thapp\Image package
  *
- * (c)  <>
+ * (c) Thomas Appel  <mail@thomas-appel.com>
  *
  * For full copyright and license information, please refer to the LICENSE file
  * that was distributed with this package.
@@ -16,13 +16,16 @@ use Thapp\Image\Driver\Im\Shell\Command;
 /**
  * @class Identify
  *
- * @package Thapp\Image\Driver\Im
+ * @package Thapp\Image
  * @version $Id$
- * @author  <>
+ * @author  Thomas Appel <mail@thomas-appel.com>
  */
 class Identify
 {
+    /** @var string */
     private $bin;
+
+    /** @var Command */
     private $command;
 
     /**
@@ -37,6 +40,13 @@ class Identify
         $this->bin = $bin ?: 'identify';
     }
 
+    /**
+     * Perform imagemagick identify
+     *
+     * @param string $file
+     *
+     * @return array
+     */
     public function identify($file)
     {
         $cmd = sprintf(
@@ -57,6 +67,13 @@ class Identify
         return $data;
     }
 
+    /**
+     * parse
+     *
+     * @param string $result
+     *
+     * @return array
+     */
     private function parse($result)
     {
         $out = [];
@@ -76,11 +93,5 @@ class Identify
         }
 
         return $out;
-    }
-
-    private function parseList($list, &$result = [])
-    {
-        foreach ($list as $value) {
-        }
     }
 }

@@ -20,14 +20,17 @@ namespace Thapp\Image\Geometry;
  */
 class Size implements SizeInterface
 {
+    /** @var int */
     private $width;
+
+    /** @var int */
     private $height;
 
     /**
      * Constructor.
      *
-     * @param mixed $width
-     * @param mixed $height
+     * @param int $width
+     * @param int $height
      */
     public function __construct($width, $height)
     {

@@ -21,37 +21,43 @@ namespace Thapp\Image\Geometry;
 interface SizeInterface
 {
     /**
-     * getRatio
+     * Get the aspect ratio of the Size object.
      *
      * @return float
      */
     public function getRatio();
 
     /**
-     * getWidth
+     * Get the width in px of the Size object.
      *
      * @return int
      */
     public function getWidth();
 
     /**
-     * getHeight
+     * Get the height in px of the Size object.
+     *
+     * This method MUST return a new instance of SizeInterface.
      *
      * @return int
      */
     public function getHeight();
 
     /**
-     * scale
+     * Scales the Size object by the given percentage.
      *
-     * @param int $perc
+     * This method MUST return a new instance of SizeInterface.
+     *
+     * @param float $perc
      *
      * @return SizeInterface
      */
     public function scale($perc);
 
     /**
-     * pixel
+     * Scales the Size object to a maximum pixel count
+     *
+     * This method MUST return a new instance of SizeInterface.
      *
      * @param int $limit
      *
@@ -60,7 +66,7 @@ interface SizeInterface
     public function pixel($limit);
 
     /**
-     * increaseByWidth
+     * Increases the Size object by width in px.
      *
      * This method MUST return a new instance of SizeInterface.
      *
@@ -71,7 +77,7 @@ interface SizeInterface
     public function increaseByWidth($width);
 
     /**
-     * increaseByHeight
+     * Increases the Size object by height in px.
      *
      * This method MUST return a new instance of SizeInterface.
      *
@@ -102,12 +108,11 @@ interface SizeInterface
     public function contains(SizeInterface $box, PointInterface $point = null);
 
     /**
-     * has
+     * Checks if given Point is within the Size object.
      *
-     * @param mixed $box
      * @param PointInterface $point
      *
-     * @return boolean
+     * @return bool
      */
     public function has(PointInterface $point);
 
@@ -123,7 +128,7 @@ interface SizeInterface
     public function fill(SizeInterface $target);
 
     /**
-     * fit
+     * Fits the origin Size object in a referenced Size object.
      *
      * This method MUST return a new instance of SizeInterface.
      *

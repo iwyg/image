@@ -3,7 +3,7 @@
 /*
  * This File is part of the Thapp\Image package
  *
- * (c)  <>
+ * (c) Thomas Appel <mail@thomas-appel.com>
  *
  * For full copyright and license information, please refer to the LICENSE file
  * that was distributed with this package.
@@ -12,22 +12,16 @@
 
 namespace Thapp\Image\Driver\Im\Shell;
 
-use Closure;
-
 /**
- * Trait: ShellCommand
+ * @class Command
  *
- * @trait
  * @package Thapp\Image
  * @version $Id$
  * @author Thomas Appel <mail@thomas-appel.com>
- * @license MIT
  */
 class Command
 {
     /**
-     * cmds
-     *
      * list of all executed commands
      *
      * @var array
@@ -35,23 +29,18 @@ class Command
     private $cmds = [];
 
     /**
-     * run a shell command
+     * Runs a shell command
      *
      * @param string  $cmd       the shell command
      * @param string  $exception exeption class
-     * @param Closure $callback  in case of an error call a
+     * @param callable $callback  in case of an error call a
      *  callback right before an exception is thrown
      *
-     * @access public
-     * @throws \RuntimeException;
+     * @throws \Exception; Exception type is based on $exception.
      * @return string             the command result
      */
-    public function run(
-        $cmd,
-        $exception = '\RuntimeException',
-        Closure $callback = null,
-        array $noEscapeChars = null
-    ) {
+    public function run($cmd, $exception = '\RuntimeException', callable $callback = null, array $noEscapeChars = null)
+    {
         $cmd = escapeshellcmd($cmd);
 
         if (is_array($noEscapeChars) and !empty($noEscapeChars)) {
@@ -80,9 +69,8 @@ class Command
     }
 
     /**
-     * get last executed command
+     * Get last executed command
      *
-     * @access public
      * @return string
      */
     public function getLastCmd()
@@ -99,8 +87,7 @@ class Command
      * @param string $stdout
      * @param string $stderr
      *
-     * @access private
-     * @return mixed
+     * @return int
      */
     private function execCmd($cmd, &$stdout = null, &$stderr = null)
     {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Imagick package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -12,18 +12,20 @@
 namespace Thapp\Image\Driver\Imagick;
 
 use Imagick;
-use Thapp\Image\Driver\ImageInterface;
+use Iterator;
+use Countable;
+use ArrayAccess;
 use Thapp\Image\Driver\AbstractFrames;
 use Thapp\Image\Geometry\GravityInterface;
 
 /**
  * @class Frames
  *
- * @package Thapp\Image\Driver\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAccess
+class Frames extends AbstractFrames implements Countable, Iterator, ArrayAccess
 {
     private $image;
 
@@ -34,7 +36,7 @@ class Frames extends AbstractFrames implements \Countable, \Iterator, \ArrayAcce
      */
     public function __construct(Image $image)
     {
-        $this->image = $image;
+        $this->image  = $image;
         $this->frames = [];
         $this->offset = 0;
     }

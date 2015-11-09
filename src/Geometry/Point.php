@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Metrics package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -14,13 +14,16 @@ namespace Thapp\Image\Geometry;
 /**
  * @class Point
  *
- * @package Thapp\Image\Metrics
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
 class Point implements PointInterface
 {
+    /** @var int **/
     private $x;
+
+    /** @var int **/
     private $y;
 
     /**

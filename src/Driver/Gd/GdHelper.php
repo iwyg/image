@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver\Gd package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -17,7 +17,7 @@ use Thapp\Image\Color\ColorInterface;
 /**
  * @trait GdHelper
  *
- * @package Thapp\Image\Driver\Gd
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
@@ -26,10 +26,10 @@ trait GdHelper
     /**
      * getColorId
      *
-     * @param mixed $gd
+     * @param resource $gd the GD resource
      * @param ColorInterface $color
      *
-     * @return void
+     * @return int
      */
     private function getColorId($gd, ColorInterface $color = null)
     {
@@ -45,5 +45,4 @@ trait GdHelper
 
         return imagecolorallocatealpha($gd, $color->getRed(), $color->getGreen(), $color->getBlue(), $alpha);
     }
-
 }

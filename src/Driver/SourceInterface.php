@@ -24,8 +24,10 @@ interface SourceInterface
      * Create a new Image instance from a file resource
      *
      * @param resource $resource valid file handle or resource
+     * @throws \Thapp\Image\Exception\ImageException if reading the image
+     * resource fails.
      *
-     * @return ImageInterface
+     * @return \Thapp\Image\Driver\ImageInterface
      */
     public function read($resource);
 
@@ -33,8 +35,9 @@ interface SourceInterface
      * Create a new Image instance from a filename
      *
      * @param string $file image file
+     * @throws \Thapp\Image\Exception\ImageException if loading the image fails.
      *
-     * @return ImageInterface
+     * @return \Thapp\Image\Driver\ImageInterface
      */
     public function load($file);
 
@@ -42,8 +45,10 @@ interface SourceInterface
      * Create a new Image from a binary blob
      *
      * @param string $content image blob
+     * @throws \Thapp\Image\Exception\ImageException if creating the image
+     * fails.
      *
-     * @return ImageInterface
+     * @return \Thapp\Image\Driver\ImageInterface
      */
     public function create($image);
 }

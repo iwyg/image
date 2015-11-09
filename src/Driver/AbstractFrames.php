@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Driver package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -11,17 +11,21 @@
 
 namespace Thapp\Image\Driver;
 
+use ArrayAccess;
+
 /**
  * @class AbstractFrames
  *
- * @package Thapp\Image\Driver
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-abstract class AbstractFrames implements FramesInterface, \ArrayAccess
+abstract class AbstractFrames implements FramesInterface, ArrayAccess
 {
-    protected $key;
+    /** @var int */
     protected $offset;
+
+    /** @var array */
     protected $frames;
 
     /**

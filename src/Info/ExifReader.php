@@ -12,7 +12,12 @@
 namespace Thapp\Image\Info;
 
 /**
- * {@inheritdoc}
+ * @class ExifReader
+ * @see AbstractReader
+ *
+ * @package Thapp\Image
+ * @version $Id$
+ * @author iwyg <mail@thomas-appel.com>
  */
 class ExifReader extends AbstractReader
 {
@@ -30,6 +35,7 @@ class ExifReader extends AbstractReader
     public function readFromBlob($blob)
     {
         $head = mb_substr($blob, 0, 2, '8bit');
+
         if ('II' === $head || 'MM' === $head) {
             $mime = 'image/tiff';
         } else {
@@ -44,9 +50,9 @@ class ExifReader extends AbstractReader
     /**
      * readExifData
      *
-     * @param mixed $file
+     * @param string $url
      *
-     * @return void
+     * @return array
      */
     private function readExifData($url)
     {
@@ -72,6 +78,9 @@ class ExifReader extends AbstractReader
         return $this->map($file + $data);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getMappedKeys()
     {
         return [];
