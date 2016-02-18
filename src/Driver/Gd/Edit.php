@@ -195,7 +195,7 @@ class Edit extends AbstractEdit
             return imageflip($this->gd(), IMG_FLIP_VERTICAL);
         }
 
-        list ($gd, $dest, $width, $height, $i) = $this->flipFlopArgs();
+        list($gd, $dest, $width, $height, $i) = $this->flipFlopArgs();
 
         while ($i < $height && imagecopy($dest, $gd, 0, $i, 0, ($height - 1) - $i, $width, 1)) {
             $i++;
@@ -223,7 +223,7 @@ class Edit extends AbstractEdit
             return imageflip($this->gd(), IMG_FLIP_HORIZONTAL);
         }
 
-        list ($gd, $dest, $width, $height, $i) = $this->flipFlopArgs();
+        list($gd, $dest, $width, $height, $i) = $this->flipFlopArgs();
 
         $i = 0;
         while ($i < $width && imagecopy($dest, $gd, $i, 0, ($width - 1) - $i, 0, 1, $height)) {

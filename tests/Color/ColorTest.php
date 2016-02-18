@@ -45,5 +45,4 @@ abstract class ColorTest extends \PHPUnit_Framework_TestCase
     }
 
     abstract protected function newColor($r, $g, $b, $a = null);
-
 }

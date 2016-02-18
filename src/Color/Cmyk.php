@@ -139,7 +139,7 @@ class Cmyk extends AbstractColor implements CmykInterface
             throw new \InvalidArgumentException('Invalid CMYK values.');
         }
 
-        list ($this->c, $this->m, $this->y, $this->k) = array_map(function ($color) {
+        list($this->c, $this->m, $this->y, $this->k) = array_map(function ($color) {
             return (float)min(100, max(0, $color));
         }, array_values($values));
     }

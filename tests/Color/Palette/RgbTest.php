@@ -28,7 +28,7 @@ class RgbTest extends \PHPUnit_Framework_TestCase
     public function itShouldReturnColor()
     {
         $palette = new Rgb;
-        $this->assertInstanceof('Thapp\Image\Color\ColorInterface', $palette->getColor([255,255,255]));
+        $this->assertInstanceof('Thapp\Image\Color\ColorInterface', $palette->getColor([255, 255, 255]));
     }
 
     /** @test */

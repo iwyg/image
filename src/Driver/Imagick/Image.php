@@ -99,7 +99,6 @@ class Image extends AbstractImage
         $version = phpversion('imagick');
 
         static::$version  = $version === '@PACKAGE_VERSION@' ? '3.4.0HEAD' : $version;
-
     }
 
     /**

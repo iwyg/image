@@ -154,7 +154,7 @@ class Image extends AbstractImage
         }
 
         $rgb = imagecolorat($this->gd, $pixel->getX(), $pixel->getY());
-        list ($r, $g, $b, $a) = array_values($color = imagecolorsforindex($this->gd, $rgb));
+        list($r, $g, $b, $a) = array_values($color = imagecolorsforindex($this->gd, $rgb));
         $a = 1 - round(($a / 127), 2);
 
         return $this->palette->getColor([$r, $g, $b, $a]);
@@ -290,8 +290,8 @@ class Image extends AbstractImage
             throw new ImageException(sprintf('Unsupported format "%s".', (string)$format));
         }
 
-        list ($fn, $args) = $map;
-        list ($path, ) = array_pad($args, 1, null);
+        list($fn, $args) = $map;
+        list($path, ) = array_pad($args, 1, null);
 
         ob_start();
         try {

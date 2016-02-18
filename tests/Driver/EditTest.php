@@ -212,7 +212,7 @@ abstract class EditTest extends \PHPUnit_Framework_TestCase
         $source = $this->newSource();
 
         if (is_array($file)) {
-            list ($w, $h, $format) = $this->mergeFileArgs($file);
+            list($w, $h, $format) = $this->mergeFileArgs($file);
 
             return $source->read($this->getTestImage($w, $h, $format));
         }

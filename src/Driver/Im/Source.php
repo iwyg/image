@@ -56,7 +56,6 @@ class Source extends AbstractSource
         try {
             $info = $this->identify->identify($file);
             return new Image($info, $this->getImagePalette($info), $this->getReader()->readFromFile($file), clone $this->convert);
-
         } catch (\Exception $e) {
             throw ImageException::load($e);
         }

@@ -28,7 +28,7 @@ class GrayscaleTest extends \PHPUnit_Framework_TestCase
     public function itShouldReturnColor()
     {
         $palette = new Grayscale;
-        $this->assertInstanceof('Thapp\Image\Color\GrayscaleInterface', $palette->getColor([55,0.5]));
+        $this->assertInstanceof('Thapp\Image\Color\GrayscaleInterface', $palette->getColor([55, 0.5]));
     }
 
     /** @test */

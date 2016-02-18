@@ -78,10 +78,10 @@ class Identify
     {
         $out = [];
         foreach (explode("\n", trim($result)) as $value) {
-            list ($key, $val) = explode('=', $value);
+            list($key, $val) = explode('=', $value);
 
             if ('colorspace' === $key) {
-                list (, $val) = explode(" ", $val);
+                list(, $val) = explode(" ", $val);
             } elseif (is_numeric($val)) {
                 $val = (int)$val;
             } elseif ("" === $val) {
@@ -89,7 +89,6 @@ class Identify
             }
 
             $out[$key] = $val;
-
         }
 
         return $out;

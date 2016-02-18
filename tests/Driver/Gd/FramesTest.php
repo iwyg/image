@@ -113,7 +113,8 @@ class FramesTest extends FTest
     //    $im->destroy();
     //}
 
-    protected function newImagick($count = 0) {
+    protected function newImagick($count = 0)
+    {
         $im = new Imagick();
 
         while (0 < $count) {

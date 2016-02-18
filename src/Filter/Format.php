@@ -20,7 +20,7 @@ use Thapp\Image\Driver\ImageInterface;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Format Implements FilterInterface
+class Format implements FilterInterface
 {
     public function __construct($format)
     {

@@ -141,7 +141,7 @@ class Rgb extends AbstractColor implements RgbInterface
             $this->a = null !== $a ? (float)max(0, min(1, $a)) : null;
         }
 
-        list ($this->r, $this->g, $this->b) = array_map(function ($color) {
+        list($this->r, $this->g, $this->b) = array_map(function ($color) {
             return (int)max(0, min(255, $color));
         }, array_values($values));
     }

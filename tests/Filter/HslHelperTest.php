@@ -30,7 +30,7 @@ class HslHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function convertsRgbToHsl($rgb, $hsl)
     {
-        list ($r, $g, $b) = $rgb;
+        list($r, $g, $b) = $rgb;
         $this->assertSame($hsl, $this->rgbToHsl($r, $g, $b));
     }
 
@@ -40,7 +40,7 @@ class HslHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function convertsHslToRgb($rgb, $hsl)
     {
-        list ($h, $s, $l) = $hsl;
+        list($h, $s, $l) = $hsl;
         $this->assertSame($rgb, $this->hslToRgb($h, $s, $l));
     }
 

@@ -74,8 +74,12 @@ class Image extends AbstractImage implements ImageInterface
      * @param MetaDataInterface $metaData
      * @param Convert $convert
      */
-    public function __construct(array $imageInfo, PaletteInterface $palette, MetaDataInterface $metaData = null, Convert $convert = null)
-    {
+    public function __construct(
+        array $imageInfo,
+        PaletteInterface $palette,
+        MetaDataInterface $metaData = null,
+        Convert $convert = null
+    ) {
         $this->setImageInfo($imageInfo);
 
         $this->palette = $palette;
@@ -243,7 +247,12 @@ class Image extends AbstractImage implements ImageInterface
 
         $conv->clean();
 
-        return new self($this->newInfo($target, $format, $size, $this->palette), clone $this->palette, new MetaData([]), $conv);
+        return new self(
+            $this->newInfo($target, $format, $size, $this->palette),
+            clone $this->palette,
+            new MetaData([]),
+            $conv
+        );
     }
 
 

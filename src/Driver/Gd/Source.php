@@ -34,7 +34,7 @@ class Source extends AbstractSource
     public function load($file)
     {
         try {
-            list ($gd, $mime) = $this->gdCreateFromFile($file);
+            list($gd, $mime) = $this->gdCreateFromFile($file);
         } catch (\Exception $e) {
             throw ImageException::load($e);
         }
@@ -122,7 +122,7 @@ class Source extends AbstractSource
     {
         $info = finfo_open(FILEINFO_MIME);
 
-        list($mime,) = explode(';', finfo_buffer($info, $blob), 2);
+        list($mime, ) = explode(';', finfo_buffer($info, $blob), 2);
         finfo_close($info);
 
         if (0 !== strpos($mime, 'image/')) {

@@ -9,7 +9,7 @@
  * that was distributed with this package.
  */
 
-namespace Thapp\Image\Tests\Filter\GD;
+namespace Thapp\Image\Tests\Filter\Gd;
 
 use Thapp\Image\Tests\TestHelperTrait;
 use Thapp\Image\Driver\Gd\Source;

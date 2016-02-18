@@ -220,8 +220,8 @@ class Size implements SizeInterface
         $pw = 1.0;
         $ph = $pw / $this->getRatio();
 
-        list ($pw, $ph) = $this->doRotate($rad, $pw, $ph);
-        list ($w, $h) = $this->doRotate($rad, $this->getWidth(), $this->getHeight());
+        list($pw, $ph) = $this->doRotate($rad, $pw, $ph);
+        list($w, $h) = $this->doRotate($rad, $this->getWidth(), $this->getHeight());
 
         return new static((int)round($w + $pw), (int)round($h + $ph));
     }

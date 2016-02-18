@@ -166,7 +166,7 @@ final class Parser
     public static function normalizeHex($hex)
     {
         if (3 === strlen($color = ltrim($hex, '#'))) {
-            list ($r, $g, $b) = str_split($color);
+            list($r, $g, $b) = str_split($color);
 
             return '#'.$r.$r.$g.$g.$b.$b;
         }
@@ -205,7 +205,6 @@ final class Parser
     private static function parse($color)
     {
         if (is_array($color)) {
-
             if (0 === ($count = count($color)) || 4 < $count) {
                 throw new \InvalidArgumentException(sprintf('Invalid argument value %s.', json_encode($color)));
             }
@@ -270,7 +269,7 @@ final class Parser
 
     private static function fourCToRgb(array $cmyk)
     {
-        list ($c, $m, $y, $k) = array_values($cmyk);
+        list($c, $m, $y, $k) = array_values($cmyk);
 
         return static::cmykToRgb($c, $m, $y, $k);
     }
