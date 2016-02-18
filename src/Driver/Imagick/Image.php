@@ -35,6 +35,9 @@ class Image extends AbstractImage
 {
     use HelperTrait;
 
+    /** @var string */
+    private static $version;
+
     /** @var array */
     private static $typeMap;
 
@@ -83,6 +86,20 @@ class Image extends AbstractImage
         $this->meta    = $meta ?: new MetaData([]);
 
         $this->setImageColorspace($palette);
+
+        $this->setVersion();
+    }
+
+    private function setVersion()
+    {
+        if (null !== static::$version) {
+            return;
+        }
+
+        $version = phpversion('imagick');
+
+        static::$version  = $version === '@PACKAGE_VERSION@' ? '3.4.0HEAD' : $version;
+
     }
 
     /**
@@ -366,7 +383,7 @@ class Image extends AbstractImage
      */
     private function cloneImagick()
     {
-        if (version_compare(phpversion('imagick'), '3.1.0b1', '>=') || defined('HHVM_VERSION')) {
+        if (version_compare(static::$version, '3.1.0b1', '>=') || defined('HHVM_VERSION')) {
             return clone $this->imagick;
         }
 
