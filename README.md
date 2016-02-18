@@ -1,33 +1,17 @@
 ## Image processing
 
-[![Build Status](https://api.travis-ci.org/iwyg/image.png?branch=develop)](https://travis-ci.org/iwyg/image)
-[![Code Climate](https://codeclimate.com/github/iwyg/image/badges/gpa.svg)](https://codeclimate.com/github/iwyg/image)
-[![Coverage Status](https://coveralls.io/repos/iwyg/image/badge.svg?branch=develop)](https://coveralls.io/r/iwyg/image?branch=develop)
-[![HHVM Status](http://hhvm.h4cc.de/badge/thapp/image.png)](http://hhvm.h4cc.de/package/thapp/image)
-[![Latest Stable Version](https://poser.pugx.org/thapp/image/v/stable.png)](https://packagist.org/packages/thapp/image) 
-[![Latest Unstable Version](https://poser.pugx.org/thapp/image/v/unstable.png)](https://packagist.org/packages/thapp/image) 
-[![License](https://poser.pugx.org/thapp/image/license.png)](https://packagist.org/packages/thapp/image)
+[![Author](http://img.shields.io/badge/author-iwyg-blue.svg?style=flat-square)](https://github.com/iwyg)
+[![Source Code](http://img.shields.io/badge/source-lucid/signal-blue.svg?style=flat-square)](https://github.com/iwyg/image/tree/develop)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/iwyg/image/blob/develop/LICENSE.md)
 
-
-This module was created for the usage in [Thapp/JitImage](https://github.com/iwyg/jitimage/tree/develop), but can be used as
-a standalone library for manipulating images. It's highly inspired by the Imagine
-library, but resolves a views flaws, but is also way more limited in features. 
+[![Build Status](https://img.shields.io/travis/iwyg/image/develop.svg?style=flat-square)](https://travis-ci.org/iwyg/image)
+[![Code Coverage](https://img.shields.io/coveralls/iwyg/image/develop.svg?style=flat-square)](https://coveralls.io/r/iwyg/image)
+[![HHVM](https://img.shields.io/hhvm/thapp/image/dev-develop.svg?style=flat-square)](http://hhvm.h4cc.de/package/thapp/image)
 
 ## Installation
 
-Require `thapp/image` in your project directory
-
 ```bash
-$ composer require thapp/image
-```
-or add this to your `composer.json`
-
-```json
-{
-	"require": {
-		"thapp/image": "1.0.*"
-	}
-}
+> composer require thapp/image
 ```
 
 ## Usage
@@ -80,7 +64,7 @@ $image = $source->create($content);
 The `Source` class takes an instance of
 `Thapp\Image\Info\MetaDataReaderInterface` as its first argument. The `$reader`
 is used to read meta information about the image. This is useful e.g. if you
-want to autorotate the image based on its orientation. 
+want to autorotate the image based on its orientation.
 
 By default, a new instance of `Thapp\Image\Info\ImageReader` is created for
 you. `ImageReader` is capable of reading basic image information derived from
@@ -127,10 +111,10 @@ type `Thapp\Image\Geometry\SizeInterface`. This object can be helpful to
 compute the desired new size of an image.
 
 All methods used for manipulating the geometry of the image are taking a size
-object as their first argument. 
+object as their first argument.
 
 The `resize()` method of the `$image` object can be used to modify the geometry
-of the image including its content. 
+of the image including its content.
 
 **Resize an image ignoring its aspect ratio**
 ```php
@@ -150,7 +134,7 @@ $image->edit()->resize($size);
 ```php
 <?php
 
-// Doubles with and height of the image. 
+// Doubles with and height of the image.
 
 $size = $image->getSize()->scale(200);
 
@@ -200,7 +184,7 @@ $image->edit()->resize($size);
 
 use Thapp\Image\Geometry\Size;
 
-// fits the image into a 400 x 400 box. 
+// fits the image into a 400 x 400 box.
 
 $size = $image->getSize();
 $fit = $size->fit(new Size(400, 400));
@@ -268,17 +252,17 @@ $image->edit()->crop($crop, $point);
 
 ```
 
-Using gravity you can place your crop according to the images gravity setting. There're 9 gravity positions: 
+Using gravity you can place your crop according to the images gravity setting. There're 9 gravity positions:
 
-1. `GRAVITY_NORTHWEST`  left top      
-2. `GRAVITY_NORTH`      center top    
-3. `GRAVITY_NORTHEAST`  right top     
-4. `GRAVITY_WEST`       left center   
-5. `GRAVITY_CENTER`     center center 
-6. `GRAVITY_EAST`       right center  
-7. `GRAVITY_SOUTHWEST`  left bottom   
-8. `GRAVITY_SOUTH`      center bottom 
-9. `GRAVITY_SOUTHEAST`  right bottom  
+1. `GRAVITY_NORTHWEST`  left top
+2. `GRAVITY_NORTH`      center top
+3. `GRAVITY_NORTHEAST`  right top
+4. `GRAVITY_WEST`       left center
+5. `GRAVITY_CENTER`     center center
+6. `GRAVITY_EAST`       right center
+7. `GRAVITY_SOUTHWEST`  left bottom
+8. `GRAVITY_SOUTH`      center bottom
+9. `GRAVITY_SOUTHEAST`  right bottom
 
 ```php
 <?php
@@ -309,7 +293,7 @@ $image->edit()->rotate(45, $color);
 
 #### Auto rotating according to its orientation
 
-If your image contains EXIF data, and was loaded using the `ExifReader`, you can use a filter to autororate the image according to its orientation. However, using the imagick image driver, the ExifReader is not necessary for this task. 
+If your image contains EXIF data, and was loaded using the `ExifReader`, you can use a filter to autororate the image according to its orientation. However, using the imagick image driver, the ExifReader is not necessary for this task.
 
 ```php
 <?php
