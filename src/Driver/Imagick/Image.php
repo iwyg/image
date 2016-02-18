@@ -381,7 +381,7 @@ class Image extends AbstractImage
     private function flatten()
     {
         try {
-            $this->imagick = $this->imagick->flattenImages();
+            $this->imagick = $this->imagick->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
         } catch (ImagickException $e) {
             throw new ImageException('Cannot flatten image', $e->getCode(), $e);
         }
