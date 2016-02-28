@@ -144,6 +144,14 @@ abstract class AbstractImage implements ImageInterface
     /**
      * {@inheritdoc}
      */
+    public function getColorSpace()
+    {
+        return 'unedfined';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getMetaData()
     {
         return $this->meta;

@@ -339,6 +339,13 @@ interface ImageInterface
     public function getPalette();
 
     /**
+     * Get the color palette associated with the image.
+     *
+     * @return string
+     */
+    public function getColorspace();
+
+    /**
      * Strip all profiles and comments
      *
      * @return void

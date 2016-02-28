@@ -69,6 +69,14 @@ class Image extends AbstractImage
         Imagick::ORIENTATION_LEFTBOTTOM  => self::ORIENT_LEFTBOTTOM
     ];
 
+    private static $colorSpaceMap = [
+        Imagick::COLORSPACE_SRGB      => 'RGB',
+        Imagick::COLORSPACE_RGB       => 'RGB',
+        Imagick::COLORSPACE_CMYK      => 'CMYK',
+        Imagick::COLORSPACE_GRAY      => 'GRAY',
+        Imagick::COLORSPACE_UNDEFINED => 'UNDEFINED'
+    ];
+
     /** @var Imagick */
     private $imagick;
 
@@ -221,6 +229,18 @@ class Image extends AbstractImage
         }
 
         return parent::getFormat();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getColorSpace()
+    {
+        if (isset(self::$colorSpaceMap[$id = $this->imagick->getColorspace()])) {
+            return self::$colorSpaceMap[$id];
+        };
+
+        return 'undefined';
     }
 
     /**

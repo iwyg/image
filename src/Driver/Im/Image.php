@@ -56,6 +56,9 @@ class Image extends AbstractImage implements ImageInterface
     /** @var int */
     private $numberImages;
 
+    /** @var string */
+    private $colorspace;
+
     /** @var Convert */
     private $convert;
 
@@ -189,6 +192,11 @@ class Image extends AbstractImage implements ImageInterface
         }
 
         return $this->palette->getColor($color);
+    }
+
+    public function getColorSpace()
+    {
+
     }
 
     /**
@@ -381,6 +389,7 @@ class Image extends AbstractImage implements ImageInterface
         $this->fileFormat   = $info['format'];
         $this->hasProfile   = null !== $info['icc'] || null !== $info['icm'];
         $this->numberImages = $info['frames'];
+        $this->colorspace   = $info['colorspace'];
     }
 
     /**

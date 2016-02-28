@@ -161,6 +161,14 @@ class Image extends AbstractImage
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getColorSpace()
+    {
+        return 'RGB';
+    }
+
+    /**
      * Get the current GD resource
      *
      * @return resource
@@ -428,7 +436,11 @@ class Image extends AbstractImage
      */
     private function getPngSaveArgs(array $options)
     {
-        $compression = (9 - (int)round(9 * (min(100, max(0, $this->getOption($options, 'compression_quality_png', 50))) / 100)));
+        $compression = (
+            9 - (int)round(
+                9 * (min(100, max(0, $this->getOption($options, 'compression_quality_png', 50))) / 100)
+            )
+        );
 
         return ['imagepng', [null, $compression]];
     }
