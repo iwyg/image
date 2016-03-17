@@ -1,12 +1,10 @@
-sudo: false
+sudo: required
 
 language: php
 
 matrix:
   fast_finish: true
   include:
-    - php: 5.6
-      env:
     - php: 5.6
       env:
       - DRIVER_IMAGICK: true
