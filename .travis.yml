@@ -7,9 +7,13 @@ matrix:
   include:
     - php: 5.6
       env:
+    - php: 5.6
+      env:
+      - DRIVER_IMAGICK: true
       - CS_CHECK_ENABLED: true
     - php: 7.0
       env:
+      - DRIVER_IMAGICK: true
       - CODE_COVERAGE_LOG: true
     - php: hhvm
   allow_failures:
@@ -19,11 +23,13 @@ before_install:
   - if [[ $CODE_COVERAGE_LOG != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
   - composer self-update
   - if [[ $CODE_COVERAGE_LOG == 'true' ]]; then composer require --no-update satooshi/php-coveralls:dev-master; fi
-  - if [[ $CS_CHECK_ENABLED == 'true' ]]; then composer require squizlabs/php_codesniffer:~2.5; fi
+  - if [[ $CS_CHECK_ENABLED == 'true' ]]; then composer require --no-update squizlabs/php_codesniffer:~2.5; fi
 
 install:
   - composer install --prefer-source --no-interaction
   - if [[ $CODE_COVERAGE_LOG == 'true' ]]; then mkdir -p coverage; fi
+  - if [[ $DRIVER_IM == 'true' ]]; then sh .travis_install_imagemagick.sh; fi
+  - if [[ $DRIVER_IMAGICK == 'true' ]]; then sh .travis_install_imagemagick; fi
 
 script:
   - if [[ $CODE_COVERAGE_LOG != 'true' ]]; then php vendor/bin/phpunit --verbose; fi;
