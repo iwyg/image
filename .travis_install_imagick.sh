@@ -2,8 +2,7 @@
 
 set -e
 
-# errors in install: invalid option -- 'y'
-sudo install libmagickcore-dev libmagickwand-dev imagemagick
+sudo apt-get install -y libmagickcore-dev libmagickwand-dev imagemagick
 
 git clone https://github.com/mkoppanen/imagick.git
 
