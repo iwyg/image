@@ -22,18 +22,18 @@ use Thapp\Image\Driver\Im\Shell\Command;
  */
 class Identify
 {
-    /** @var array */
-    private static $fmtstr = [
-        '%s -ping -format colorspace=%%r',
-        'type=%%[type]',
-        'width=%%w',
-        'height=%%h',
-        'format=%%m',
-        'extension=%%e',
-        'icc=%%[profile:icc]',
-        'icm=%%[profile:icm]',
-        'frames=%%n %s'
-    ];
+    /** @var string */
+    const FMTSTR = <<<'PHP'
+%s -ping -format colorspace=%%r
+type=%%[type]
+width=%%w
+height=%%h
+format=%%m
+extension=%%e
+icc=%%[profile:icc]
+icm=%%[profile:icm]
+frames=%%n %s
+PHP;
 
     /** @var string */
     private $bin;
@@ -62,7 +62,7 @@ class Identify
      */
     public function identify($file)
     {
-        $cmd = sprintf(implode("\n", self::$fmtstr), $this->bin, $file);
+        $cmd = sprintf(self::FMTSTR, $this->bin, $file);
 
         try {
             $ret  = $this->command->run($cmd);
@@ -86,14 +86,14 @@ class Identify
     private function parse($result)
     {
         $out = [];
-        foreach (explode("\n", trim($result)) as $value) {
+        foreach (explode(PHP_EOL, trim($result)) as $value) {
             list($key, $val) = explode('=', $value);
 
             if ('colorspace' === $key) {
                 list(, $val) = explode(' ', $val);
             } elseif (is_numeric($val)) {
                 $val = (int)$val;
-            } elseif ("" === $val) {
+            } elseif ('' === $val) {
                 $val = null;
             }
 
