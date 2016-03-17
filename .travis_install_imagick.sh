@@ -12,7 +12,7 @@ phpize
 sudo make
 sudo make install
 
-PHP_VERSION = `phpenv version-name`;
+PHP_VERSION=`phpenv version-name`;
 echo "extension = imagick.so" >> ~/.phpenv/versions/$PHP_VERSION/etc/php.ini
 php --ri imagick;
 cd ..
