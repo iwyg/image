@@ -208,8 +208,12 @@ class Edit extends AbstractEdit
      *
      * @return void
      */
-    protected function createCanvas(SizeInterface $size, PointInterface $point, ColorInterface $color = null, $mode = Imagick::COMPOSITE_OVER)
-    {
+    protected function createCanvas(
+        SizeInterface $size,
+        PointInterface $point,
+        ColorInterface $color = null,
+        $mode = Imagick::COMPOSITE_OVER
+    ) {
         $canvas = new Imagick();
 
         $color = null !== $color ? $this->pixelFromColor($color) : new ImagickPixel('srgba(255, 255, 255, 0)');

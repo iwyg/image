@@ -23,6 +23,19 @@ use Thapp\Image\Driver\Im\Shell\Command;
 class Identify
 {
     /** @var string */
+    const FMTSTR = <<<'PHP'
+%s -ping -format colorspace=%%r
+type=%%[type]
+width=%%w
+height=%%h
+format=%%m
+extension=%%e
+icc=%%[profile:icc]
+icm=%%[profile:icm]
+frames=%%n %s
+PHP;
+
+    /** @var string */
     private $bin;
 
     /** @var Command */
@@ -49,11 +62,7 @@ class Identify
      */
     public function identify($file)
     {
-        $cmd = sprintf(
-            '%s -ping -format colorspace=%%r\ntype=%%[type]\nwidth=%%w\nheight=%%h\nformat=%%m\nextension=%%e\nicc=%%[profile:icc]\nicm=%%[profile:icm]\nframes=%%n %s',
-            $this->bin,
-            $file
-        );
+        $cmd = sprintf(self::FMTSTR, $this->bin, $file);
 
         try {
             $ret  = $this->command->run($cmd);

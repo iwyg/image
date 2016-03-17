@@ -26,8 +26,12 @@ class Modulate extends GdFilter
 {
     use HslHelperTrait;
 
+    /** @var float */
     private $degree;
+    /** @var int */
     private $saturation;
+
+    /** @var int */
     private $brightness;
 
     /**
@@ -51,7 +55,14 @@ class Modulate extends GdFilter
         $gd = $image->getGd();
 
         if (0 !== $this->saturation && 0 !== $this->degree) {
-            $this->applyHue($gd, $image->getWidth(), $image->getHeight(), $this->degree, $this->saturation, $this->brightness);
+            $this->applyHue(
+                $gd,
+                $image->getWidth(),
+                $image->getHeight(),
+                $this->degree,
+                $this->saturation,
+                $this->brightness
+            );
         }
     }
 
@@ -81,7 +92,8 @@ class Modulate extends GdFilter
 
                 $this->setHue($h, $angle, $noHue);
 
-                list($r, $g, $b) = $this->hslToRgb($h, max(0, min(1, $s * $saturation)), max(0, min(1, $brightness * $l)));
+                list($r, $g, $b) =
+                    $this->hslToRgb($h, max(0, min(1, $s * $saturation)), max(0, min(1, $brightness * $l)));
 
                 imagesetpixel($gd, $x, $y, imagecolorallocatealpha($gd, $r, $g, $b, ($index & 0x7F000000) >> 24));
             }

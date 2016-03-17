@@ -26,11 +26,13 @@ class IdentifyTest extends \PHPUnit_Framework_TestCase
     use TestHelperTrait;
 
     /** @test */
-    public function itIsExpectedThat()
+    public function itShouldIdentifyImageProps()
     {
         $id = new Identify;
+        $info = $id->identify($this->asset('pattern4c.jpg'));
 
-        $id->identify($this->asset('pattern4c.jpg'));
+        $this->assertArrayHasKey('colorspace', $info);
+        $this->assertArrayHasKey('file', $info);
     }
 
     protected function asset($file)
@@ -40,6 +42,6 @@ class IdentifyTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->skipIfImagemagick();
+        //$this->skipIfImagemagick();
     }
 }

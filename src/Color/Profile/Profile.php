@@ -104,7 +104,9 @@ class Profile implements ProfileInterface
     private function setFile($file)
     {
         if (!is_string($file)) {
-            throw new \InvalidArgumentException(sprintf('%s expects $file to be string, instead saw %s', __METHOD__, gettype($file)));
+            throw new \InvalidArgumentException(
+                sprintf('%s expects $file to be string, instead saw %s', __METHOD__, gettype($file))
+            );
         }
 
         if ((!is_file($file) || !stream_is_local($file)) && 0 !== mb_strpos($file, 'data://', 0, '8bit')) {

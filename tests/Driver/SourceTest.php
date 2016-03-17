@@ -119,7 +119,10 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->newSource();
         $stream = $this->getTestImage();
-        $this->assertInstanceof('Thapp\Image\Driver\ImageInterface', $this->images[] = $source->create(stream_get_contents($stream)));
+        $this->assertInstanceof(
+            'Thapp\Image\Driver\ImageInterface',
+            $this->images[] = $source->create(stream_get_contents($stream))
+        );
     }
 
     /**

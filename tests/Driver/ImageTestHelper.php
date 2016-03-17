@@ -61,10 +61,9 @@ trait ImageTestHelper
         return $transparent ? $alpha > 0 : 0 === $alpha;
     }
 
-    protected function assertTransparentGmagick(ImageInterface $image, $transparent = true, $alpha, $x = 0, $y = 0)
+    protected function assertTransparentGmagick(ImageInterface $image, $transparent = true, $alpha = 1.0, $x = 0, $y = 0)
     {
         $gd = imagecreatefromstring($image->getBlob());
-
         $alpha = (imagecolorat($gd, $x, $y) & 0x7F000000) >> 24;
 
         imagedestroy($gd);

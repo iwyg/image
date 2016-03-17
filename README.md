@@ -1,7 +1,7 @@
 ## Image processing
 
 [![Author](http://img.shields.io/badge/author-iwyg-blue.svg?style=flat-square)](https://github.com/iwyg)
-[![Source Code](http://img.shields.io/badge/source-lucid/signal-blue.svg?style=flat-square)](https://github.com/iwyg/image/tree/develop)
+[![Source Code](http://img.shields.io/badge/source-iwyg/image-blue.svg?style=flat-square)](https://github.com/iwyg/image/tree/develop)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/iwyg/image/blob/develop/LICENSE.md)
 
 [![Build Status](https://img.shields.io/travis/iwyg/image/develop.svg?style=flat-square)](https://travis-ci.org/iwyg/image)

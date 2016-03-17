@@ -22,6 +22,11 @@ use Thapp\Image\Geometry\PointInterface;
  */
 class ColorAt extends AbstractCommand
 {
+    /** @var string */
+    const FMTSTR = <<<'PHP'
+-crop 1x1+%s+%s -format "rgba(%%[fx:floor(255*u.r)],%%[fx:floor(255*u.g)],%%[fx:floor(255*u.b)],%%[fx:abs(u.a)])" info:
+PHP;
+
     /** @var PointInterface */
     private $point;
 
@@ -40,10 +45,6 @@ class ColorAt extends AbstractCommand
      */
     public function asString()
     {
-        return sprintf(
-            '-crop 1x1+%s+%s -format "rgba(%%[fx:floor(255*u.r)],%%[fx:floor(255*u.g)],%%[fx:floor(255*u.b)],%%[fx:abs(u.a)])" info:',
-            $this->point->getX(),
-            $this->point->getY()
-        );
+        return sprintf(self::FMTSTR, $this->point->getX(), $this->point->getY());
     }
 }

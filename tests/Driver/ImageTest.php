@@ -237,7 +237,10 @@ abstract class ImageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($image === $copy, 'Image should not equal copy.');
         $this->assertFalse($image->frames() === $copy->frames(), 'frames should not equal copied frames.');
-        $this->assertFalse($image->getMetaData() === $copy->getMetaData(), 'metadata should not equal copied metadata.');
+        $this->assertFalse(
+            $image->getMetaData() === $copy->getMetaData(),
+            'metadata should not equal copied metadata.'
+        );
         $this->assertSame($image->getPalette(), $copy->getPalette(), 'palette should equal copied palette.');
         $copy->destroy();
     }
