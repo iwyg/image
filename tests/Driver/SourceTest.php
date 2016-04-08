@@ -134,7 +134,7 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
         $source = $this->newSource();
         $image  = $this->images[] = $source->load($this->asset($file));
 
-        $this->assertInstanceOf($palette, $image->getPalette());
+        $this->assertInstanceOf($palette, $image->getPalette(), sprintf('Assertion failed for %s.', $file));
     }
 
     public function paletteTestProvider()
