@@ -18,7 +18,7 @@ use Thapp\Image\Driver\Im\Command\Raw;
 /**
  * @class Colorize
  *
- * @package Thapp\Image\Filter\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */

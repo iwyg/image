@@ -22,7 +22,7 @@ use Thapp\Image\Driver\Im\Command\Raw;
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */
-class Modulate extends ImagickFilter
+class Modulate extends ImFilter
 {
     use AbstractModulate;
 

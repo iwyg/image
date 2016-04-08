@@ -15,7 +15,7 @@ use Thapp\Image\Driver\ImageInterface;
 use Thapp\Image\Filter\DriverAwareFilterInterface;
 
 /**
- * @class ImagickFilter
+ * @class ImFilter
  *
  * @package Thapp\Image
  * @version $Id$
