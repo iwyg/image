@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\JitImage\Filter package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -17,7 +17,7 @@ use Thapp\Image\Filter\AbstractModulate;
 /**
  * @class Greyscale
  *
- * @package Thapp\JitImage\Filter
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */

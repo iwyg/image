@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This File is part of the Thapp\Image\Filter\Imagick package
+ * This File is part of the Thapp\Image package
  *
  * (c) iwyg <mail@thomas-appel.com>
  *
@@ -17,7 +17,7 @@ use Thapp\Image\Filter\DriverAwareFilterInterface;
 /**
  * @class ImagickFilter
  *
- * @package Thapp\Image\Filter\Imagick
+ * @package Thapp\Image
  * @version $Id$
  * @author iwyg <mail@thomas-appel.com>
  */

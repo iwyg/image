@@ -22,25 +22,13 @@ use Thapp\Image\Driver\ImageInterface;
  */
 trait AbstractModulate
 {
-    /**
-     * brightness
-     *
-     * @var int
-     */
+    /** @var int */
     protected $brightness;
 
-    /**
-     * bue
-     *
-     * @var int
-     */
+    /** @var int */
     protected $bue;
 
-    /**
-     * saturation
-     *
-     * @var int
-     */
+    /** @var int */
     protected $saturation;
 
     /**
@@ -50,8 +38,6 @@ trait AbstractModulate
      * @param int $saturation
      * @param int $hue
      * @param boolean $contrast
-     *
-     * @return void
      */
     public function __construct($brightnes = 100, $saturation = 100, $hue = 100)
     {
