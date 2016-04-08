@@ -2,7 +2,7 @@
 
 set -e
 
-sudo apt-get install -y libmagickcore-dev libmagickwand-dev imagemagick
+sudo apt-get install -y libmagickcore-dev libmagickwand-dev imagemagick littlecms
 
 git clone https://github.com/mkoppanen/imagick.git
 
