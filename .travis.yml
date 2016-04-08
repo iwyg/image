@@ -7,11 +7,18 @@ matrix:
   include:
     - php: 5.6
       env:
-      - DRIVER_IMAGICK: true
       - CS_CHECK_ENABLED: true
     - php: 7.0
       env:
-      - DRIVER_IMAGICK: true
+      - IMAGE_DRIVER: 'im'
+    - php: 7.0
+      env:
+      - IMAGE_DRIVER: 'gd'
+    - php: 7.0
+      env:
+      - IMAGE_DRIVER: 'imagick'
+    - php: 7.0
+      env:
       - CODE_COVERAGE_LOG: true
     - php: hhvm
   allow_failures:
@@ -26,8 +33,8 @@ before_install:
 install:
   - composer install --prefer-source --no-interaction
   - if [[ $CODE_COVERAGE_LOG == 'true' ]]; then mkdir -p coverage; fi
-  - if [[ $DRIVER_IM == 'true' ]]; then sh .travis_install_imagemagick.sh; fi
-  - if [[ $DRIVER_IMAGICK == 'true' ]]; then sh .travis_install_imagick.sh; fi
+  - if [[ $IMAGE_DRIVER == 'im' ]]; then sh .travis_install_imagemagick.sh; fi
+  - if [[ $IMAGE_DRIVER == 'imagick' ]]; then sh .travis_install_imagick.sh; fi
 
 script:
   - if [[ $CODE_COVERAGE_LOG != 'true' ]]; then php vendor/bin/phpunit --verbose; fi;

@@ -14,6 +14,9 @@ namespace Thapp\Image\Tests\Driver;
 use Thapp\Image\Exception\ImageException;
 use Thapp\Image\Info\MetaDataReaderInterface;
 use Thapp\Image\Tests\TestHelperTrait;
+use Thapp\Image\Color\Palette\RgbPaletteInterface;
+use Thapp\Image\Color\Palette\CmykPaletteInterface;
+use Thapp\Image\Color\Palette\GrayscalePaletteInterface;
 
 /**
  * @class ImageTest
@@ -140,9 +143,9 @@ abstract class SourceTest extends \PHPUnit_Framework_TestCase
     public function paletteTestProvider()
     {
         return [
-            ['pattern.png', 'Thapp\Image\Color\Palette\RgbPaletteInterface'],
-            ['grayscale.jpg', 'Thapp\Image\Color\Palette\GrayscalePaletteInterface'],
-            ['pattern4c.jpg', 'Thapp\Image\Color\Palette\CmykPaletteInterface'],
+            ['pattern.png', RgbPaletteInterface::class],
+            ['pattern4c.jpg', CmykPaletteInterface::class],
+            ['grayscale.jpg', GrayscalePaletteInterface::class],
         ];
     }
 

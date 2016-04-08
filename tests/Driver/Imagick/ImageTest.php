@@ -129,18 +129,11 @@ class ImageTest extends AbstractImageTest
     /** @test */
     public function itShouldSaveImageWithWhiteBackground()
     {
-        $image = $this->loadImage($this->asset('transparent4.png'));
-        $image->setGravity(new Gravity(5));
-        $image->edit()->extent(new Size(800, 800));
-        //$image->edit()->extent(new Size(1000, 1000), null, $image->getPalette()->getColor('#ff0000'));
-        $image->setFormat('PNG');
-        $image->save($this->asset('_save_as_png.png'));
-        //$content = $image->getBlob();
-        //$image->destroy();
-
-        //$image = (new Source)->create($content);
-
-        //$color = $image->getColorAt(new Point(1, 1));
+        //$image = $this->loadImage($this->asset('transparent4.png'));
+        //$image->setGravity(new Gravity(5));
+        //$image->edit()->extent(new Size(800, 800));
+        //$image->setFormat('PNG');
+        //$image->save($this->asset('_save_as_png.png'));
     }
 
 
