@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="false"
-  backupStaticAttributes="false"
-  bootstrap="vendor/autoload.php"
-  colors="true"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  processIsolation="false"
-  stopOnFailure="false"
-  syntaxCheck="true">
+    backupStaticAttributes="false"
+    bootstrap="vendor/autoload.php"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="true"
+    syntaxCheck="true">
   <testsuites>
     <testsuite name="Image">
       <directory>./tests</directory>
@@ -17,14 +17,10 @@
   <filter>
     <blacklist>
       <directory suffix=".php">./vendor</directory>
-      <directory suffix=".php">./test</directory>
+      <directory suffix=".php">./tests</directory>
     </blacklist>
+    <whitelist processUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">./src</directory>
+    </whitelist>
   </filter>
-  <!--
-  <logging>
-    <log type="coverage-html" target="report" showUncoveredFiles="true"/>
-    <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
-    <log type="coverage-clover" target="/tmp/coverage/coverage.xml" />
-  </logging>
-  -->
 </phpunit>
