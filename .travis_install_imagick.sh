@@ -2,7 +2,7 @@
 
 set -e
 
-sudo apt-get uninstall -y imagemagick
+sudo apt-get remove -y imagemagick --purge
 
 sudo apt-get install -y liblcms2-2 liblcms2-utils libmagickcore-dev libmagickwand-dev imagemagick
 
