@@ -95,12 +95,10 @@ final class Parser
             // transform the alpha values to saturation of 4c colors.
             $a = $colors[ColorInterface::CHANNEL_ALPHA];
 
-            $colors = [
-                1.0 === $k ? 0 : round(((1 - $r - $k) / (1 - $k)), 2),
-                1.0 === $k ? 0 : round(((1 - $g - $k) / (1 - $k)), 2),
-                1.0 === $k ? 0 : round(((1 - $b - $k) / (1 - $k)), 2),
-                $key = round($k, 2)//round($a * ($k * 100), 2)
-            ];
+            $colors = array_map(function ($c) use ($k) {
+                return 1.0 === $k ? 0 : round(((1 - $c - $k) / (1 - $k)), 2);
+            }, [$r, $g, $b])
+            $colors[] = round($k, 2);//round($a * ($k * 100), 2)
         }
 
         return static::map4c($colors);
@@ -187,12 +185,10 @@ final class Parser
     public static function cmykToRgb($c, $m, $y, $k)
     {
         $k = 1 - $k / 100;
-        return [
-            min(255, max(0, (int)round(255 * (1 - $c / 100) * $k))),
-            min(255, max(0, (int)round(255 * (1 - $m / 100) * $k))),
-            min(255, max(0, (int)round(255 * (1 - $y / 100) * $k))),
-            1.0
-        ];
+        
+        return array_map(function ($c) use ($k) {
+            return min(255, max(0, (int)round(255 * (1 - $c / 100) * $k)));
+        }, [$c, $m, $y]);
     }
 
     /**
