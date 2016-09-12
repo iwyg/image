@@ -97,7 +97,7 @@ final class Parser
 
             $colors = array_map(function ($c) use ($k) {
                 return 1.0 === $k ? 0 : round(((1 - $c - $k) / (1 - $k)), 2);
-            }, [$r, $g, $b])
+            }, [$r, $g, $b]);
             $colors[] = round($k, 2);//round($a * ($k * 100), 2)
         }
 
